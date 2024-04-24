@@ -70,7 +70,7 @@
                 </div>
 
                 <div class="pt-5">
-                    {% for dessert in desserts %}
+                    {% for desserts in desserts %}
                     <div class="row mt-4">
                         <div class="col-md-2 col-sm-12">
                             <img class="rounded" src="{{ desserts.image.url }}" width="150" height="100"/>
@@ -89,6 +89,28 @@
                     <hr />
                     {% endfor %}
                 </div>
+
+                <div class="pt-5">
+                    {% for spaghetti in spaghetti %}
+                    <div class="row mt-4">
+                        <div class="col-md-2 col-sm-12">
+                            <img class="rounded" src="{{ spaghetti.image.url }}" width="150" height="100"/>
+                        </div>
+                        <div class="col-md-8 col-sm-12">
+                            <div class="d-flex flex-row">
+                                <div class="form-group form-check">
+                                    <input type="checkbox" name="items[]" class="form-check-input" value="{{ spaghetti.pk }}">
+                                    <label class="form-check-label">{{ spaghetti.name }}</label>
+                                </div>
+                                <p class="font-weight-bold pl-5">{{ spaghetti.price }}</p>
+                            </div>
+                            <p>{{ spaghetti.description }}</p>
+                        </div>
+                    </div>
+                    <hr />
+                    {% endfor %}
+                </div>
+
 
                 <div class="form-group pt-3">
                     <label for="name">Full Name</label>
@@ -123,8 +145,6 @@
                     </div>
                 </div>
   
-
-                <!-- <button class="btn btn-dark mt-5">Place Order!</button> -->
             </form>
         </div>
     </div>

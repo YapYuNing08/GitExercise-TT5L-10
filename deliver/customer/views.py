@@ -20,6 +20,7 @@ class Order(View):
         tea = MenuItem.objects.filter(category__name__contains='Tea')
         pastries = MenuItem.objects.filter(category__name__contains='Pastries')
         desserts = MenuItem.objects.filter(category__name__contains='Desserts')
+        spaghetti = MenuItem.objects.filter(category__name__contains='Spaghetti')
 
         # pass into context
         context = {
@@ -27,6 +28,7 @@ class Order(View):
             'tea': tea,
             'pastries': pastries,
             'desserts': desserts,
+            'spaghetti': spaghetti
         }
 
         # render the template
@@ -84,7 +86,6 @@ class Order(View):
         }
 
         return render(request, 'customer/order_confirmation.html', context)
-
 
 
 
