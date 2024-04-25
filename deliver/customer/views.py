@@ -70,7 +70,7 @@ class Order(View):
 
         # Send confirmation email to the user
         body = ('Thank you for your order! Your food is being made and will be served soon!\n'
-                f'Your total: {price}\n')
+                f'Your total: RM{price}\n')
         send_mail(
             'Thank You For Your Order!',
             body,

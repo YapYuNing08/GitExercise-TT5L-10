@@ -18,7 +18,7 @@
                                     <input type="checkbox" name="items[]" class="form-check-input" value="{{ coffee.pk }}">
                                     <label class="form-check-label">{{ coffee.name }}</label>
                                 </div>
-                                <p class="font-weight-bold pl-5">{{ coffee.price }}</p>
+                                <p class="font-weight-bold pl-5">RM{{ coffee.price }}</p>
                             </div>
                             <p>{{ coffee.description }}</p>
                         </div>
@@ -39,7 +39,13 @@
                                     <input type="checkbox" name="items[]" class="form-check-input" value="{{ tea.pk }}">
                                     <label class="form-check-label">{{ tea.name }}</label>
                                 </div>
-                                <p class="font-weight-bold pl-5">{{ tea.price }}</p>
+
+                                <!-- <div class="quantity">
+                                    <label for="quantity">Quantity:</label>
+                                    <input type="number" id="quantity" name="quantity[]" min="1" value="1">
+                                </div> -->
+
+                                <p class="font-weight-bold pl-5">RM{{ tea.price }}</p>
                             </div>
                             <p>{{ tea.description }}</p>
                         </div>
@@ -60,7 +66,7 @@
                                     <input type="checkbox" name="items[]" class="form-check-input" value="{{ pastries.pk }}">
                                     <label class="form-check-label">{{ pastries.name }}</label>
                                 </div>
-                                <p class="font-weight-bold pl-5">{{ pastries.price }}</p>
+                                <p class="font-weight-bold pl-5">RM{{ pastries.price }}</p>
                             </div>
                             <p>{{ pastries.description }}</p>
                         </div>
@@ -81,7 +87,7 @@
                                     <input type="checkbox" name="items[]" class="form-check-input" value="{{ desserts.pk }}">
                                     <label class="form-check-label">{{ desserts.name }}</label>
                                 </div>
-                                <p class="font-weight-bold pl-5">{{ desserts.price }}</p>
+                                <p class="font-weight-bold pl-5">RM{{ desserts.price }}</p>
                             </div>
                             <p>{{ desserts.description }}</p>
                         </div>
@@ -102,7 +108,7 @@
                                     <input type="checkbox" name="items[]" class="form-check-input" value="{{ spaghetti.pk }}">
                                     <label class="form-check-label">{{ spaghetti.name }}</label>
                                 </div>
-                                <p class="font-weight-bold pl-5">{{ spaghetti.price }}</p>
+                                <p class="font-weight-bold pl-5">RM{{ spaghetti.price }}</p>
                             </div>
                             <p>{{ spaghetti.description }}</p>
                         </div>
