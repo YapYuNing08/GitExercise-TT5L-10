@@ -19,13 +19,15 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from customer.views import Index, About, Order
+from customer.views import Index, About, Order, Signin, Signup
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('allauth.urls')),
+    # path('accounts/', include('allauth.urls')),
     path('', Index.as_view(), name="index"),
     path('about/', About.as_view(), name="about"),
+    path('signin/', Signin.as_view(), name="signin"),
+    path('signup/', Signup.as_view(), name="signup"),
     path('order/', Order.as_view(), name="order")
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

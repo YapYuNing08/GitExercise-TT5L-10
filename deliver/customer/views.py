@@ -11,6 +11,14 @@ class Index(View):
 class About(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/about.html')
+    
+class Signin(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'customer/signin.html')
+    
+class Signup(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'customer/signup.html')
 
 
 class Order(View):

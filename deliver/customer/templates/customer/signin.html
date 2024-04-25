@@ -1,23 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">  <!--specifies the language of the element's content. en=english-->
-  <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content = "IE=edge">
-    <meta name="viewport" content="width=device-width" , initial-scale="1.0">
-    <title>Website Sign In Page</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
+{% extends 'customer/base.html' %}
 
-  <body>
-    <header class="header">
-      <nav class="nav">
-        <a href="#">Home</a>
-        <a href="#">About</a>
-        <a href="#">Menu</a>
-        <a href="#">Contact</a>
-      </nav>
-    </header>
-    
+{% block content %}
+<div class="container mb-5">
+  <div class="row justify-content-center mt-5">
+      <div class="col-md-8 col-sm-12 offset-md-1 p-4 text-center">
+          <h1>Sign In</h1>
+      </div>
+  </div>
+</div>
+
     <form method="post">
       <fieldset>
         <label for="email">Enter Your Email: <input id="email" name="email" type="email" required /></label>
@@ -26,4 +17,4 @@
       <input type="submit" value="Submit" />
     </form>
   </body>
-</html>
+  {% endblock content %}
