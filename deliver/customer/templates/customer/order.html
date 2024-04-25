@@ -6,7 +6,8 @@
         <div class="col-md-12 col-sm-12 p-4">
             <form method="POST">
                 {% csrf_token %}
-                <div class="pt-5">
+
+                <!-- <div class="pt-5">
                     {% for coffee in coffee %}
                     <div class="row">
                         <div class="col-md-2 col-sm-12">
@@ -25,30 +26,31 @@
                     </div>
                     <hr />
                 {% endfor %}
-                </div>
+                </div> -->
 
-                <div class="pt-5">
-                    {% for tea in tea %}
+
+                <div class="pt-5"><h2>Beverages</h2>
+                    {% for beverage in beverage %}
                     <div class="row mt-4">
                         <div class="col-md-2 col-sm-12">
-                            <img class="rounded" src="{{ tea.image.url }}" width="150" height="100"/>
+                            <img class="rounded" src="{{ beverage.image.url }}" width="150" height="100"/>
                         </div>
                         <div class="col-md-8 col-sm-12">
                             <div class="d-flex flex-row">
                                 <div class="form-group form-check">
-                                    <input type="checkbox" name="items[]" class="form-check-input" value="{{ tea.pk }}">
-                                    <label class="form-check-label">{{ tea.name }}</label>
+                                    <input type="checkbox" name="items[]" class="form-check-input" value="{{ beverage.pk }}">
+                                    <label class="form-check-label">{{ beverage.name }}</label>
                                 </div>
-                                <p class="font-weight-bold pl-5">{{ tea.price }}</p>
+                                <p class="font-weight-bold pl-5">RM{{ beverage.price }}</p>
                             </div>
-                            <p>{{ tea.description }}</p>
+                            <p>{{ beverage.description }}</p>
                         </div>
                     </div>
                     <hr />
                     {% endfor %}
                 </div>
 
-                <div class="pt-5">
+                <!-- <div class="pt-5">
                     {% for pastries in pastries %}
                     <div class="row mt-4">
                         <div class="col-md-2 col-sm-12">
@@ -67,9 +69,9 @@
                     </div>
                     <hr />
                     {% endfor %}
-                </div>
+                </div> -->
 
-                <div class="pt-5">
+                <div class="pt-5"><h2>Desserts</h2>
                     {% for desserts in desserts %}
                     <div class="row mt-4">
                         <div class="col-md-2 col-sm-12">
@@ -81,7 +83,7 @@
                                     <input type="checkbox" name="items[]" class="form-check-input" value="{{ desserts.pk }}">
                                     <label class="form-check-label">{{ desserts.name }}</label>
                                 </div>
-                                <p class="font-weight-bold pl-5">{{ desserts.price }}</p>
+                                <p class="font-weight-bold pl-5">RM{{ desserts.price }}</p>
                             </div>
                             <p>{{ desserts.description }}</p>
                         </div>
@@ -90,27 +92,48 @@
                     {% endfor %}
                 </div>
 
-                <div class="pt-5">
-                    {% for spaghetti in spaghetti %}
+
+                <div class="pt-5"><h2>Pastries</h2>
+                    {% for pastries in pastries %}
                     <div class="row mt-4">
                         <div class="col-md-2 col-sm-12">
-                            <img class="rounded" src="{{ spaghetti.image.url }}" width="150" height="100"/>
+                            <img class="rounded" src="{{ pastries.image.url }}" width="150" height="100"/>
                         </div>
                         <div class="col-md-8 col-sm-12">
                             <div class="d-flex flex-row">
                                 <div class="form-group form-check">
-                                    <input type="checkbox" name="items[]" class="form-check-input" value="{{ spaghetti.pk }}">
-                                    <label class="form-check-label">{{ spaghetti.name }}</label>
+                                    <input type="checkbox" name="items[]" class="form-check-input" value="{{ pastries.pk }}">
+                                    <label class="form-check-label">{{ pastries.name }}</label>
                                 </div>
-                                <p class="font-weight-bold pl-5">{{ spaghetti.price }}</p>
+                                <p class="font-weight-bold pl-5">RM{{ pastries.price }}</p>
                             </div>
-                            <p>{{ spaghetti.description }}</p>
+                            <p>{{ pastries.description }}</p>
                         </div>
                     </div>
                     <hr />
                     {% endfor %}
                 </div>
 
+                <div class="pt-5"><h2>Main dishes</h2>
+                    {% for main in main %}
+                    <div class="row mt-4">
+                        <div class="col-md-2 col-sm-12">
+                            <img class="rounded" src="{{ main.image.url }}" width="150" height="100"/>
+                        </div>
+                        <div class="col-md-8 col-sm-12">
+                            <div class="d-flex flex-row">
+                                <div class="form-group form-check">
+                                    <input type="checkbox" name="items[]" class="form-check-input" value="{{ main.pk }}">
+                                    <label class="form-check-label">{{ main.name }}</label>
+                                </div>
+                                <p class="font-weight-bold pl-5">RM{{ main.price }}</p>
+                            </div>
+                            <p>{{ main.description }}</p>
+                        </div>
+                    </div>
+                    <hr />
+                    {% endfor %}
+                </div>
 
                 <div class="form-group pt-3">
                     <label for="name">Full Name</label>
