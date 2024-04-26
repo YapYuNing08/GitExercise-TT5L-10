@@ -24,7 +24,8 @@ from customer.views import Index, About, Order, Signin, Signup
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
-    path('', Index.as_view(), name="index"),
+    path('', Signin.as_view(), name="signin"),
+    path('index/', Index.as_view(), name="index"),
     path('about/', About.as_view(), name="about"),
     path('signin/', Signin.as_view(), name="signin"),
     path('signup/', Signup.as_view(), name="signup"),

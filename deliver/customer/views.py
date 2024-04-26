@@ -3,7 +3,7 @@ from django.views import View
 from .models import MenuItem, Category, OrderModel
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, signin
+from django.contrib.auth import authenticate, login
 # from customer import views
 
 class Index(View):
@@ -44,8 +44,8 @@ class Signin(View):
         user = authenticate(request, username=username, password=pass1)
 
         if user is not None:
-            signin(request,user)
-            return redirect('about')
+            login(request,user)
+            return redirect('index')
         else:
             return HttpResponse("Username or Password is incorrect!")
         
