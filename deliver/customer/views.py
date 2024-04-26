@@ -1,7 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponse, redirect
 from django.views import View
 from .models import MenuItem, Category, OrderModel
 from django.core.mail import send_mail
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, signin
+# from customer import views
 
 class Index(View):
     def get(self, request, *args, **kwargs):
@@ -12,13 +15,40 @@ class About(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/about.html')
     
+class Signup(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'customer/signup.html')
+        
+    def post(self, request, *args, **kwargs):
+        uname = request.POST.get('username')
+        email = request.POST.get('email')
+        pass1 = request.POST.get('password1')
+        pass2 = request.POST.get('password2')
+
+        if pass1!=pass2:
+            return HttpResponse("Passwords do not match")
+        
+        my_user = User.objects.create_user(uname,email,pass1)
+        my_user.save()
+        return redirect('signin')
+        
 class Signin(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/signin.html')
     
-class Signup(View):
-    def get(self, request, *args, **kwargs):
-        return render(request, 'customer/signup.html')
+    def post(self, request, *args, **kwargs):
+        username = request.POST.get('username')
+        pass1 = request.POST.get('pass')
+        print(username,pass1)
+
+        user = authenticate(request, username=username, password=pass1)
+
+        if user is not None:
+            signin(request,user)
+            return redirect('about')
+        else:
+            return HttpResponse("Username or Password is incorrect!")
+        
 
 
 class Order(View):
