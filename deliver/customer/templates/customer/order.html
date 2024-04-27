@@ -51,6 +51,27 @@
                     {% endfor %}
                 </div>
 
+                <div class="pt-5"><h2>Beverages</h2>
+                    {% for beverages in beverages %}
+                    <div class="row mt-4">
+                        <div class="col-md-2 col-sm-12">
+                            <img class="rounded" src="{{ beverages.image.url }}" width="150" height="100"/>
+                        </div>
+                        <div class="col-md-8 col-sm-12">
+                            <div class="d-flex flex-row">
+                                <div class="form-group form-check">
+                                    <input type="checkbox" name="items[]" class="form-check-input" value="{{ beverages.pk }}">
+                                    <label class="form-check-label">{{ beverages.name }}</label>
+                                </div>
+                                <p class="font-weight-bold pl-5">RM{{ beverages.price }}</p>
+                            </div>
+                            <p>{{ beverages.description }}</p>
+                        </div>
+                    </div>
+                    <hr />
+                    {% endfor %}
+                </div>
+
                 <!-- <div class="pt-5">
                     {% for pastries in pastries %}
                     <div class="row mt-4">
