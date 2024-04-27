@@ -10,7 +10,6 @@ class Index(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/index.html')
 
-
 class About(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/about.html')
@@ -49,24 +48,34 @@ class Signin(View):
         else:
             return HttpResponse("Username or Password is incorrect!")
         
+# class Signup(View):
+#     def get(self, request, *args, **kwargs):
+#         return render(request, 'customer/signup.html')
 
+# class Signup(View):
+#     def get(self, request, *args, **kwargs):
+#         return render(request, 'customer/signup.html')
 
 class Order(View):
     def get(self, request, *args, **kwargs):
         # get every item from each category
-        coffee = MenuItem.objects.filter(category__name__contains='Coffee')
-        tea = MenuItem.objects.filter(category__name__contains='Tea')
-        pastries = MenuItem.objects.filter(category__name__contains='Pastries')
+        # coffee = MenuItem.objects.filter(category__name__contains='Coffee')
+        beverage = MenuItem.objects.filter(category__name__contains='Beverage')
+        # pastries = MenuItem.objects.filter(category__name__contains='Pastries')
         desserts = MenuItem.objects.filter(category__name__contains='Desserts')
-        spaghetti = MenuItem.objects.filter(category__name__contains='Spaghetti')
+        pastries = MenuItem.objects.filter(category__name__contains='Pastries')
+        main = MenuItem.objects.filter(category__name__contains='Main')
+        
 
         # pass into context
         context = {
-            'coffee': coffee,
-            'tea': tea,
-            'pastries': pastries,
+            # 'coffee': coffee,
+            'beverage': beverage,
+            # 'pastries': pastries,
             'desserts': desserts,
-            'spaghetti': spaghetti
+            'pastries': pastries,
+            'main': main
+            
         }
 
         # render the template
@@ -108,7 +117,7 @@ class Order(View):
 
         # Send confirmation email to the user
         body = ('Thank you for your order! Your food is being made and will be served soon!\n'
-                f'Your total: {price}\n')
+                f'Your total: RM{price}\n')
         send_mail(
             'Thank You For Your Order!',
             body,
