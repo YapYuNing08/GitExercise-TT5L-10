@@ -1,7 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponse, redirect
 from django.views import View
 from .models import MenuItem, Category, OrderModel
 from django.core.mail import send_mail
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
+# from customer import views
 
 class Index(View):
     def get(self, request, *args, **kwargs):
@@ -11,28 +14,59 @@ class Index(View):
 class About(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/about.html')
+    
+class Signup(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'customer/signup.html')
+        
+    def post(self, request, *args, **kwargs):
+        uname = request.POST.get('username')
+        email = request.POST.get('email')
+        pass1 = request.POST.get('password1')
+        pass2 = request.POST.get('password2')
+
+        if pass1!=pass2:
+            return HttpResponse("Passwords do not match")
+        
+        my_user = User.objects.create_user(uname,email,pass1)
+        my_user.save()
+        return redirect('signin')
+        
+class Signin(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'customer/signin.html')
+    
+    def post(self, request, *args, **kwargs):
+        username = request.POST.get('username')
+        pass1 = request.POST.get('pass')
+        print(username,pass1)
+
+        user = authenticate(request, username=username, password=pass1)
+
+        if user is not None:
+            login(request,user)
+            return redirect('index')
+        else:
+            return HttpResponse("Username or Password is incorrect!")
+        
 
 
 class Order(View):
     def get(self, request, *args, **kwargs):
         # get every item from each category
-        # coffee = MenuItem.objects.filter(category__name__contains='Coffee')
-        beverage = MenuItem.objects.filter(category__name__contains='Beverage')
-        # pastries = MenuItem.objects.filter(category__name__contains='Pastries')
-        desserts = MenuItem.objects.filter(category__name__contains='Desserts')
+        coffee = MenuItem.objects.filter(category__name__contains='Coffee')
+        tea = MenuItem.objects.filter(category__name__contains='Tea')
         pastries = MenuItem.objects.filter(category__name__contains='Pastries')
-        main = MenuItem.objects.filter(category__name__contains='Main')
-        
+        desserts = MenuItem.objects.filter(category__name__contains='Desserts')
+        spaghetti = MenuItem.objects.filter(category__name__contains='Spaghetti')
 
         # pass into context
         context = {
-            # 'coffee': coffee,
-            'beverage': beverage,
-            # 'pastries': pastries,
-            'desserts': desserts,
+            'coffee': coffee,
+            'tea': tea,
             'pastries': pastries,
-            'main': main
-            
+            'desserts': desserts,
+            'spaghetti': spaghetti
         }
 
         # render the template
@@ -74,7 +108,7 @@ class Order(View):
 
         # Send confirmation email to the user
         body = ('Thank you for your order! Your food is being made and will be served soon!\n'
-                f'Your total: RM{price}\n')
+                f'Your total: {price}\n')
         send_mail(
             'Thank You For Your Order!',
             body,
