@@ -1,17 +1,90 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
 from .models import MenuItem, Category, OrderModel
 from django.core.mail import send_mail
+from django.http import HttpResponse
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.contrib.auth import authenticate, login
+
+
+
+def home(request):
+    return render(request, 'customer/home.html')
+
+def signup(request):
+
+    if request.method == "POST":
+        username = request.POST['username']
+        email = request.POST['email']
+        fname = request.POST['fname']
+        lname = request.POST['lname']
+        pass1 = request.POST['pass1']
+        pass2 = request.POST['pass2']
+
+        # if User.objects.filter(username=username):
+        #     messages.error(request, "Username already exist! Please try some other username")
+        #     return redirect ('home')
+        
+        # if User.objects.filter(email=email):
+        #     messages.error(request, "Email already registered! Please try some other email")
+        #     return redirect ('home')
+        
+        # if len(username)>0:
+        #     messages.error(request, "Username must be under 10 characters")
+
+        # if not username.isalnum():
+        #     messages.error(request, "Username must be Alpha-Numeric")
+        #     return redirect('home')
+
+
+        myuser = User.objects.create_user(username, email, pass1)
+        myuser.first_name = fname
+        myuser.last_name = lname
+
+        myuser.save()
+
+        # messages.success(request, "Your Account has been successfully created")
+
+        return redirect('signin')
+
+    return render(request, 'customer/signup.html', )
+
+def signin(request):
+
+    if request.method == 'POST':
+        username = request.POST['username']
+        pass1 =request.POST['pass1']
+
+        user = authenticate(username=username, password=pass1)
+
+        if user is not None:
+            login(request, user)
+            fname = user.first_name
+            return render(request, "customer/index.html", {"fname":fname})
+
+        else:
+            # messages.error(request, "Bad Credentials!")
+            return redirect('home')
+
+    return render(request, 'customer/signin.html')
+
 
 class Index(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/index.html')
 
-
 class About(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/about.html')
-
+    
+# class Signin(View):
+#     def get(self, request, *args, **kwargs):
+#         return render(request, 'customer/signin.html')
+    
+# class Signup(View):
+#     def get(self, request, *args, **kwargs):
+#         return render(request, 'customer/signup.html')
 
 class Order(View):
     def get(self, request, *args, **kwargs):
