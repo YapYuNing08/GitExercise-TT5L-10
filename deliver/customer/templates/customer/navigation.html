@@ -1,5 +1,12 @@
+
+<style>
+nav {
+  background-color: darkgrey;
+}
+</style>
+
 <nav class="navbar navbar-expand-lg navbar-dark brown">
-    <a class="navbar-brand" href="{% url 'index' %}">Home</a>
+    <a class="navbar-brand" href="{% url 'signin' %}">CuppaClick</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -10,12 +17,6 @@
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#">Menu</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'signin' %}">Sign In</span></a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'signup' %}">Sign Up</span></a>
         </li>
       </ul>
       <ul class="navbar-nav">
