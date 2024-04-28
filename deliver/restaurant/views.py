@@ -14,15 +14,17 @@ class Dashboard(LoginRequiredMixin, UserPassesTestMixin, View):
             created_on__year=today.year, created_on__month=today.month, created_on__day=today.day)
 
         # loop through the orders and add the price value
-        total_revenue = 0
-        for order in orders:
-            total_revenue += order.price
+        total_revenue = sum(order.price for order in orders)
+        total_orders = len(orders)
+        
+        # for order in orders:
+        #     total_revenue += order.price
 
         # pass total number of orders and total revenue into template
         context = {
             'orders': orders,
             'total_revenue': total_revenue,
-            'total_orders': len(orders)
+            'total_orders': total_orders
         }
 
         return render(request, 'restaurant/dashboard.html', context)
