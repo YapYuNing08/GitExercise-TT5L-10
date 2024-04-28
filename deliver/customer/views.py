@@ -56,9 +56,7 @@ class Signin(View):
 class Order(View):
     def get(self, request, *args, **kwargs):
         # get every item from each category
-        # coffee = MenuItem.objects.filter(category__name__contains='Coffee')
         beverage = MenuItem.objects.filter(category__name__contains='Beverage')
-        # pastries = MenuItem.objects.filter(category__name__contains='Pastries')
         desserts = MenuItem.objects.filter(category__name__contains='Desserts')
         pastries = MenuItem.objects.filter(category__name__contains='Pastries')
         main = MenuItem.objects.filter(category__name__contains='Main')
@@ -66,9 +64,7 @@ class Order(View):
 
         # pass into context
         context = {
-            # 'coffee': coffee,
             'beverage': beverage,
-            # 'pastries': pastries,
             'desserts': desserts,
             'pastries': pastries,
             'main': main
@@ -81,6 +77,7 @@ class Order(View):
     def post(self, request, *args, **kwargs):
         name = request.POST.get('name')
         email = request.POST.get('email')
+        phone = request.POST.get('phone')
 
         order_items = {
             'items': []
@@ -108,20 +105,22 @@ class Order(View):
         order = OrderModel.objects.create(
             price=price,
             name=name,
-            email=email
+            email=email,
+            phone=phone,
+            order_items=order_items
         )
         order.items.add(*item_ids)
 
         # Send confirmation email to the user
-        body = ('Thank you for your order! Your food is being made and will be served soon!\n'
-                f'Your total: RM{price}\n')
-        send_mail(
-            'Thank You For Your Order!',
-            body,
-            'example@example.com',
-            [email],
-            fail_silently=False
-        )
+        # body = ('Thank you for your order! Your food is being made and will be served soon!\n'
+        #         f'Your total: RM{price}\n')
+        # send_mail(
+        #     'Thank You For Your Order!',
+        #     body,
+        #     'example@example.com',
+        #     [email],
+        #     fail_silently=False
+        # )
 
 
         context = {
