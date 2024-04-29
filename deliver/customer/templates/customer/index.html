@@ -2,15 +2,6 @@
 
 {% block content %}
 
-{% if user.is_authenticated %}
-<h3>Hello {{fname}}</h3>
-<h4>You're successfully logged in</h4>
-
-{% else %}
-    <button type="submit"><a href='/signup'>Sign Up</a></button>
-    <button type="submit"><a href='/signin'>Sign In</a></button>
-{% endif %}
-
 <div class="container mb-5">
     <div class="row justify-content-center mt-5">
         <div class="col-md-8 col-sm-12 offset-md-1 p-4 text-center">

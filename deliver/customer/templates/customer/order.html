@@ -8,6 +8,7 @@
             <form method="POST">
                 {% csrf_token %}
 
+<<<<<<< HEAD
                 <!-- <div class="pt-5">
                     {% for coffee in coffee %}
                     <div class="row">
@@ -30,6 +31,8 @@
                 </div> -->
 
 
+=======
+>>>>>>> af17df39b6b03ab2e2549391c7a1e95d09a523a6
                 <div class="pt-5"><h2>Beverages</h2>
                     {% for beverage in beverage %}
                     <div class="row mt-4">
@@ -44,6 +47,10 @@
                                 </div>
                                 <p class="font-weight-bold pl-5">RM{{ beverage.price }}</p>
                             </div>
+                            <p><select name="order_type">
+                                <option value="dinein">Dine In</option>
+                                <option value="takeaway">Takeaway</option></select>
+                            </p>
                             <p>{{ beverage.description }}</p>
                         </div>
                     </div>
@@ -51,6 +58,7 @@
                     {% endfor %}
                 </div>
 
+<<<<<<< HEAD
                 <!-- <div class="pt-5">
                     {% for pastries in pastries %}
                     <div class="row mt-4">
@@ -72,6 +80,8 @@
                     {% endfor %}
                 </div> -->
 
+=======
+>>>>>>> af17df39b6b03ab2e2549391c7a1e95d09a523a6
                 <div class="pt-5"><h2>Desserts</h2>
                     {% for desserts in desserts %}
                     <div class="row mt-4">
@@ -92,7 +102,6 @@
                     <hr />
                     {% endfor %}
                 </div>
-
 
                 <div class="pt-5"><h2>Pastries</h2>
                     {% for pastries in pastries %}
@@ -141,9 +150,14 @@
                     <input required class="form-control" type="text" placeholder="Your Name" name="name"/>
                 </div>
 
-                <div class="form-group pt-3">
-                    <label for="name">Email Address</label>
+                <!-- <div class="form-group pt-3">
+                    <label for="email">Email Address</label>
                     <input required class="form-control" type="text" placeholder="example@company.com" name="email"/>
+                </div> -->
+
+                <div class="form-group pt-3">
+                    <label for="phone">Phone Number</label>
+                    <input required class="form-control" type="number" placeholder="01xxxxxxx" name="phone"/>
                 </div>
 
                 <!-- Button trigger modal -->
