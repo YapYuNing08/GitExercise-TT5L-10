@@ -19,7 +19,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from customer.views import Index, About, Dashboard, Order, Signin, Signup
+from customer.views import Index, About, Order, Signin, Signup
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,7 +28,7 @@ urlpatterns = [
     path('', Signin.as_view(), name="signin"),
     path('index/', Index.as_view(), name="index"),
     path('about/', About.as_view(), name="about"),
-    path('dashboard/', Dashboard.as_view(), name="dashboard"),
+    # path('dashboard/', Dashboard.as_view(), name="dashboard"),
     path('signin/', Signin.as_view(), name="signin"),
     path('signup/', Signup.as_view(), name="signup"),
     path('order/', Order.as_view(), name="order")

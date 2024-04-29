@@ -15,6 +15,7 @@ class Dashboard(LoginRequiredMixin, UserPassesTestMixin, View):
 
         # loop through the orders and add the price value
         total_revenue = sum(order.price for order in orders)
+
         total_orders = len(orders)
         
         # for order in orders:
@@ -28,6 +29,29 @@ class Dashboard(LoginRequiredMixin, UserPassesTestMixin, View):
         }
 
         return render(request, 'restaurant/dashboard.html', context)
+
+    def test_func(self):
+        return self.request.user.groups.filter(name='Staff').exists()
+
+class OrderDetails(LoginRequiredMixin, UserPassesTestMixin, View):
+    def get(self, request, pk, *args, **kwargs):
+        order = OrderModel.objects.get(pk=pk)
+        context = {
+            'order': order
+        }
+
+        return render(request, 'restaurant/order_details.html', context)
+    
+    def post(self, request, pk, *args, **kwargs):
+        order = OrderModel.objects.get(pk=pk)
+        order.is_served = True
+        order.save()
+
+        context = {
+            'order':order
+        }
+
+        return render(request, 'restaurant/order_details.html', context)
 
     def test_func(self):
         return self.request.user.groups.filter(name='Staff').exists()

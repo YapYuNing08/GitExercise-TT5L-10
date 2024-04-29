@@ -25,6 +25,7 @@ class OrderModel(models.Model):
     items = models.ManyToManyField('MenuItem', related_name='order', blank=True)
     name = models.CharField(max_length=50, blank=True)
     phone = models.CharField(max_length=50, null=True)
+    is_served = models.BooleanField(default=False)
 
     def __str__(self):
         return f'Order: {self.created_on.strftime("%b %d %I: %M %p")}'

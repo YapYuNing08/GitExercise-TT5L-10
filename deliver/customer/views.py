@@ -10,9 +10,9 @@ class Index(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/index.html')
     
-class Dashboard(View):
-    def get(self, request, *args, **kwargs):
-        return render(request, 'customer/dashboard.html')
+# class Dashboard(View):
+#     def get(self, request, *args, **kwargs):
+#         return render(request, 'customer/dashboard.html')
 
 class About(View):
     def get(self, request, *args, **kwargs):
