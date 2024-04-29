@@ -9,6 +9,10 @@ from django.contrib.auth import authenticate, login
 class Index(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/index.html')
+    
+# class Dashboard(View):
+#     def get(self, request, *args, **kwargs):
+#         return render(request, 'customer/dashboard.html')
 
 class About(View):
     def get(self, request, *args, **kwargs):
@@ -48,20 +52,11 @@ class Signin(View):
         else:
             return HttpResponse("Username or Password is incorrect!")
         
-# class Signup(View):
-#     def get(self, request, *args, **kwargs):
-#         return render(request, 'customer/signup.html')
-
-# class Signup(View):
-#     def get(self, request, *args, **kwargs):
-#         return render(request, 'customer/signup.html')
 
 class Order(View):
     def get(self, request, *args, **kwargs):
         # get every item from each category
-        # coffee = MenuItem.objects.filter(category__name__contains='Coffee')
         beverage = MenuItem.objects.filter(category__name__contains='Beverage')
-        # pastries = MenuItem.objects.filter(category__name__contains='Pastries')
         desserts = MenuItem.objects.filter(category__name__contains='Desserts')
         pastries = MenuItem.objects.filter(category__name__contains='Pastries')
         main = MenuItem.objects.filter(category__name__contains='Main')
@@ -69,9 +64,7 @@ class Order(View):
 
         # pass into context
         context = {
-            # 'coffee': coffee,
             'beverage': beverage,
-            # 'pastries': pastries,
             'desserts': desserts,
             'pastries': pastries,
             'main': main
@@ -82,54 +75,56 @@ class Order(View):
         return render(request, 'customer/order.html', context)
 
     def post(self, request, *args, **kwargs):
+        items_ids = request.POST.getlist('items[]')
         name = request.POST.get('name')
-        email = request.POST.get('email')
+        phone = request.POST.get('phone')
 
-        order_items = {
-            'items': []
-        }
+        # order_items = {
+        #     'items': []
+        # }
 
-        items = request.POST.getlist('items[]')
+        items = MenuItem.objects.filter(id__in=items_ids)
 
-        for item in items:
-            menu_item = MenuItem.objects.get(pk__contains=int(item))
-            item_data = {
-                'id': menu_item.pk,
-                'name': menu_item.name,
-                'price': menu_item.price
-            }
+        # for item in items:
+        #     menu_item = MenuItem.objects.get(pk__contains=int(item))
+        #     item_data = {
+        #         'id': menu_item.pk,
+        #         'name': menu_item.name,
+        #         'price': menu_item.price
+        #     }
 
-            order_items['items'].append(item_data)
+        #     order_items['items'].append(item_data)
 
-            price = 0
-            item_ids = []
+        #     price = 0
+        #     item_ids = []
+        total_price = sum(item.price for item in items)
 
-        for item in order_items['items']:
-            price += item['price']
-            item_ids.append(item['id'])
+        # for item in order_items['items']:
+        #     price += item['price']
+        #     item_ids.append(item['id'])
 
         order = OrderModel.objects.create(
-            price=price,
+            price=total_price,
             name=name,
-            email=email
+            phone=phone,
         )
-        order.items.add(*item_ids)
+        order.items.set(items)
 
         # Send confirmation email to the user
-        body = ('Thank you for your order! Your food is being made and will be served soon!\n'
-                f'Your total: RM{price}\n')
-        send_mail(
-            'Thank You For Your Order!',
-            body,
-            'example@example.com',
-            [email],
-            fail_silently=False
-        )
+        # body = ('Thank you for your order! Your food is being made and will be served soon!\n'
+        #         f'Your total: RM{price}\n')
+        # send_mail(
+        #     'Thank You For Your Order!',
+        #     body,
+        #     'example@example.com',
+        #     [email],
+        #     fail_silently=False
+        # )
 
 
         context = {
-            'items': order_items['items'],
-            'price': price
+            'items': items,
+            'price': total_price
         }
 
         return render(request, 'customer/order_confirmation.html', context)

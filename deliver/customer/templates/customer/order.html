@@ -8,28 +8,6 @@
             <form method="POST">
                 {% csrf_token %}
 
-                <!-- <div class="pt-5">
-                    {% for coffee in coffee %}
-                    <div class="row">
-                        <div class="col-md-2 col-sm-12">
-                            <img class="rounded" src="{{ coffee.image.url }}" width="150" height="100"/>
-                        </div>
-                        <div class="col-md-8 col-sm-12">
-                            <div class="d-flex flex-row">
-                                <div class="form-group form-check">
-                                    <input type="checkbox" name="items[]" class="form-check-input" value="{{ coffee.pk }}">
-                                    <label class="form-check-label">{{ coffee.name }}</label>
-                                </div>
-                                <p class="font-weight-bold pl-5">{{ coffee.price }}</p>
-                            </div>
-                            <p>{{ coffee.description }}</p>
-                        </div>
-                    </div>
-                    <hr />
-                {% endfor %}
-                </div> -->
-
-
                 <div class="pt-5"><h2>Beverages</h2>
                     {% for beverage in beverage %}
                     <div class="row mt-4">
@@ -44,33 +22,16 @@
                                 </div>
                                 <p class="font-weight-bold pl-5">RM{{ beverage.price }}</p>
                             </div>
+                            <p><select name="order_type">
+                                <option value="dinein">Dine In</option>
+                                <option value="takeaway">Takeaway</option></select>
+                            </p>
                             <p>{{ beverage.description }}</p>
                         </div>
                     </div>
                     <hr />
                     {% endfor %}
                 </div>
-
-                <!-- <div class="pt-5">
-                    {% for pastries in pastries %}
-                    <div class="row mt-4">
-                        <div class="col-md-2 col-sm-12">
-                            <img class="rounded" src="{{ pastries.image.url }}" width="150" height="100"/>
-                        </div>
-                        <div class="col-md-8 col-sm-12">
-                            <div class="d-flex flex-row">
-                                <div class="form-group form-check">
-                                    <input type="checkbox" name="items[]" class="form-check-input" value="{{ pastries.pk }}">
-                                    <label class="form-check-label">{{ pastries.name }}</label>
-                                </div>
-                                <p class="font-weight-bold pl-5">{{ pastries.price }}</p>
-                            </div>
-                            <p>{{ pastries.description }}</p>
-                        </div>
-                    </div>
-                    <hr />
-                    {% endfor %}
-                </div> -->
 
                 <div class="pt-5"><h2>Desserts</h2>
                     {% for desserts in desserts %}
@@ -92,7 +53,6 @@
                     <hr />
                     {% endfor %}
                 </div>
-
 
                 <div class="pt-5"><h2>Pastries</h2>
                     {% for pastries in pastries %}
@@ -141,9 +101,14 @@
                     <input required class="form-control" type="text" placeholder="Your Name" name="name"/>
                 </div>
 
-                <div class="form-group pt-3">
-                    <label for="name">Email Address</label>
+                <!-- <div class="form-group pt-3">
+                    <label for="email">Email Address</label>
                     <input required class="form-control" type="text" placeholder="example@company.com" name="email"/>
+                </div> -->
+
+                <div class="form-group pt-3">
+                    <label for="phone">Phone Number</label>
+                    <input required class="form-control" type="number" placeholder="01xxxxxxx" name="phone"/>
                 </div>
 
                 <!-- Button trigger modal -->
