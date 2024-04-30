@@ -28,9 +28,8 @@ urlpatterns = [
     path('', Signin.as_view(), name="signin"),
     path('index/', Index.as_view(), name="index"),
     path('about/', About.as_view(), name="about"),
-    # path('dashboard/', Dashboard.as_view(), name="dashboard"),
     path('signin/', Signin.as_view(), name="signin"),
     path('signup/', Signup.as_view(), name="signup"),
-    path('order/', Order.as_view(), name="order")
+    path('order/', Order.as_view(), name="order"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
