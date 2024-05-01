@@ -1,0 +1,148 @@
+{% extends 'customer/base.html' %}
+
+{% block content %}
+
+            
+              <!-- <form class="form-inline">
+                
+              </form>
+              <a href="" class="order_online">
+                Order Online
+              </a>
+    
+    end header section -->
+<style>
+   
+    form *{
+        font-family: 'Poppins',sans-serif;
+        color: #3b2106;
+        letter-spacing: 0.5px;
+        outline: none;
+        border: none;
+        margin-bottom: 10px;
+    }
+     h2{
+        font-size: 32px;
+        font-weight: 500;
+        line-height: 42px;
+        margin-top: 30px;
+    }
+    
+    label{
+        display: block;
+        margin-top: 30px;
+        font-size: 16px;
+        font-weight: 500;
+    }
+    input{
+        display: block;
+        height: 50px;
+        width: 100%;
+        background-color: rgba(240, 253, 255, 0.667);
+        border-radius: 3px;
+        padding: 0 10px;
+        margin-top: 10px;
+        font-size: 14px;
+        font-weight: 300;
+    }
+    ::placeholder{
+        color: #b8a490;
+    }
+    button{
+        margin-top: 50px;
+        width: 100%;
+        background-color: #fff6dd;
+        color: #080710;
+        padding: 15px 0;
+        font-size: 18px;
+        font-weight: 600;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+</style>
+
+
+  <!-- book section -->
+  <section class="book_section layout_padding">
+    {% csrf_token %} 
+    <div class="container">
+      <div class="heading_container">
+        
+        <h2>
+          Book A Table
+        </h2>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form_container">
+            <form action="">
+              <div>
+                <input type="text" class="form-control" placeholder="Your Name" name="name" id="name">
+              </div>
+              <div>
+                <input type="text" class="form-control" placeholder="Phone Number" name="number" id="number">
+              </div>
+              <div>
+                <input type="email" class="form-control" placeholder="Your Email" name="email" id="email">
+              </div>
+              <div>
+                <select class="form-control nice-select wide" name="person" id="person">
+                  <option value="" disabled selected>
+                    How many persons?
+                  </option>
+                  <option value="2">
+                    2
+                  </option>
+                  <option value="3">
+                    3
+                  </option>
+                  <option value="4">
+                    4
+                  </option>
+                  <option value="5">
+                    5
+                  </option>
+                  <option value="6">
+                    6
+                  </option>
+                  <option value="7">
+                    7
+                  </option>
+                  <option value="8">
+                    8
+                  </option>
+                  <option value="9">
+                    9
+                  </option>
+                  <option value="10">
+                    10
+                  </option>
+                  <option value="11">
+                    11
+                  </option>
+                  <option value="12">
+                    12
+                  </option>
+                </select>
+              </div>
+              <div>
+                <input type="date" class="form-control" name="date" id="person">
+              </div>
+              <div class="btn_box">
+                <button>
+                  Book Now
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- end book section -->
+
+
+
+</body>
+{% endblock content %}

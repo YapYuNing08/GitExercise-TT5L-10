@@ -18,6 +18,15 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+class Book_table(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField
+    number = models.IntegerField(max_length=15)
+    date = models.DateField()
+    person = models.IntegerField 
+
+    def __str__(self):
+        return f"Reservation for{self.name} on {self.date}"
 
 class OrderModel(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)

@@ -11,9 +11,30 @@ class Index(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/index.html')
     
-# class Dashboard(View):
-#     def get(self, request, *args, **kwargs):
-#         return render(request, 'customer/dashboard.html')
+class Reservation(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'customer/reservation.html')
+    
+    def post(self, request, *args, **kwargs):
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        number = request.POST.get('number')
+        date = request.POST.get('date')
+        person = request.POST.get('person')
+        
+        # if all([name, email, number, date, person]):
+        #     reservation = Reservation(
+        #         name = name,
+        #         email = email,
+        #         number = number,
+        #         date = date,
+        #         person = person
+        #     )
+        reservation = Reservation.objects.create(name,email,number,date,person)
+        reservation.save()
+        return redirect('reservation')
+
+        # return render(request, 'customer/reservation.html')
 
 class About(View):
     def get(self, request, *args, **kwargs):
@@ -43,7 +64,7 @@ class Signin(View):
     def post(self, request, *args, **kwargs):
         username = request.POST.get('username')
         pass1 = request.POST.get('pass')
-        print(username,pass1)
+       
 
         user = authenticate(request, username=username, password=pass1)
 
