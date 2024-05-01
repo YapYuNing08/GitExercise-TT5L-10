@@ -26,7 +26,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('restaurant/', include('restaurant.urls')),
     path('', Signin.as_view(), name="signin"),
-    path('index/', Index.as_view(), name="index"),
+    path('index/', Index.as_view(), name='index'),
     path('about/', About.as_view(), name="about"),
     # path('dashboard/', Dashboard.as_view(), name="dashboard"),
     path('signin/', Signin.as_view(), name="signin"),

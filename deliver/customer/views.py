@@ -4,7 +4,8 @@ from .models import MenuItem, Category, OrderModel
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
-# from customer import views
+
+
 
 class Index(View):
     def get(self, request, *args, **kwargs):
@@ -51,6 +52,9 @@ class Signin(View):
             return redirect('index')
         else:
             return HttpResponse("Username or Password is incorrect!")
+        
+    
+
         
 
 class Order(View):
