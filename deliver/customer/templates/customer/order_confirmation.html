@@ -1,23 +1,42 @@
 {% extends 'customer/base.html' %}
 
 {% block content %}
-<div class="container mb-5">
-    <div class="row justify-content-center mt-1">
-        <div class="col-md-5 col-sm-12 p-4 text-center">
-            <h1>Order Submitted!</h1>
-            <p>Thank you for your order! Your food is being made and will be served soon!</p>
-            <a href="{% url 'index' %}">Go to the homepage</a>
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6 col-sm-12 text-center">
+            <h1>Order Confirmation</h1>
+            <p>Thank you for your order!</p>
         </div>
     </div>
 
     <div class="row justify-content-center mt-5">
-        <div class="col-md-5 col-sm-12 text-center">
-            <h3 class="pb-3">Order Summary:</h3>
-            {% for item in items %}
-                <p>{{ item.name }} <span class="pl-3">RM{{ item.price }}</span></p>
-            {% endfor %}
+        <div class="col-md-8 col-sm-12">
+            <h2>Items Ordered</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Item</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Total Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items_with_quantity %}
+                    <tr>
+                        <td>{{ item.item.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>RM{{ item.total_price }}</td> 
+                    </tr>
+                    {% endfor %}
+                </tbody>                                
+            </table>
+        </div>
+    </div>
 
-            <p class="font-weight-bold pt-4">Total: RM{{ price }}</p>
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6 col-sm-12">
+            <h2>Total Price</h2>
+            <p>RM{{ total_price }}</p>
         </div>
     </div>
 </div>

@@ -1,25 +1,6 @@
 {% extends 'customer/base.html' %}
 
 {% block content %}
-<!-- <div class="container mb-5">
-  <div class="row justify-content-center mt-5">
-      <div class="col-md-8 col-sm-12 offset-md-1 p-4 text-center">
-          <h1>Sign In</h1>
-      </div>
-  </div>
-</div> -->
-
-    <!-- <form method="post">
-      <fieldset>
-        <div class="col-md-8 col-sm-12 offset-md-1 p-4 text-center">
-          <label for="email">Enter Your Email: <input id="email" name="email" type="email" required /></label>
-          <label for="new-password">Enter Your Password: <input id="new-password" name="new-password" type="password" pattern="[0-9]{8,}" required /></label>
-        </div>
-      </fieldset>
-      <input type="submit" value="Submit" />
-    </form> -->
-  
-
     <head>
       <!-- Design by foolishdeveloper.com -->
         <title>Sign In</title>
@@ -40,12 +21,24 @@
         background-color: #080710;
     }
     .background{
-        width: 430px;
+        /* width: 430px;
         height: 520px;
         position: absolute;
         transform: translate(-50%,-50%);
         left: 50%;
-        top: 50%;
+        top: 50%; */
+
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: -1;
+        background-image: url('media/menu_images/BlackTea_E6AKdSH.jpg');
+        background-size: cover;
+        background-position: center;
+        filter: blur(4px); 
+       
     }
     /* .background .shape{
         height: 200px;
