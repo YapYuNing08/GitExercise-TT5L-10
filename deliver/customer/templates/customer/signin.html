@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <html>
-    <head>
+    <body>
         <title>Sign In</title>
      
         <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -16,8 +16,10 @@
         margin: 0;
         box-sizing: border-box;
     }
+    
     body{
         background-color: #f8e5c5;
+
     }
     .background{
         width: 430px;
@@ -26,6 +28,7 @@
         transform: translate(-50%,-50%);
         left: 50%;
         top: 50%;
+        
     }
    
     form{
@@ -89,10 +92,10 @@
     }
     
         </style>
-    </head>
-    <body>
+ 
+ 
      
-        </div>
+
         <form method="post">
             <h3>Login Here</h3>
             {% csrf_token %} 
@@ -106,6 +109,5 @@
            
             <a href="{% url 'signup' %}" >Create an account</a>
         </form>
-
-
-  </html>
+    </body>
+</html>

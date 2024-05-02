@@ -2,15 +2,6 @@
 
 {% block content %}
 
-            
-              <!-- <form class="form-inline">
-                
-              </form>
-              <a href="" class="order_online">
-                Order Online
-              </a>
-    
-    end header section -->
 <style>
    
     form *{
@@ -64,6 +55,7 @@
 
   <!-- book section -->
   <section class="book_section layout_padding">
+    
     {% csrf_token %} 
     <div class="container">
       <div class="heading_container">
@@ -77,15 +69,19 @@
           <div class="form_container">
             <form action="">
               <div>
+                <label for="name">Name</label>
                 <input type="text" class="form-control" placeholder="Your Name" name="name" id="name">
               </div>
               <div>
+                <label for="number">Number</label>
                 <input type="text" class="form-control" placeholder="Phone Number" name="number" id="number">
               </div>
               <div>
+                <label for="email">Email</label>
                 <input type="email" class="form-control" placeholder="Your Email" name="email" id="email">
               </div>
               <div>
+                <label for="person">Person</label>
                 <select class="form-control nice-select wide" name="person" id="person">
                   <option value="" disabled selected>
                     How many persons?
@@ -126,7 +122,8 @@
                 </select>
               </div>
               <div>
-                <input type="date" class="form-control" name="date" id="person">
+                <label for="date">Date</label>
+                <input type="date" class="form-control" name="date" id="date">
               </div>
               <div class="btn_box">
                 <button>

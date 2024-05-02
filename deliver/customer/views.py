@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.views import View
-from .models import MenuItem, Category, OrderModel
+from .models import MenuItem, Category, OrderModel, ReservationModel
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
@@ -22,15 +22,7 @@ class Reservation(View):
         date = request.POST.get('date')
         person = request.POST.get('person')
         
-        # if all([name, email, number, date, person]):
-        #     reservation = Reservation(
-        #         name = name,
-        #         email = email,
-        #         number = number,
-        #         date = date,
-        #         person = person
-        #     )
-        reservation = Reservation.objects.create(name,email,number,date,person)
+        reservation = ReservationModel.objects.create(name=name,email=email,number=number,date=date,person=person)
         reservation.save()
         return redirect('reservation')
 

@@ -18,7 +18,7 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-class Book_table(models.Model):
+class ReservationModel(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField
     number = models.IntegerField(max_length=15)
