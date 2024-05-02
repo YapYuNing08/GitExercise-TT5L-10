@@ -32,6 +32,9 @@ class Signup(View):
         if pass1!=pass2:
             return HttpResponse("Passwords do not match")
         
+        if User.objects.filter(email=email).exists():
+            return HttpResponse("This email is already in use. Please use a different email.")
+
         my_user = User.objects.create_user(uname,email,pass1)
         my_user.save()
         return redirect('signin')
