@@ -19,7 +19,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from customer.views import Index, About, Order, Signin, Signup
+from customer.views import Index, About, Order, Signin, Signup, Category, CategoryTitle, ProductDetail
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,5 +31,8 @@ urlpatterns = [
     path('signin/', Signin.as_view(), name="signin"),
     path('signup/', Signup.as_view(), name="signup"),
     path('order/', Order.as_view(), name="order"),
+    path("category/<slug:val>", Category.as_view(), name="category"),
+    path("category_title/<val>", CategoryTitle.as_view(), name="category_title"),
+    path("product_detail/<int:pk>", ProductDetail.as_view(), name="product_detail")
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
