@@ -1,10 +1,8 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.views import View
 from .models import MenuItem, Category, OrderModel, Product
-from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.db.models import Count
 
 class Index(View):
