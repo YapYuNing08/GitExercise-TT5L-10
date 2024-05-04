@@ -1,6 +1,23 @@
 from django.db import models
 from datetime import datetime, date
 
+category_choices = (
+    ('B', 'Beverage'),
+    ('D', 'Desserts'),
+    ('P', 'Pastries'),
+    ('M', 'Main')
+)
+
+class Product(models.Model):
+    title = models.CharField(max_length=100)
+    price = models.FloatField()
+    description = models.TextField()
+    category = models.CharField(choices=category_choices, max_length=2)
+    image = models.ImageField(upload_to='product')
+
+    def __str__(self):
+        return self.title
+
 class MenuItem(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()

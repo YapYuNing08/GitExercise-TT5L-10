@@ -18,6 +18,10 @@
         <div class="col-md-6 col-sm-12 mt-5">
             <p><span style="font-weight: 400;">Name: </span>{{ order.name }}</p>
             <p><span style="font-weight: 400;">Phone Number: </span>{{ order.phone }}</p>
+            <p><span style="font-weight: 400;">Ordered items: </span></p>
+            {% for item in order.items.all %}
+                <p>{{ item.name }}</p>
+            {% endfor %}
         </div>
 
         <div class="col-md-6 col-sm-12">

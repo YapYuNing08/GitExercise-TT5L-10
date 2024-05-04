@@ -19,7 +19,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from customer.views import Index, About, Order, Signin, Signup, Menu, MenuSearch
+from customer.views import Index, About, Order, Signin, Signup, Menu, MenuSearch, Category, CategoryTitle, ProductDetail
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,12 +28,13 @@ urlpatterns = [
     path('', Signin.as_view(), name="signin"),
     path('index/', Index.as_view(), name="index"),
     path('about/', About.as_view(), name="about"),
-    path('menu/', Menu.as_view(), name='menu'),
-    path('menu/search', MenuSearch.as_view(), name='menu-search'),
-    # path('dashboard/', Dashboard.as_view(), name="dashboard"),
     path('signin/', Signin.as_view(), name="signin"),
     path('signup/', Signup.as_view(), name="signup"),
     path('order/', Order.as_view(), name="order"),
-    path('cart/', include('cart.urls')),
+    path('menu/', Menu.as_view(), name='menu'),
+    path('menu/search', MenuSearch.as_view(), name='menu-search'),
+    path("category/<slug:val>", Category.as_view(), name="category"),
+    path("category_title/<val>", CategoryTitle.as_view(), name="category_title"),
+    path("product_detail/<int:pk>", ProductDetail.as_view(), name="product_detail")
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

@@ -1,7 +1,8 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.views import View
 from django.db.models import Q
-from .models import MenuItem, Category, OrderModel, OrderItem
+from .models import MenuItem, Category, OrderModel, OrderItem, Product
+from django.db.models import Count
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
@@ -187,3 +188,20 @@ class Menu(View):
         context = {'menu_items': menu_items}
 
         return render(request, 'customer/menu.html', context)
+    
+class Category(View):
+    def get(self, request, val):
+        product = Product.objects.filter(category=val)
+        title = Product.objects.filter(category=val).values('title').annotate(total=Count('title'))
+        return render(request, "customer/category.html", locals())
+
+class CategoryTitle(View):
+    def get(self, request, val):
+        product = Product.objects.filter(title=val)
+        title = Product.objects.filter(category=product[0].category).values('title')
+        return render(request, "customer/category.html", locals())
+
+class ProductDetail(View):
+    def get(self, request, pk):
+        product = Product.objects.get(pk=pk)
+        return render(request, 'customer/product_detail.html', locals())
