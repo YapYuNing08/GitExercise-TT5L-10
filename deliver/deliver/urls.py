@@ -33,6 +33,7 @@ urlpatterns = [
     # path('dashboard/', Dashboard.as_view(), name="dashboard"),
     path('signin/', Signin.as_view(), name="signin"),
     path('signup/', Signup.as_view(), name="signup"),
-    path('order/', Order.as_view(), name="order")
+    path('order/', Order.as_view(), name="order"),
+    path('cart/', include('cart.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
