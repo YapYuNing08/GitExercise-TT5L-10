@@ -16,7 +16,7 @@ class Index(View):
 class About(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/about.html')
-    
+
 class Signup(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/signup.html')
@@ -32,7 +32,10 @@ class Signup(View):
         
         if User.objects.filter(email=email).exists():
             return HttpResponse("This email is already in use. Please use a different email.")
-
+        
+        if 'admin' in uname:
+            return HttpResponse("Username 'admin' is not allowed. Please try again with a different username.")
+        
         my_user = User.objects.create_user(uname,email,pass1)
         my_user.save()
         return redirect('signin')
@@ -47,10 +50,14 @@ class Signin(View):
         print(username,pass1)
 
         user = authenticate(request, username=username, password=pass1)
-
+        
         if user is not None:
-            login(request,user)
-            return redirect('index')
+            if 'admin' in username:
+                login(request,user)
+                return redirect('restaurant_index')
+            else:
+                login(request,user)
+                return redirect('index')
         else:
             return HttpResponse("Username or Password is incorrect!")
         

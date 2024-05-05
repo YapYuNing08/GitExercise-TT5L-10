@@ -1,10 +1,12 @@
-
-from django.shortcuts import render
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, HttpResponse, redirect
 from django.views import View
-from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.utils.timezone import datetime
 from customer.models import OrderModel
 
+class Index(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'restaurant/index.html')
 
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
