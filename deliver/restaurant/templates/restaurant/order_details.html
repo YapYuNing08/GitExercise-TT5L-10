@@ -29,7 +29,7 @@
             {% if order.is_served %}
                 <p><i style="color: green;" class="fas fa-check"></i><span class="pl-2">Order has been served</span></p>
             {% else %}
-                <form id="markServedForm" method="POST">
+                <form method="POST">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-outline-success">Mark as served</button>
                 </form>
@@ -43,6 +43,12 @@
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('markServedForm').addEventListener('submit', function(event) {
             event.preventDefault(); // Prevent form submission
+            
+            // Update progress bar value
+            var progressBar = document.getElementById('file');
+            progressBar.value = 100; // Set to 100% for example, you can adjust as needed
+            
+            // Optionally, display a message or perform other actions
             alert('Order has been marked as served! Your food will be served soon.');
         });
     });
