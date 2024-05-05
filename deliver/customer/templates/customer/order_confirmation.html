@@ -22,4 +22,14 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('markServedForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+            alert('Order has been marked as served! Your food will be served soon.');
+        });
+    });
+</script>
+
 {% endblock content %}

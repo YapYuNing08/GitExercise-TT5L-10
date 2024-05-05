@@ -29,7 +29,7 @@
             {% if order.is_served %}
                 <p><i style="color: green;" class="fas fa-check"></i><span class="pl-2">Order has been served</span></p>
             {% else %}
-                <form method="POST">
+                <form id="markServedForm" method="POST">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-outline-success">Mark as served</button>
                 </form>
@@ -38,3 +38,12 @@
     </div>
 </div>
 {% endblock content %}
+
+<!-- <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('markServedForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+            alert('Order has been marked as served! Your food will be served soon.');
+        });
+    });
+</script> -->
