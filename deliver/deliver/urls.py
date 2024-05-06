@@ -19,7 +19,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from customer.views import Index, About, Order, Signin, Signup, Reservation
+from customer.views import Index, About, Order, Signin, Signup, Reservation, Reservation_detail
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,6 +28,7 @@ urlpatterns = [
     path('', Signin.as_view(), name="signin"),
     path('index/', Index.as_view(), name='index'),
     path('reservation/', Reservation.as_view(), name='reservation'),
+    path('reservation_detail/', Reservation_detail.as_view(), name='reservation_detail'),
     path('about/', About.as_view(), name="about"),
     # path('dashboard/', Dashboard.as_view(), name="dashboard"),
     path('signin/', Signin.as_view(), name="signin"),

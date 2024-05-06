@@ -11,18 +11,25 @@ class Index(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/index.html')
     
+class Reservation_detail(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'customer/reservation_detail.html')
+    
 class Reservation(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/reservation.html')
     
     def post(self, request, *args, **kwargs):
         name = request.POST.get('name')
-        email = request.POST.get('email')
-        number = request.POST.get('number')
+        phone = request.POST.get('phone')
         date = request.POST.get('date')
         person = request.POST.get('person')
         
-        reservation = ReservationModel.objects.create(name=name,email=email,number=number,date=date,person=person)
+        reservation = ReservationModel.objects.create(
+            name=name,      
+            phone=phone,
+            date=date,
+            person=person)
         reservation.save()
         return redirect('reservation')
 
@@ -45,6 +52,9 @@ class Signup(View):
         if pass1!=pass2:
             return HttpResponse("Passwords do not match")
         
+        if User.objects.filter(username=uname).exists():
+            return HttpResponse("Username already taken, please use a different username")
+        
         my_user = User.objects.create_user(uname,email,pass1)
         my_user.save()
         return redirect('signin')
@@ -66,8 +76,6 @@ class Signin(View):
         else:
             return HttpResponse("Username or Password is incorrect!")
         
-    
-
         
 
 class Order(View):
