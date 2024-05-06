@@ -1,6 +1,7 @@
 {% extends 'restaurant/base.html' %}
 
 {% block content %}
+{% if user.is_authenticated and user.is_staff and user.is_superuser %}
 <div class="container">
     <div class="row justify-content-center mt-3">
         <div class="card col-md-5 mr-3">
@@ -42,4 +43,9 @@
         </div>
     </div>
 </div>
+{% else  %}
+<div class="container">
+    <h3> Staff page</h3>
+</div>
+{% endif %}
 {% endblock content %}

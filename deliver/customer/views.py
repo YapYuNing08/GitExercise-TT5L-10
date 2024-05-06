@@ -1,6 +1,7 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.views import View
-from .models import MenuItem, Category, OrderModel, Product
+from .models import MenuItem, Category, OrderModel, ReservationModel, Product
+from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.db.models import Count
@@ -9,9 +10,29 @@ class Index(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/index.html')
     
-# class Dashboard(View):
-#     def get(self, request, *args, **kwargs):
-#         return render(request, 'customer/dashboard.html')
+class Reservation_detail(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'customer/reservation_detail.html')
+    
+class Reservation(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'customer/reservation.html')
+    
+    def post(self, request, *args, **kwargs):
+        name = request.POST.get('name')
+        phone = request.POST.get('phone')
+        date = request.POST.get('date')
+        person = request.POST.get('person')
+        
+        reservation = ReservationModel.objects.create(
+            name=name,      
+            phone=phone,
+            date=date,
+            person=person)
+        reservation.save()
+        return redirect('reservation')
+
+        # return render(request, 'customer/reservation.html')
 
 class About(View):
     def get(self, request, *args, **kwargs):
@@ -47,7 +68,7 @@ class Signin(View):
     def post(self, request, *args, **kwargs):
         username = request.POST.get('username')
         pass1 = request.POST.get('pass')
-        print(username,pass1)
+       
 
         user = authenticate(request, username=username, password=pass1)
         
@@ -60,6 +81,7 @@ class Signin(View):
                 return redirect('index')
         else:
             return HttpResponse("Username or Password is incorrect!")
+        
         
 
 class Order(View):
