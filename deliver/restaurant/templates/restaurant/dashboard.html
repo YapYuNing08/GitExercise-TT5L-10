@@ -24,7 +24,6 @@
                             <th scope="col">Price</th>
                             <th scope="col">Name</th>
                             <th scope="col">Phone</th>
-                            <th scope="col">Ordered Items</th>
                             <th scope="col">Details</th>
                         </tr>
                     </thead>
@@ -36,9 +35,6 @@
                             <td>{{ order.price }}</td>
                             <td>{{ order.name }}</td>
                             <td>{{ order.phone }}</td>
-                            {% for item in order.items.all %}
-                                <td>{{ item.name }}</td>
-                            {% endfor %}
                             <td><a href="{% url 'order_details' order.pk %}"><i class="far fa-edit"></i></a></td>
                         </tr>
                         {% endfor %}

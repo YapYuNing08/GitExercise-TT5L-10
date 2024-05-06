@@ -14,8 +14,7 @@
       box-sizing: border-box;
   }
   body{
-        background-color: #f8e5c5;
-        background-image: url('media/menu_images/BlackTea_E6AKdSH.jpg');
+        background-color: rgb(118, 28, 28);
     }
   .background{
       width: 420px;
@@ -29,7 +28,7 @@
   form{
       height: 580px;
       width: 450px;
-      background-color: rgba(255, 255, 255, 0.937);
+      background-color: rgba(255, 255, 255, 0.726);
       position: absolute;
       transform: translate(-50%,-50%);
       top: 50%;
@@ -102,9 +101,8 @@
           <label for="password1">Password</label>
           <input type="password" placeholder="Password" id="password1" name="password1">
   
-  
-          <label for="password2">Confrom Password</label>
-          <input type="password" placeholder="Confrom Password" id="password2" name="password2">
+          <label for="password2">Confirm Password</label>
+          <input type="password" placeholder="Confirm Password" id="password2" name="password2">
           <button type="submit">Signup</button>
           
           <a href="{% url 'signin' %}" >I have account</a>

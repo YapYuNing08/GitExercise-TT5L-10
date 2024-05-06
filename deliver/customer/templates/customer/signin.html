@@ -15,11 +15,9 @@
     }
     
     body{
-        background-color: #f8e5c5;
-        background-image: url('media/menu_images/BlackTea_E6AKdSH.jpg');
-        /* background-size: cover;  Ensure it covers the full background */
-        background-position: center;
+        background-color: rgb(118, 28, 28);
     }
+
     .background{
         width: 430px;
         height: 520px;
@@ -44,6 +42,7 @@
         box-shadow: 0 0 40px rgba(8,7,16,0.6);
         padding: 50px 35px;
     }
+
     form *{
         font-family: 'Poppins',sans-serif;
         color: #3b2106;
@@ -51,6 +50,7 @@
         outline: none;
         border: none;
     }
+
     form h3{
         font-size: 32px;
         font-weight: 500;
@@ -64,6 +64,7 @@
         font-size: 16px;
         font-weight: 500;
     }
+
     input{
         display: block;
         height: 50px;
@@ -75,9 +76,11 @@
         font-size: 14px;
         font-weight: 300;
     }
+
     ::placeholder{
         color: #b8a490;
     }
+
     button{
         margin-top: 50px;
         width: 100%;
@@ -105,8 +108,8 @@
             <input type="password" placeholder="Password" id="password" name="pass">
     
             <button type="submit">Log In</button>
-           
-            <a href="{% url 'signup' %}" >Create an account</a>
+            <br><br>
+            <a href="{% url 'signup' %}" >No account? Create now!</a> 
         </form>
     </body>
 </html>

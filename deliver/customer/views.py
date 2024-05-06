@@ -1,11 +1,10 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.views import View
-from .models import MenuItem, Category, OrderModel, ReservationModel
+from .models import MenuItem, Category, OrderModel, ReservationModel, Product
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
-
-
+from django.db.models import Count
 
 class Index(View):
     def get(self, request, *args, **kwargs):
@@ -38,7 +37,7 @@ class Reservation(View):
 class About(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/about.html')
-    
+
 class Signup(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/signup.html')
@@ -52,8 +51,11 @@ class Signup(View):
         if pass1!=pass2:
             return HttpResponse("Passwords do not match")
         
-        if User.objects.filter(username=uname).exists():
-            return HttpResponse("Username already taken, please use a different username")
+        if User.objects.filter(email=email).exists():
+            return HttpResponse("This email is already in use. Please use a different email.")
+        
+        if 'admin' in uname:
+            return HttpResponse("Username 'admin' is not allowed. Please try again with a different username.")
         
         my_user = User.objects.create_user(uname,email,pass1)
         my_user.save()
@@ -69,10 +71,14 @@ class Signin(View):
        
 
         user = authenticate(request, username=username, password=pass1)
-
+        
         if user is not None:
-            login(request,user)
-            return redirect('index')
+            if 'admin' in username:
+                login(request,user)
+                return redirect('restaurant_index')
+            else:
+                login(request,user)
+                return redirect('index')
         else:
             return HttpResponse("Username or Password is incorrect!")
         
@@ -93,7 +99,6 @@ class Order(View):
             'desserts': desserts,
             'pastries': pastries,
             'main': main
-            
         }
 
         # render the template
@@ -104,29 +109,9 @@ class Order(View):
         name = request.POST.get('name')
         phone = request.POST.get('phone')
 
-        # order_items = {
-        #     'items': []
-        # }
-
         items = MenuItem.objects.filter(id__in=items_ids)
 
-        # for item in items:
-        #     menu_item = MenuItem.objects.get(pk__contains=int(item))
-        #     item_data = {
-        #         'id': menu_item.pk,
-        #         'name': menu_item.name,
-        #         'price': menu_item.price
-        #     }
-
-        #     order_items['items'].append(item_data)
-
-        #     price = 0
-        #     item_ids = []
         total_price = sum(item.price for item in items)
-
-        # for item in order_items['items']:
-        #     price += item['price']
-        #     item_ids.append(item['id'])
 
         order = OrderModel.objects.create(
             price=total_price,
@@ -135,27 +120,26 @@ class Order(View):
         )
         order.items.set(items)
 
-        # Send confirmation email to the user
-        # body = ('Thank you for your order! Your food is being made and will be served soon!\n'
-        #         f'Your total: RM{price}\n')
-        # send_mail(
-        #     'Thank You For Your Order!',
-        #     body,
-        #     'example@example.com',
-        #     [email],
-        #     fail_silently=False
-        # )
-
-
         context = {
             'items': items,
             'price': total_price
         }
 
         return render(request, 'customer/order_confirmation.html', context)
+    
+class Category(View):
+    def get(self, request, val):
+        product = Product.objects.filter(category=val)
+        title = Product.objects.filter(category=val).values('title').annotate(total=Count('title'))
+        return render(request, "customer/category.html", locals())
 
+class CategoryTitle(View):
+    def get(self, request, val):
+        product = Product.objects.filter(title=val)
+        title = Product.objects.filter(category=product[0].category).values('title')
+        return render(request, "customer/category.html", locals())
 
-
-
-
-
+class ProductDetail(View):
+    def get(self, request, pk):
+        product = Product.objects.get(pk=pk)
+        return render(request, 'customer/product_detail.html', locals())
