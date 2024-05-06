@@ -51,3 +51,7 @@ class OrderDetails(View):
         }
 
         return render(request, 'restaurant/order_details.html', context)
+    
+class Reservation(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'restaurant/reservation.html')
