@@ -3,6 +3,7 @@ from django.shortcuts import render, HttpResponse, redirect
 from django.views import View
 from django.utils.timezone import datetime
 from customer.models import OrderModel
+# from django.contrib.auth.decorators import login_required
 
 class Index(View):
     def get(self, request, *args, **kwargs):

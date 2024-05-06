@@ -35,6 +35,14 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+class ReservationModel(models.Model):
+    created_on = models.DateTimeField(auto_now_add=True)
+    name = models.CharField(max_length=100)
+    phone = models.CharField(max_length=15, null=True)
+    date = models.DateField()
+    person = models.IntegerField(default=1)
+    def __str__(self):
+        return f'Order: {self.created_on.strftime("%b %d %I: %M %p")}'
 
 class OrderModel(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
