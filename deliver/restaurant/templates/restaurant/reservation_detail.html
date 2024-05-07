@@ -1,4 +1,4 @@
-{% extends 'customer/base.html' %}
+{% extends 'restaurant/base.html' %}
 
 {% block content %}
 
@@ -6,7 +6,7 @@
     <div class="row justify-content-center mt-3">
         <div class="card col-md-5 mr-3">
             <h4 class="text-center pt-2">Today's Total Reservation</h4>
-            <h1 class="text-center" style="color: green;">{{ total_revenue }}</h1>
+            <h1 class="text-center" style="color: green;">{{ total_reservations }}</h1>
         </div>
 
        
@@ -18,12 +18,11 @@
                     <thead>
                         <tr>
                             <th scope="col">Name</th>
-                            <th scope="col">Number</th>
-                            <th scope="col">Person</th>
+                            <th scope="col">Phone</th>
                             <th scope="col">Date</th>
-                            <th scope="col">Time</th>
+                            <th scope="col">Person</th>
                             <th scope="col">Status</th><div class="col-md-6 col-sm-12">
-                                <h5>Status</h5>
+                                <!-- <h5>Status</h5>
                                 {% if order.is_served %}
                                     <p><i style="color: green;" class="fas fa-check"></i><span class="pl-2">Order has been served</span></p>
                                 {% else %}
@@ -31,12 +30,12 @@
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-outline-success">Mark as served</button>
                                     </form>
-                                {% endif %}
+                                {% endif %} -->
                                 
                         </tr>
                     </thead>
                     
-                    <tbody>
+                    <!-- <tbody>
                        {% for order in orders %}
                         <tr>
                             <td>{{ order.pk }}</td>
@@ -49,7 +48,7 @@
                             <td><a href="{% url 'order_details' order.pk %}"><i class="far fa-edit"></i></a></td>
                         </tr>
                         {% endfor %}
-                    </tbody>
+                    </tbody> -->
             </table>
         </div>
     </div>

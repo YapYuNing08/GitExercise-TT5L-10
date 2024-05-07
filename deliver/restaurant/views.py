@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, HttpResponse, redirect
 from django.views import View
 from django.utils.timezone import datetime
-from customer.models import OrderModel
+from customer.models import OrderModel, ReservationModel
 # from django.contrib.auth.decorators import login_required
 
 class Index(View):
@@ -32,6 +32,22 @@ class Dashboard(View):
         }
 
         return render(request, 'restaurant/dashboard.html', context)
+    
+class ReservationDetail(View):
+    def get(self, request, *args, **kwargs):
+        # get the current date
+        today = datetime.today()
+        reservations = ReservationModel.objects.filter(
+            created_on__year=today.year, created_on__month=today.month, created_on__day=today.day)
+
+        total_reservations = len(reservations)
+    
+        context = {
+            'reservations': reservations,
+            'total_reservation': total_reservations
+        }
+
+        return render(request, 'restaurant/reservation_detail.html', context)
 
 class OrderDetails(View):
     def get(self, request, pk, *args, **kwargs):

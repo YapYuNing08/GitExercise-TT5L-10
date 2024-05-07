@@ -10,10 +10,6 @@ class Index(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/index.html')
     
-class Reservation_detail(View):
-    def get(self, request, *args, **kwargs):
-        return render(request, 'customer/reservation_detail.html')
-    
 class Reservation(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/reservation.html')
