@@ -33,21 +33,25 @@ class Dashboard(View):
 
         return render(request, 'restaurant/dashboard.html', context)
     
-class ReservationDetail(View):
-    def get(self, request, *args, **kwargs):
-        # get the current date
-        today = datetime.today()
-        reservations = ReservationModel.objects.filter(
-            created_on__year=today.year, created_on__month=today.month, created_on__day=today.day)
-
-        total_reservations = len(reservations)
-    
+class ReservationDetails(View):
+    def get(self, request, pk, *args, **kwargs):
+        reservation = ReservationModel.objects.get(pk=pk)
+        reservations = ReservationModel.objects.all()
         context = {
-            'reservations': reservations,
-            'total_reservation': total_reservations
+            'reservation': reservation,
+            'reservations': reservations
         }
 
-        return render(request, 'restaurant/reservation_detail.html', context)
+        return render(request, 'restaurant/reservation_details.html', context)
+    
+    def post(self, request, pk, *args, **kwargs):
+        reservation = ReservationModel.objects.get(pk=pk)
+
+        context = {
+            'reservation':reservation
+        }
+
+        return render(request, 'restaurant/reservation_details.html', context)
 
 class OrderDetails(View):
     def get(self, request, pk, *args, **kwargs):
