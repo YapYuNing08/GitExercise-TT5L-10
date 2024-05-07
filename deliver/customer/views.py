@@ -12,23 +12,24 @@ class Index(View):
     
 class Reservation(View):
     def get(self, request, *args, **kwargs):
+        reservations = ReservationModel.objects.all()
         return render(request, 'customer/reservation.html')
     
     def post(self, request, *args, **kwargs):
         name = request.POST.get('name')
         phone = request.POST.get('phone')
         date = request.POST.get('date')
+        time = request.POST.get('time')
         person = request.POST.get('person')
         
         reservation = ReservationModel.objects.create(
             name=name,      
             phone=phone,
             date=date,
+            time=time,
             person=person)
         reservation.save()
         return redirect('reservation')
-
-        # return render(request, 'customer/reservation.html')
 
 class About(View):
     def get(self, request, *args, **kwargs):
