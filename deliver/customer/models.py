@@ -1,5 +1,5 @@
 from django.db import models
-from datetime import datetime, date
+from datetime import timezone, datetime
 
 category_choices = (
     ('B', 'Beverage'),
@@ -79,7 +79,7 @@ class OrderModel(models.Model):
 #     description=models.CharField(max_length=200, null=True, blank=True)
 #     date_created=models.DateTimeField(auto_now_add=True, null=True)
 
-#     def __str__(self):
+#     def _str_(self):
 #         return self.name
 
 # class Order(models.Model):

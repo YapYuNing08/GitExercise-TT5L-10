@@ -29,7 +29,6 @@ urlpatterns = [
     path('index/', Index.as_view(), name='index'),
     path('reservation/', Reservation.as_view(), name='reservation'),
     path('about/', About.as_view(), name="about"),
-    path('signin/', Signin.as_view(), name="signin"),
     path('signup/', Signup.as_view(), name="signup"),
     path('order/', Order.as_view(), name="order"),
     path("category/<slug:val>", Category.as_view(), name="category"),
