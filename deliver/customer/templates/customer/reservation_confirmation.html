@@ -1,13 +1,11 @@
 {% extends 'customer/base.html' %}
 
 {% block content %}
-
-
 <div class="container mb-5">
     <div class="row justify-content-center mt-1">
         <div class="col-md-5 col-sm-12 p-4 text-center">
             <h1>Reservation Submitted!</h1>
-            <p>Thank you for your reservation!</p>
+            <p>Your booking has been confirmed.</p>
             <a href="{% url 'index' %}">Go to the homepage</a>
         </div>
     </div>
@@ -16,16 +14,16 @@
         <div class="col-md-5 col-sm-12 text-center">
             
             <h3 class="pb-3">Reservation Summary:</h3>
-            {% for reservation in reservations %}
-                <p>Name: {{ reservation.name }} </p>
-                <p>Phone: {{ reservation.phone }} </p>
-                <p>Person: {{ reservation.person }} </p>
-                <p>Date: {{ reservation.date }} </p>
-                <p>Time: {{ reservation.time }} </p>
-            {% endfor %}
+                <p>Name: {{ reservation.name }}</p>
+                <p>Phone Number: {{ reservation.phone }}</p>
+                <p>Date: {{ reservation.date }}</p>
+                <p>Time: {{ reservation.time }}</p>
+                <p>Number of pax: {{ reservation.person }}</p>
 
         </div>
     </div>
 </div>
+
+
 
 {% endblock content %}

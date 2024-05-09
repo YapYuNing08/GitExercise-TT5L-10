@@ -62,9 +62,7 @@
           {% csrf_token %} 
           <div class="container">
             <div class="heading_container">
-              <h2>
-                Book A Table
-              </h2>
+              <h2>Book Your Table Now!</h2>
             </div>
             <div class="row">
               <div class="col-md-6 center">
@@ -73,22 +71,17 @@
                     {% csrf_token %} 
                     <div class="form-group pt-3">
                       <label for="name">Name</label>
-                      <input type="text" class="form-control" placeholder="Your Name" name="name" id="name">
+                      <input type="text" class="form-control" placeholder="Your Name" name="name" id="name" required>
                     </div>
 
                     <div class="form-group pt-3">
                       <label for="phone">Phone Number</label>
-                      <input type="text" class="form-control" placeholder="01xxxxxxx" name="phone" id="phone">
+                      <input type="text" class="form-control" placeholder="01xxxxxxx" name="phone" id="phone" required>
                     </div>
 
-                    <!-- <div class="form-group pt-3">
-                      <label for="email">Email</label>
-                      <input type="email" class="form-control" placeholder="Your Email" name="email" id="email">
-                    </div> -->
-
                     <div class="form-group pt-3">
-                      <label for="person">Person</label>
-                      <select class="form-control nice-select wide" name="person" id="person">
+                      <label for="person">Number of Pax</label>
+                      <select class="form-control nice-select wide" name="person" id="person" required>
                         <option value="" disabled selected>
                           How many persons?
                         </option>
@@ -130,12 +123,12 @@
 
                     <div class="form-group pt-3">
                       <label for="date">Date</label>
-                      <input type="date" class="form-control" name="date" id="date">
+                      <input type="date" class="form-control" name="date" id="date" required>
                   </div>
                   
                   <div class="form-group pt-3">
                       <label for="time">Time</label>
-                      <input type="time" class="form-control" min="11:00" max="23:00" name="time" id="time">
+                      <input type="time" class="form-control" min="11:00" max="23:00" name="time" id="time" required>
                   </div>
                   
                   <script>
@@ -148,47 +141,20 @@
                   
                       // Set min attribute of time input to current time
                       document.getElementById("time").min = currentTime;
-                  </script>         
-                  
-                  
+                  </script>
                 
                     <button type="button" class="btn btn-red" data-toggle="modal" data-target="#bookingModal">
                       Book Now!
                     </button>
                     
                     <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
-                      <div class="modal-dialog modal-dialog-centered">
-                          <div class="modal-content">
-                              <div class="modal-header"> <!-- Add text-center class here -->
-                                  <h5 class="modal-title d-inline " id="bookingModalLabel">Book Table!</h5>
-                              </div>
-                              <form method="post" action="{% url 'reservation' %}">
-                                  {% csrf_token %}
-                                  <div class="modal-body">
-                                      <!-- Display booking details here -->
-                                      <div class="mb-3">
-                                          <label for="name" class="form-label">Name</label>
-                                          <p class="form-control-static">{{ booking_details.name }}</p>
-                                      </div>
-                                      <div class="mb-3">
-                                          <label for="email" class="form-label">Person</label>
-                                          <p class="form-control-static">{{ booking_details.person }}</p>
-                                      </div>
-                                      <div class="mb-3">
-                                          <label for="date" class="form-label">Date</label>
-                                          <p class="form-control-static">{{ booking_details.date }}</p>
-                                      </div>
-                                      <div class="mb-3">
-                                          <label for="time" class="form-label">Time</label>
-                                          <p class="form-control-static">{{ booking_details.time }}</p>
-                                      </div>
-                                      <!-- Add more details as needed -->
-                                  </div>
-                                  <div class="modal-footer">
-                                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                      <button type="submit" class="btn btn-primary">Book Now!</button>
-                                  </div>
-                              </form>
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="bookingModalLabel">Confirm to book?</h5>
+                            <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button> -->
                           </div>
                       </div>
                   </div>

@@ -13,6 +13,7 @@
                         <th scope="col">Person</th>
                         <th scope="col">Date</th>
                         <th scope="col">Time</th>
+                        <th scope="col">Status</th>
                     </tr>
                 </thead>
                     
@@ -25,8 +26,20 @@
                         <td>{{ reservation.date }}</td>
                         <td>{{ reservation.time }}</td>
                         
+                        <td>
+                            {% if reservation.is_served %}
+                                <p><i style="color: green;" class="fas fa-check"></i><span class="pl-2">Reservation has been served</span></p>
+                            {% else %}
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
+                                    <button type="submit" class="btn btn-outline-success">Mark as served</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                        {% endfor %}
                     </tr>
-                    {% endfor %}
+                    
                 </tbody>
             </table>
         </div>
