@@ -1,12 +1,14 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.views import View
 from django.db.models import Q
-from .models import MenuItem, Category, OrderModel, OrderItem, Product
+from .models import MenuItem, Category, OrderModel, Product, OrderItem, Customer, Cart
+from .forms import CustomerRegistrationForm, CustomerProfileForm
 from django.db.models import Count
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
-# from customer import views
+from django.contrib import messages
+from django.http import JsonResponse
 
 class Index(View):
     def get(self, request, *args, **kwargs):
@@ -75,53 +77,6 @@ class Order(View):
 
         # render the template
         return render(request, 'customer/order.html', context)
-
-    # def post(self, request, *args, **kwargs):
-    #     items_ids = request.POST.getlist('items[]')
-    #     name = request.POST.get('name')
-    #     phone = request.POST.get('phone')
-
-    #     # order_items = {
-    #     #     'items': []
-    #     # }
-
-    #     items = MenuItem.objects.filter(id__in=items_ids)
-
-    #     # for item in items:
-    #     #     menu_item = MenuItem.objects.get(pk__contains=int(item))
-    #     #     item_data = {
-    #     #         'id': menu_item.pk,
-    #     #         'name': menu_item.name,
-    #     #         'price': menu_item.price
-    #     #     }
-
-    #     #     order_items['items'].append(item_data)
-
-    #     #     price = 0
-    #     #     item_ids = []
-    #     total_price = sum(item.price for item in items)
-
-    #     # for item in order_items['items']:
-    #     #     price += item['price']
-    #     #     item_ids.append(item['id'])
-
-    #     order = OrderModel.objects.create(
-    #         price=total_price,
-    #         name=name,
-    #         phone=phone,
-    #     )
-    #     order.items.set(items)
-
-    #     # Send confirmation email to the user
-    #     # body = ('Thank you for your order! Your food is being made and will be served soon!\n'
-    #     #         f'Your total: RM{price}\n')
-    #     # send_mail(
-    #     #     'Thank You For Your Order!',
-    #     #     body,
-    #     #     'example@example.com',
-    #     #     [email],
-    #     #     fail_silently=False
-    #     # )
 
     def post(self, request, *args, **kwargs):
         items_ids = request.POST.getlist('items[]')
@@ -192,7 +147,7 @@ class Menu(View):
 class Category(View):
     def get(self, request, val):
         product = Product.objects.filter(category=val)
-        title = Product.objects.filter(category=val).values('title').annotate(total=Count('title'))
+        title = Product.objects.filter(category=val).values('title')
         return render(request, "customer/category.html", locals())
 
 class CategoryTitle(View):
@@ -205,3 +160,159 @@ class ProductDetail(View):
     def get(self, request, pk):
         product = Product.objects.get(pk=pk)
         return render(request, 'customer/product_detail.html', locals())
+    
+class CustomerRegistrationView(View):
+    def get(self, request):
+        form = CustomerRegistrationForm()
+        return render(request, 'customer/customerregistration.html', locals())
+    def post(self, request):
+        form = CustomerRegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Congratulation! User Register successfully')
+        else:
+            messages.warning(request, "Invalid Input Data")
+        return render(request, 'customer/customerregistration.html', locals())
+
+
+
+
+def add_to_cart(request):
+    user=request.user
+    product_id = request.GET.get('prod_id')
+    product = Product.objects.get(id=product_id)
+    Cart(user=user, product=product).save()
+    return redirect('/cart')
+
+
+def show_cart(request):
+    user = request.user  
+    cart = Cart.objects.filter(user=user)
+    amount = 0
+    for p in cart:
+        value = p.quantity * p.product.price
+        amount = amount + value
+    totalamount = amount
+    return render(request, 'customer/addtocart.html', locals())
+
+
+# def checkout(View):
+#     def get(self, request):
+#         return render(request, 'customer/checkout.html', locals())
+
+
+
+def plus_cart(request):
+    if request.method == 'GET':
+        prod_id = request.GET('prod_id')
+        c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
+        c.quantity+=1
+        c.save()
+        cart = Cart.objects.filter(user=user)
+        amount = 0
+        for p in cart:
+            value = p.quantity * p.product.price
+            amount = amount + value
+        totalamount = amount
+        data = {
+            'quantity':c.quantity,
+            'amount':amount,
+            'totalamount':totalamount
+        }
+        return JsonResponse(data)
+    
+def minus_cart(request):
+    if request.method == 'GET':
+        prod_id = request.GET('prod_id')
+        c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
+        c.quantity-=1
+        c.save()
+        cart = Cart.objects.filter(user=user)
+        amount = 0
+        for p in cart:
+            value = p.quantity * p.product.price
+            amount = amount + value
+        totalamount = amount
+        data = {
+            'quantity':c.quantity,
+            'amount':amount,
+            'totalamount':totalamount
+        }
+        return JsonResponse(data)
+    
+def remove_cart(request):
+    if request.method == 'GET':
+        prod_id = request.GET('prod_id')
+        c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
+        c.delete()
+        user = request.user
+        cart = Cart.objects.filter(user=user)
+        amount = 0
+        for p in cart:
+            value = p.quantity * p.product.price
+            amount = amount + value
+        totalamount = amount
+        data = {
+            'quantity':c.quantity,
+            'amount':amount,
+            'totalamount':totalamount
+        }
+        return JsonResponse(data)
+
+
+
+
+class Login(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'customer/login.html')
+    
+# class PasswordResetView(View):
+#     def get(self, request, *args, **kwargs):
+#         return render(request, 'customer/login.html')
+    
+
+class ProfileView(View):
+    def get(self, request):
+        form = CustomerProfileForm()
+        return render(request, 'customer/profile.html', locals())
+    def post(self, request):
+        form = CustomerProfileForm(request.POST)
+        if form.is_valid():
+            user = request.user
+            name = form.cleaned_data['name']
+            mobile = form.cleaned_data['mobile']
+            address = form.cleaned_data['address']
+
+            reg = Customer(user=user, name=name, mobile=mobile, address=address)
+            reg.save()
+            messages.success(request, "Congratulations! Profile Save Successfully.")
+        else:
+            messages.warning(request, "Invalid Input Data")
+        return render(request, 'customer/profile.html', locals())
+
+
+
+def address(request):
+    add = Customer.objects.filter(user=request.user)
+    return render(request, 'customer/address.html', locals())
+
+
+
+class updateAddress(View):
+    def get(self, request, pk):
+        add = Customer.objects.get(pk=pk)
+        form = CustomerProfileForm(instance=add)
+        return render(request, 'customer/updateAddress.html', locals())
+    def post(self, request, pk):
+        form = CustomerProfileForm(request.POST)
+        if form.is_valid():
+            add = Customer.objects.get(pk=pk)
+            add.name = form.cleaned_data['name']
+            add.mobile = form.cleaned_data['mobile']
+            add.address = form.cleaned_data['address']
+            add.save()
+            messages.success(request, "Congratulations! Profile Update Successfully.")
+        else:
+            messages.warning(request, "Invalid Input Data.")
+        return redirect('address')
+    

@@ -19,7 +19,10 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from customer.views import Index, About, Order, Signin, Signup, Menu, MenuSearch, Category, CategoryTitle, ProductDetail
+from customer.views import Index, About, Order, Signin, Signup, Menu, MenuSearch, Category, CategoryTitle, ProductDetail, CustomerRegistrationView, Login, ProfileView
+from django.contrib.auth import views as auth_view
+from customer.forms import LoginForm
+from customer import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,6 +38,23 @@ urlpatterns = [
     path('menu/search', MenuSearch.as_view(), name='menu-search'),
     path("category/<slug:val>", Category.as_view(), name="category"),
     path("category_title/<val>", CategoryTitle.as_view(), name="category_title"),
-    path("product_detail/<int:pk>", ProductDetail.as_view(), name="product_detail")
+    path("product_detail/<int:pk>", ProductDetail.as_view(), name="product_detail"),
+    path('profile/', ProfileView.as_view(), name='profile'),
+    path('address/', views.address, name='address'),
+    path('updateAddress/<int:pk>', views.updateAddress.as_view(), name='updateAddress'),
+    
+    path('add-to-cart/', views.add_to_cart, name='add-to-cart'),
+    path('cart/', views.show_cart, name='showcart'),
+    # path('checkout/', views.checkout, name='checkout'),
+
+    path('pluscart/', views.plus_cart),
+    path('minuscart/', views.minus_cart),
+    path('removecart/', views.remove_cart),
+
+
+    # login authentication
+    path('registration/', CustomerRegistrationView.as_view(), name='customerregistration'),
+    path('login/', Login.as_view(), name='login')
+    # path('password-reset/', PasswordResetView.as_view(), name='password_reset')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
