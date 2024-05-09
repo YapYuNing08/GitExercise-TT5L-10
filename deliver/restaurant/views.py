@@ -33,12 +33,6 @@ class Dashboard(View):
 
         return render(request, 'restaurant/dashboard.html', context)
 
-<<<<<<< HEAD
-    def test_func(self):
-        return self.request.user.groups.filter(name='Staff').exists()
-
-=======
->>>>>>> b30a921963733f3d7c4021193c1092e0d594b3a3
 class OrderDetails(View):
     def get(self, request, pk, *args, **kwargs):
         order = OrderModel.objects.get(pk=pk)
