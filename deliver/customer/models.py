@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import timezone, datetime
+from django.contrib.auth.models import User
 
 category_choices = (
     ('B', 'Beverage'),
@@ -10,7 +11,8 @@ category_choices = (
 
 class Product(models.Model):
     title = models.CharField(max_length=100)
-    price = models.FloatField()
+    # price = models.FloatField()
+    price = models.DecimalField(max_digits=5, decimal_places=2)
     description = models.TextField()
     category = models.CharField(choices=category_choices, max_length=2)
     image = models.ImageField(upload_to='product')
@@ -60,36 +62,33 @@ class OrderModel(models.Model):
     def __str__(self):
         return f'Order: {self.created_on.strftime("%b %d %I: %M %p")}'
     
-# class Customer(models.Model):
-#     name=models.CharField(max_length=50, null=True)
-#     phone=models.CharField(max_length=50, null=True)
-#     email=models.EmailField()
-#     date_created=models.DateTimeField(auto_now_add=True, null=True)
 
-#     def __str__(self):
-#         return self.name
+class OrderItem(models.Model):
+    order = models.ForeignKey('OrderModel', on_delete=models.CASCADE)
+    item = models.ForeignKey('MenuItem', on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
 
-# class Product(models.Model):
-#     CATEGORY=(
-#         ('Dine in','Dine in'),
-#         ('Takeaway','Takeaway'),
-#     )
-#     name=models.CharField(max_length=50, null=True)
-#     price=models.FloatField()
-#     category=models.CharField(max_length=50, null=True, choices=CATEGORY)
-#     description=models.CharField(max_length=200, null=True, blank=True)
-#     date_created=models.DateTimeField(auto_now_add=True, null=True)
+    def __str__(self):
+        return f"{self.quantity} of {self.item.name} in order #{self.order.id}"
+    
 
-#     def __str__(self):
-#         return self.name
 
-# class Order(models.Model):
-#     STATUS=(
-#         ('Pending','Pending'),
-#         ('Served','Served'),
-#     )
+class Cart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
+    product = models.ForeignKey(Product,on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
 
-    # customer=models.ForeignKey(Customer, null=True, on_delete=models.SET_NULL())
-    # product=models.ForeignKey(Product,null=True, on_delete=models.SET_NULL())
-    # date_created=models.DateTimeField(auto_now_add=True, null=True)
-    # status=models.CharField(max_length=50, null=True, choices=STATUS)
+    @property
+    def total_cost(self):
+        return self.quantity * self.product.price
+    
+
+    
+class Customer(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    mobile = models.IntegerField(default=0)
+    address = models.CharField(max_length=100)
+    def __str__(self):
+        return self.name

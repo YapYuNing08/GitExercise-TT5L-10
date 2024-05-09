@@ -1,3 +1,4 @@
+{% block content %}
 <style>
 nav {
   background-color: darkgrey;
@@ -41,7 +42,7 @@ nav {
               User
             </a>
             <ul class="dropdown-menu" aria-labelledby="profileDropdown">
-              <li><a class="dropdown-item" href="#">Profile</a></li>
+              <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
               <li><a class="dropdown-item" href="#">Orders</a></li>
               <li><a class="dropdown-item" href="#">Change Password</a></li>
             </ul>
@@ -49,6 +50,16 @@ nav {
         <li class="nav-item">
             <a class="nav-link" href="#" >Cart</a>
         </li>
+
+        <li class="nav-item mx-2">
+          <a href="{% url 'signin' %}" class="nav-link text-white">Login</a>
+        </li>
+
+        <li class="nav-item mx-2">
+          <a href="{% url 'customerregistration' %}" class="nav-link text-white">Registration</a>
+        </li>
+
       </ul>
     </div>
   </nav>
+{% endblock content %}
