@@ -1,0 +1,29 @@
+{% extends 'customer/base.html' %}
+
+{% block content %}
+<div class="container mb-5">
+    <div class="row justify-content-center mt-1">
+        <div class="col-md-5 col-sm-12 p-4 text-center">
+            <h1>Reservation Submitted!</h1>
+            <p>Your booking has been confirmed.</p>
+            <a href="{% url 'index' %}">Go to the homepage</a>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-5 col-sm-12 text-center">
+            
+            <h3 class="pb-3">Reservation Summary:</h3>
+                <p>Name: {{ reservation.name }}</p>
+                <p>Phone Number: {{ reservation.phone }}</p>
+                <p>Date: {{ reservation.date }}</p>
+                <p>Time: {{ reservation.time }}</p>
+                <p>Number of pax: {{ reservation.person }}</p>
+
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock content %}

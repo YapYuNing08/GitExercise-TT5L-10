@@ -1,0 +1,190 @@
+{% extends 'customer/base.html' %}
+
+{% block content %}
+
+<style>
+   
+    form *{
+        font-family: 'Poppins',sans-serif;
+        color: #3b2106;
+        letter-spacing: 0.5px;
+        outline: none;
+        border: none;
+        margin-bottom: 10px;
+    }
+     h2{
+        font-size: 32px;
+        font-weight: 500;
+        line-height: 42px;
+        margin-top: 30px;
+    }
+    
+    label{
+        display: block;
+        margin-top: 30px;
+        font-size: 16px;
+        font-weight: 500;
+    }
+    input{
+        display: block;
+        height: 50px;
+        width: 100%;
+        background-color: rgba(240, 253, 255, 0.667);
+        border-radius: 3px;
+        padding: 0 10px;
+        margin-top: 10px;
+        font-size: 14px;
+        font-weight: 300;
+    }
+    ::placeholder{
+        color: #b8a490;
+    }
+    button{
+        margin-top: 50px;
+        margin-bottom: 20px;
+        width: 100%;
+        background-color: #fff6dd;
+        color: #080710;
+        padding: 15px 0;
+        font-size: 18px;
+        font-weight: 600;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+</style>
+
+
+  <!-- book section -->
+  <!-- <section class="book_section layout_padding"> -->
+    <div class="row justify-content-center mt-1">
+      <div class="col-md-12 col-sm-12 p-4">
+        <form method="POST">
+          {% csrf_token %} 
+          <div class="container">
+            <div class="heading_container">
+              <h2>Book Your Table Now!</h2>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form_container">
+                  <form method="POST">
+                    {% csrf_token %} 
+                    <div class="form-group pt-3">
+                      <label for="name">Name</label>
+                      <input type="text" class="form-control" placeholder="Your Name" name="name" id="name" required>
+                    </div>
+
+                    <div class="form-group pt-3">
+                      <label for="phone">Phone Number</label>
+                      <input type="text" class="form-control" placeholder="01xxxxxxx" name="phone" id="phone" required>
+                    </div>
+
+                    <div class="form-group pt-3">
+                      <label for="person">Number of Pax</label>
+                      <select class="form-control nice-select wide" name="person" id="person" required>
+                        <option value="" disabled selected>
+                          How many persons?
+                        </option>
+                        <option value="2">
+                          2
+                        </option>
+                        <option value="3">
+                          3
+                        </option>
+                        <option value="4">
+                          4
+                        </option>
+                        <option value="5">
+                          5
+                        </option>
+                        <option value="6">
+                          6
+                        </option>
+                        <option value="7">
+                          7
+                        </option>
+                        <option value="8">
+                          8
+                        </option>
+                        <option value="9">
+                          9
+                        </option>
+                        <option value="10">
+                          10
+                        </option>
+                        <option value="11">
+                          11
+                        </option>
+                        <option value="12">
+                          12
+                        </option>
+                      </select>
+                    </div>
+
+                    <div class="form-group pt-3">
+                      <label for="date">Date</label>
+                      <input type="date" class="form-control" name="date" id="date" required>
+                  </div>
+                  
+                  <div class="form-group pt-3">
+                      <label for="time">Time</label>
+                      <input type="time" class="form-control" min="11:00" max="23:00" name="time" id="time" required>
+                  </div>
+                  
+                  <script>
+                      // Get current date and time
+                      var currentDate = new Date();
+                      var currentTime = currentDate.getHours() + ":" + currentDate.getMinutes();
+                  
+                      // Set min attribute of date input to current date
+                      document.getElementById("date").min = currentDate.toISOString().split('T')[0];
+                  
+                      // Set min attribute of time input to current time
+                      document.getElementById("time").min = currentTime;
+                  </script>
+                
+                    <button type="button" class="btn btn-red" data-toggle="modal" data-target="#bookingModal">
+                      Book Now!
+                    </button>
+                    
+                    <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="bookingModalLabel">Confirm to book?</h5>
+                            <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button> -->
+                          </div>
+                          <!-- <form method="post" action="{% url 'reservation' %}">
+                            {% csrf_token %} -->
+                            <!-- <div class="modal-body"> -->
+                              <!-- Display booking details here -->
+                              <!-- <p>Name: {{ name }}</p>
+                              <p>Email: {{ email }}</p>
+                              <p>Date: {{ date }}</p>
+                              <p>Time: {{ time }}</p> -->
+                              <!-- Add more details as needed -->
+                      
+                            <!-- </div> -->
+                            <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-dark">Book Now!</button>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                      <div class="modal-footer">
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>  
+    </div>        
+
+
+</body>
+{% endblock content %}

@@ -1,28 +1,125 @@
 {% extends 'customer/base.html' %}
 
 {% block content %}
+<div class="stepper-wrapper">
+    <div class="stepper-item completed">
+      <div class="step-counter">1</div>
+      <div class="step-name">Sign In</div>
+    </div>
+    <div class="stepper-item completed">
+      <div class="step-counter">2</div>
+      <div class="step-name">Order</div>
+    </div>
+    <div class="stepper-item active">
+      <div class="step-counter">3</div>
+      <div class="step-name">Confirmation</div>
+    </div>
+  </div>
+
+  <style>
+    .stepper-wrapper {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    }
+    .stepper-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    }
+    .stepper-item::before {
+    position: absolute;
+    content: "";
+    border-bottom: 2px solid #ccc;
+    width: 100%;
+    top: 20px;
+    left: -50%;
+    z-index: 2;
+    }
+    .stepper-item::after {
+    position: absolute;
+    content: "";
+    border-bottom: 2px solid #ccc;
+    width: 100%;
+    top: 20px;
+    left: 50%;
+    z-index: 2;
+    }
+    .stepper-item .step-counter {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ccc;
+    margin-bottom: 6px;
+    }
+    .stepper-item.active .step-counter{
+    font-weight: bold;
+    background-color: #4bb543;
+    }
+    .stepper-item.completed .step-counter {
+    background-color: #4bb543;
+    }
+    .stepper-item.completed::after {
+    position: absolute;
+    content: "";
+    border-bottom: 2px solid #4bb543;
+    width: 100%;
+    top: 20px;
+    left: 50%;
+    z-index: 3;
+    }
+    .stepper-item:first-child::before {
+    content: none;
+    }
+    .stepper-item:last-child::after {
+    content: none;
+    }
+  </style>
+
 <div class="container mb-5">
     <div class="row justify-content-center mt-1">
         <div class="col-md-5 col-sm-12 p-4 text-center">
-            <label for="file">Order Progress: </label>
-            <progress id="file" value="50" max="100">50%</progress> 
             <h1>Order Submitted!</h1>
             <p>Thank you for your order! Your food is being made and will be served soon!</p>
             <a href="{% url 'index' %}">Go to the homepage</a>
-
-            <h2>Order ID: {{item.pk}} </h2>
         </div>
     </div>
 
     <div class="row justify-content-center mt-5">
-        <div class="col-md-5 col-sm-12 text-center">
-            
-            <h3 class="pb-3">Order Summary:</h3>
-            {% for item in items %}
-                <p>{{ item.name }} <span class="pl-3">{{ item.price }}</span></p>
-            {% endfor %}
+        <div class="col-md-8 col-sm-12">
+            <h2>Items Ordered</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Item</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Total Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items_with_quantity %}
+                    <tr>
+                        <td>{{ item.item.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>RM{{ item.total_price }}</td> 
+                    </tr>
+                    {% endfor %}
+                </tbody>                                
+            </table>
+        </div>
+    </div>
 
-            <p class="font-weight-bold pt-4">Total: {{ price }}</p>
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6 col-sm-12">
+            <h2>Total Price</h2>
+            <p>RM{{ total_price }}</p>
         </div>
     </div>
 </div>
