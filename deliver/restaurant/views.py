@@ -57,6 +57,7 @@ class ReservationDetails(View):
     def get(self, request, pk, *args, **kwargs):
         reservation = ReservationModel.objects.get(pk=pk)
         reservations = ReservationModel.objects.all()
+        
         context = {
             'reservation': reservation,
             'reservations': reservations
@@ -65,10 +66,13 @@ class ReservationDetails(View):
         return render(request, 'restaurant/reservation_details.html', context)
     
     def post(self, request, pk, *args, **kwargs):
-        reservation = ReservationModel.objects.get(pk=pk)
-
+        reservation_id = request.POST.get('reservation_id')  # Assuming the hidden input is named 'reservation_id'
+        reservation = ReservationModel.objects.get(pk=reservation_id)
+        # reservation = ReservationModel.objects.get(pk=pk)
+        reservation.is_served = True
+        reservation.save()
         context = {
             'reservation':reservation
         }
 
-        return render(request, 'restaurant/reservation_details.html', context)
+        return redirect('reservation_details', pk=pk)

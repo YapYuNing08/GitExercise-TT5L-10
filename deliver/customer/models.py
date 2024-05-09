@@ -45,6 +45,7 @@ class ReservationModel(models.Model):
     date = models.DateField()
     time = models.TimeField(default=default_time)
     person = models.IntegerField(default=1)
+    is_served = models.BooleanField(default=False)
     def __str__(self):
         return f'Reservation: {self.created_on.strftime("%b %d %I: %M %p")}'
 

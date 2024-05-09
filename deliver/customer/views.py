@@ -10,10 +10,6 @@ class Index(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/index.html')
     
-class Reservation_detail(View):
-    def get(self, request, *args, **kwargs):
-        return render(request, 'customer/reservation_detail.html')
-    
 class Reservation(View):
     def get(self, request, *args, **kwargs):
         reservations = ReservationModel.objects.all()
@@ -32,8 +28,30 @@ class Reservation(View):
             date=date,
             time=time,
             person=person)
+        
         reservation.save()
-        return redirect('reservation')
+        request.session['reservation_id'] = reservation.id
+        
+        return redirect('reservation_confirmation')
+    
+class ReservationConfirmation(View):
+    def get(self, request, *args, **kwargs):
+        # Retrieve the reservation ID from the session
+        reservation_id = request.session.get('reservation_id')
+        if reservation_id is None:
+            return HttpResponse("Reservation ID not found in session.")
+        
+        # Get the reservation object
+        reservation = ReservationModel.objects.get(pk=reservation_id)
+        
+        context = {
+            'reservation': reservation
+        }
+        return render(request, 'customer/reservation_confirmation.html', context)
+# class ReservationConfirmation(View):
+#     def get(self, request, *args, **kwargs):
+        
+#         return render(request, 'customer/reservation_confirmation.html', context)
 
 class About(View):
     def get(self, request, *args, **kwargs):

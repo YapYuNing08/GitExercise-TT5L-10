@@ -62,9 +62,7 @@
           {% csrf_token %} 
           <div class="container">
             <div class="heading_container">
-              <h2>
-                Book A Table
-              </h2>
+              <h2>Book Your Table Now!</h2>
             </div>
             <div class="row">
               <div class="col-md-6">
@@ -73,22 +71,17 @@
                     {% csrf_token %} 
                     <div class="form-group pt-3">
                       <label for="name">Name</label>
-                      <input type="text" class="form-control" placeholder="Your Name" name="name" id="name">
+                      <input type="text" class="form-control" placeholder="Your Name" name="name" id="name" required>
                     </div>
 
                     <div class="form-group pt-3">
                       <label for="phone">Phone Number</label>
-                      <input type="text" class="form-control" placeholder="01xxxxxxx" name="phone" id="phone">
+                      <input type="text" class="form-control" placeholder="01xxxxxxx" name="phone" id="phone" required>
                     </div>
 
-                    <!-- <div class="form-group pt-3">
-                      <label for="email">Email</label>
-                      <input type="email" class="form-control" placeholder="Your Email" name="email" id="email">
-                    </div> -->
-
                     <div class="form-group pt-3">
-                      <label for="person">Person</label>
-                      <select class="form-control nice-select wide" name="person" id="person">
+                      <label for="person">Number of Pax</label>
+                      <select class="form-control nice-select wide" name="person" id="person" required>
                         <option value="" disabled selected>
                           How many persons?
                         </option>
@@ -130,13 +123,25 @@
 
                     <div class="form-group pt-3">
                       <label for="date">Date</label>
-                      <input type="date" class="form-control" name="date" id="date">
-                    </div>
-                    
-                    <div class="form-group pt-3">
+                      <input type="date" class="form-control" name="date" id="date" required>
+                  </div>
+                  
+                  <div class="form-group pt-3">
                       <label for="time">Time</label>
-                      <input type="time" class="form-control" min="11:00" max="23:00" name="time" id="time">
-                    </div>                   
+                      <input type="time" class="form-control" min="11:00" max="23:00" name="time" id="time" required>
+                  </div>
+                  
+                  <script>
+                      // Get current date and time
+                      var currentDate = new Date();
+                      var currentTime = currentDate.getHours() + ":" + currentDate.getMinutes();
+                  
+                      // Set min attribute of date input to current date
+                      document.getElementById("date").min = currentDate.toISOString().split('T')[0];
+                  
+                      // Set min attribute of time input to current time
+                      document.getElementById("time").min = currentTime;
+                  </script>
                 
                     <button type="button" class="btn btn-red" data-toggle="modal" data-target="#bookingModal">
                       Book Now!
@@ -146,10 +151,10 @@
                       <div class="modal-dialog">
                         <div class="modal-content">
                           <div class="modal-header">
-                            <h5 class="modal-title" id="bookingModalLabel">Book Table!</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <h5 class="modal-title" id="bookingModalLabel">Confirm to book?</h5>
+                            <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                               <span aria-hidden="true">&times;</span>
-                            </button>
+                            </button> -->
                           </div>
                           <!-- <form method="post" action="{% url 'reservation' %}">
                             {% csrf_token %} -->
