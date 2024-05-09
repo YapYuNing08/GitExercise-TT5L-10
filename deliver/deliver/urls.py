@@ -19,14 +19,10 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-<<<<<<< HEAD
-from customer.views import Index, About, Order, Signin, Signup, Menu, MenuSearch, Category, CategoryTitle, ProductDetail, CustomerRegistrationView, Login, ProfileView
+from customer.views import Index, About, Order, Signin, Signup, Menu, MenuSearch, Category, CategoryTitle, ProductDetail, CustomerRegistrationView, Login, ProfileView, Reservation, ReservationConfirmation 
 from django.contrib.auth import views as auth_view
 from customer.forms import LoginForm
 from customer import views
-=======
-from customer.views import Index, About, Order, Signin, Signup, Reservation, Category, CategoryTitle, ProductDetail, ReservationConfirmation
->>>>>>> b30a921963733f3d7c4021193c1092e0d594b3a3
 
 urlpatterns = [
     path('admin/', admin.site.urls),

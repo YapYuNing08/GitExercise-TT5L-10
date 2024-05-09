@@ -32,11 +32,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 AUTHENTICATION_BACKENDS = [
-<<<<<<< HEAD
-=======
     'allauth.account.auth_backends.AuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend',
->>>>>>> b30a921963733f3d7c4021193c1092e0d594b3a3
     'allauth.account.auth_backends.AuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
