@@ -1,5 +1,5 @@
 from django.db import models
-from datetime import datetime, date
+from datetime import timezone, datetime
 from django.contrib.auth.models import User
 
 category_choices = (
@@ -37,6 +37,19 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+def default_time():
+    return datetime.now().time()
+
+class ReservationModel(models.Model):
+    created_on = models.DateTimeField(auto_now_add=True)
+    name = models.CharField(max_length=100)
+    phone = models.CharField(max_length=15, null=True)
+    date = models.DateField()
+    time = models.TimeField(default=default_time)
+    person = models.IntegerField(default=1)
+    is_served = models.BooleanField(default=False)
+    def __str__(self):
+        return f'Reservation: {self.created_on.strftime("%b %d %I: %M %p")}'
 
 class OrderModel(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)

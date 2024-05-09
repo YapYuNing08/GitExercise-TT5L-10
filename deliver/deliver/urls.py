@@ -19,19 +19,24 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+<<<<<<< HEAD
 from customer.views import Index, About, Order, Signin, Signup, Menu, MenuSearch, Category, CategoryTitle, ProductDetail, CustomerRegistrationView, Login, ProfileView
 from django.contrib.auth import views as auth_view
 from customer.forms import LoginForm
 from customer import views
+=======
+from customer.views import Index, About, Order, Signin, Signup, Reservation, Category, CategoryTitle, ProductDetail, ReservationConfirmation
+>>>>>>> b30a921963733f3d7c4021193c1092e0d594b3a3
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('restaurant/', include('restaurant.urls')),
     path('', Signin.as_view(), name="signin"),
-    path('index/', Index.as_view(), name="index"),
+    path('index/', Index.as_view(), name='index'),
+    path('reservation/', Reservation.as_view(), name='reservation'),
+    path('reservation_confirmation/', ReservationConfirmation.as_view(), name='reservation_confirmation'),
     path('about/', About.as_view(), name="about"),
-    path('signin/', Signin.as_view(), name="signin"),
     path('signup/', Signup.as_view(), name="signup"),
     path('order/', Order.as_view(), name="order"),
     path('menu/', Menu.as_view(), name='menu'),

@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.views import View
 from django.db.models import Q
-from .models import MenuItem, Category, OrderModel, Product, OrderItem, Customer, Cart
+from .models import MenuItem, Category, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel
 from .forms import CustomerRegistrationForm, CustomerProfileForm
 from django.db.models import Count
 from django.core.mail import send_mail
@@ -10,18 +10,58 @@ from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.http import JsonResponse
 
+
 class Index(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/index.html')
     
-# class Dashboard(View):
+class Reservation(View):
+    def get(self, request, *args, **kwargs):
+        reservations = ReservationModel.objects.all()
+        return render(request, 'customer/reservation.html')
+    
+    def post(self, request, *args, **kwargs):
+        name = request.POST.get('name')
+        phone = request.POST.get('phone')
+        date = request.POST.get('date')
+        time = request.POST.get('time')
+        person = request.POST.get('person')
+        
+        reservation = ReservationModel.objects.create(
+            name=name,      
+            phone=phone,
+            date=date,
+            time=time,
+            person=person)
+        
+        reservation.save()
+        request.session['reservation_id'] = reservation.id
+        
+        return redirect('reservation_confirmation')
+    
+class ReservationConfirmation(View):
+    def get(self, request, *args, **kwargs):
+        # Retrieve the reservation ID from the session
+        reservation_id = request.session.get('reservation_id')
+        if reservation_id is None:
+            return HttpResponse("Reservation ID not found in session.")
+        
+        # Get the reservation object
+        reservation = ReservationModel.objects.get(pk=reservation_id)
+        
+        context = {
+            'reservation': reservation
+        }
+        return render(request, 'customer/reservation_confirmation.html', context)
+# class ReservationConfirmation(View):
 #     def get(self, request, *args, **kwargs):
-#         return render(request, 'customer/dashboard.html')
+        
+#         return render(request, 'customer/reservation_confirmation.html', context)
 
 class About(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/about.html')
-    
+
 class Signup(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/signup.html')
@@ -35,6 +75,12 @@ class Signup(View):
         if pass1!=pass2:
             return HttpResponse("Passwords do not match")
         
+        if User.objects.filter(email=email).exists():
+            return HttpResponse("This email is already in use. Please use a different email.")
+        
+        if 'admin' in uname:
+            return HttpResponse("Username 'admin' is not allowed. Please try again with a different username.")
+        
         my_user = User.objects.create_user(uname,email,pass1)
         my_user.save()
         return redirect('signin')
@@ -46,15 +92,20 @@ class Signin(View):
     def post(self, request, *args, **kwargs):
         username = request.POST.get('username')
         pass1 = request.POST.get('pass')
-        print(username,pass1)
+       
 
         user = authenticate(request, username=username, password=pass1)
-
+        
         if user is not None:
-            login(request,user)
-            return redirect('index')
+            if 'admin' in username:
+                login(request,user)
+                return redirect('restaurant_index')
+            else:
+                login(request,user)
+                return redirect('index')
         else:
             return HttpResponse("Username or Password is incorrect!")
+        
         
 
 class Order(View):

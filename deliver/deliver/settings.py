@@ -32,6 +32,11 @@ ALLOWED_HOSTS = []
 # Application definition
 
 AUTHENTICATION_BACKENDS = [
+<<<<<<< HEAD
+=======
+    'allauth.account.auth_backends.AuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend',
+>>>>>>> b30a921963733f3d7c4021193c1092e0d594b3a3
     'allauth.account.auth_backends.AuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
@@ -51,6 +56,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.sites',
     'django.contrib.staticfiles',
+    'django_seed',
 ]
 
 SITE_ID = 1
@@ -149,5 +155,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 ACCOUNT_ADAPTER = 'restaurant.account_adapter.NoNewUsersAccountAdapter'
-# LOGIN_REDIRECT_URL = 'dashboard'
-LOGIN_REDIRECT_URL = '/profile/'
+
+# LOGIN_REDIRECT_URL = '/profile/'
+
+LOGIN_REDIRECT_URL = 'dashboard'
+
+LOGIN_URL = 'user-login'

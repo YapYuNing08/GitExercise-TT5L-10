@@ -1,0 +1,49 @@
+{% extends 'restaurant/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-12 mt-5">
+            <table class="table table-hover table-striped">
+                <h1>Reservations</h1>
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Phone Number</th>
+                        <th scope="col">Person</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Time</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                    
+                <tbody>
+                    {% for reservation in reservations %}
+                    <tr>
+                        <td>{{ reservation.name }}</td>
+                        <td>{{ reservation.phone }}</td>
+                        <td>{{ reservation.person }}</td>
+                        <td>{{ reservation.date }}</td>
+                        <td>{{ reservation.time }}</td>
+                        
+                        <td>
+                            {% if reservation.is_served %}
+                                <p><i style="color: green;" class="fas fa-check"></i><span class="pl-2">Reservation has been served</span></p>
+                            {% else %}
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
+                                    <button type="submit" class="btn btn-outline-success">Mark as served</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

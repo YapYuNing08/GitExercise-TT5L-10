@@ -1,10 +1,13 @@
-
-from django.shortcuts import render
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, HttpResponse, redirect
 from django.views import View
-from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.utils.timezone import datetime
-from customer.models import OrderModel
+from customer.models import OrderModel, ReservationModel
+# from django.contrib.auth.decorators import login_required
 
+class Index(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'restaurant/index.html')
 
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
@@ -30,9 +33,12 @@ class Dashboard(View):
 
         return render(request, 'restaurant/dashboard.html', context)
 
+<<<<<<< HEAD
     def test_func(self):
         return self.request.user.groups.filter(name='Staff').exists()
 
+=======
+>>>>>>> b30a921963733f3d7c4021193c1092e0d594b3a3
 class OrderDetails(View):
     def get(self, request, pk, *args, **kwargs):
         order = OrderModel.objects.get(pk=pk)
@@ -52,6 +58,27 @@ class OrderDetails(View):
         }
 
         return render(request, 'restaurant/order_details.html', context)
+    
+class ReservationDetails(View):
+    def get(self, request, pk, *args, **kwargs):
+        reservation = ReservationModel.objects.get(pk=pk)
+        reservations = ReservationModel.objects.all()
+        
+        context = {
+            'reservation': reservation,
+            'reservations': reservations
+        }
 
-    def test_func(self):
-        return self.request.user.groups.filter(name='Staff').exists()
+        return render(request, 'restaurant/reservation_details.html', context)
+    
+    def post(self, request, pk, *args, **kwargs):
+        reservation_id = request.POST.get('reservation_id')  # Assuming the hidden input is named 'reservation_id'
+        reservation = ReservationModel.objects.get(pk=reservation_id)
+        # reservation = ReservationModel.objects.get(pk=pk)
+        reservation.is_served = True
+        reservation.save()
+        context = {
+            'reservation':reservation
+        }
+
+        return redirect('reservation_details', pk=pk)

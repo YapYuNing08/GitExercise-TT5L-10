@@ -1,9 +1,10 @@
 from django.contrib import admin
-from . models import MenuItem, Category, OrderModel, Product, Cart, Customer
+from . models import MenuItem, Category, OrderModel, Product, Cart, Customer, ReservationModel
 
 admin.site.register(MenuItem)
 admin.site.register(Category)
 admin.site.register(OrderModel)
+admin.site.register(ReservationModel)
 
 @admin.register(Product)
 class ProductModelAdmin(admin.ModelAdmin):
