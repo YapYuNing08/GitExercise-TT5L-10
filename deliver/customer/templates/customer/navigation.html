@@ -6,6 +6,7 @@ nav {
 </style>
 
 <nav class="navbar navbar-expand-lg navbar-dark brown">
+  {% if request.user.is_authenticated %}
     <a class="navbar-brand" href="{% url 'signin' %}">CuppaClick</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -44,13 +45,14 @@ nav {
             <ul class="dropdown-menu" aria-labelledby="profileDropdown">
               <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
               <li><a class="dropdown-item" href="#">Orders</a></li>
-              <li><a class="dropdown-item" href="#">Change Password</a></li>
+              <li><a class="dropdown-item" href="{% url 'password_change' %}">Change Password</a></li>
+              <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
             </ul>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#" >Cart</a>
+            <a class="nav-link" href="{% url 'showcart' %}" >Cart</a>
         </li>
-
+  {% else %}
         <li class="nav-item mx-2">
           <a href="{% url 'signin' %}" class="nav-link text-white">Login</a>
         </li>
@@ -58,7 +60,7 @@ nav {
         <li class="nav-item mx-2">
           <a href="{% url 'customerregistration' %}" class="nav-link text-white">Registration</a>
         </li>
-
+  {% endif %}
       </ul>
     </div>
   </nav>
