@@ -24,15 +24,17 @@ $('#slider1, #slider2, #slider3').owlCarousel({
 
 $('.plus-cart').click(function(){
     var id=$(this).attr("pid").toString();
-    var eml=this.parentNode.children[2] 
+    var eml=this.parentNode.children[2];
+    var quantity = parseInt(eml.innerText);
     $.ajax({
         type:"GET",
         url:"/pluscart",
         data:{
-            prod_id:id
+            prod_id:id,
+            quantity:quantity
         },
         success:function(data){
-            console.log("data=",data);
+            // console.log("data=",data);
             eml.innerText=data.quantity; 
             document.getElementById("amount").innerText=data.amount; 
             document.getElementById("totalamount").innerText=data.totalamount;

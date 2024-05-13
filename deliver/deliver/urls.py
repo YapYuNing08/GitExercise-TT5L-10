@@ -30,24 +30,30 @@ urlpatterns = [
     path('restaurant/', include('restaurant.urls')),
     path('', Signin.as_view(), name="signin"),
     path('index/', Index.as_view(), name='index'),
+    path('about/', About.as_view(), name="about"),
+
     path('reservation/', Reservation.as_view(), name='reservation'),
     path('reservation_confirmation/', ReservationConfirmation.as_view(), name='reservation_confirmation'),
-    path('about/', About.as_view(), name="about"),
+    
     path('signup/', Signup.as_view(), name="signup"),
+
     path('order/', Order.as_view(), name="order"),
     path('menu/', Menu.as_view(), name='menu'),
     path('menu/search', MenuSearch.as_view(), name='menu-search'),
+    path('all-products/', views.all_products, name='all_products'),
+    
     path("category/<slug:val>", Category.as_view(), name="category"),
     path("category_title/<val>", CategoryTitle.as_view(), name="category_title"),
+
     path("product_detail/<int:pk>", ProductDetail.as_view(), name="product_detail"),
     path('profile/', ProfileView.as_view(), name='profile'),
+    
     path('address/', views.address, name='address'),
     path('updateAddress/<int:pk>', views.updateAddress.as_view(), name='updateAddress'),
     
     path('add-to-cart/', views.add_to_cart, name='add-to-cart'),
     path('cart/', views.show_cart, name='showcart'),
     path('checkout/', Checkout.as_view(), name='checkout'),
-    # path('checkout/', views.checkout, name='checkout'),
 
     path('pluscart/', views.plus_cart),
     path('minuscart/', views.minus_cart),

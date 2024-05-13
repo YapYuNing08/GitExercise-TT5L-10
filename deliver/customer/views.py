@@ -194,7 +194,13 @@ class Menu(View):
         context = {'menu_items': menu_items}
 
         return render(request, 'customer/menu.html', context)
-    
+
+def all_products(request):
+    # categories = Category.objects.all()
+    products = Product.objects.all()
+    return render(request, 'customer/all_products.html', {'products': products})
+
+
 class Category(View):
     def get(self, request, val):
         product = Product.objects.filter(category=val)
@@ -267,39 +273,22 @@ def plus_cart(request):
             cart_item.quantity += 1
             cart_item.save()
 
-            cart = Cart.objects.filter(user=request.user)
-            amount = sum(item.quantity * item.product.price for item in cart)
-            data = {
+        else:
+            Cart.objects.create(user=request.user, product_id=prod_id, quantity=1)
+        cart = Cart.objects.filter(user=request.user)
+        amount = sum(item.quantity * item.product.price for item in cart)
+        data = {
                 'quantity': cart_item.quantity,
                 'amount': amount,
                 'totalamount': amount,  # Assuming totalamount is the same as amount in this context
             }
 
-            return JsonResponse(data)
-            
+        return JsonResponse(data) 
                 
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
     
 def minus_cart(request):
-    # if request.method == 'GET':
-    #     prod_id = request.GET.get('prod_id') 
-    #     c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
-    #     c.quantity-=1
-    #     c.save()
-    #     user = request.user
-    #     cart = Cart.objects.filter(user=user)
-    #     amount = 0
-    #     for p in cart:
-    #         value = p.quantity * p.product.price
-    #         amount = amount + value
-    #     totalamount = amount
-    #     data = {
-    #         'quantity':c.quantity,
-    #         'amount':amount,
-    #         'totalamount':totalamount
-    #     }
-    #     return JsonResponse(data)
     if request.method == 'GET':
         prod_id = request.GET.get('prod_id') 
         cart_item = Cart.objects.filter(Q(product=prod_id) & Q(user=request.user)).first()
