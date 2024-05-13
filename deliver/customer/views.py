@@ -6,7 +6,7 @@ from .forms import CustomerRegistrationForm, CustomerProfileForm
 from django.db.models import Count
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.http import JsonResponse
 
@@ -53,10 +53,6 @@ class ReservationConfirmation(View):
             'reservation': reservation
         }
         return render(request, 'customer/reservation_confirmation.html', context)
-# class ReservationConfirmation(View):
-#     def get(self, request, *args, **kwargs):
-        
-#         return render(request, 'customer/reservation_confirmation.html', context)
 
 class About(View):
     def get(self, request, *args, **kwargs):
@@ -105,7 +101,11 @@ class Signin(View):
                 return redirect('index')
         else:
             return HttpResponse("Username or Password is incorrect!")
-        
+
+class Logout(View):
+    def get(self, request, *args, **kwargs):
+        logout(request)  # Logs out the user
+        return redirect('signin') 
         
 
 class Order(View):
@@ -193,7 +193,13 @@ class Menu(View):
         context = {'menu_items': menu_items}
 
         return render(request, 'customer/menu.html', context)
-    
+
+def all_products(request):
+    # categories = Category.objects.all()
+    products = Product.objects.all()
+    return render(request, 'customer/all_products.html', {'products': products})
+
+
 class Category(View):
     def get(self, request, val):
         product = Product.objects.filter(category=val)
@@ -224,11 +230,8 @@ class CustomerRegistrationView(View):
             messages.warning(request, "Invalid Input Data")
         return render(request, 'customer/customerregistration.html', locals())
 
-
-
-
 def add_to_cart(request):
-    user=request.user
+    user = request.user
     product_id = request.GET.get('prod_id')
     product = Product.objects.get(id=product_id)
     Cart(user=user, product=product).save()
@@ -246,70 +249,87 @@ def show_cart(request):
     return render(request, 'customer/addtocart.html', locals())
 
 
-# def checkout(View):
-#     def get(self, request):
-#         return render(request, 'customer/checkout.html', locals())
+class Checkout(View):
+    def get(self, request):
+        user = request.user
+        add = Customer.objects.filter(user=user)
+        cart_items = Cart.objects.filter(user=user)
+        famount = 0
+        for p in cart_items:
+            value = p.quantity * p.product.price
+            famount = famount + value
+        totalamount = famount
+        return render(request, 'customer/checkout.html', locals())
 
 
 
 def plus_cart(request):
     if request.method == 'GET':
-        prod_id = request.GET('prod_id')
-        c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
-        c.quantity+=1
-        c.save()
-        cart = Cart.objects.filter(user=user)
-        amount = 0
-        for p in cart:
-            value = p.quantity * p.product.price
-            amount = amount + value
-        totalamount = amount
+        prod_id = request.GET.get('prod_id') 
+        cart_item = Cart.objects.filter(Q(product=prod_id) & Q(user=request.user)).first()
+   
+        if cart_item:
+            cart_item.quantity += 1
+            cart_item.save()
+
+        else:
+            Cart.objects.create(user=request.user, product_id=prod_id, quantity=1)
+        cart = Cart.objects.filter(user=request.user)
+        amount = sum(item.quantity * item.product.price for item in cart)
         data = {
-            'quantity':c.quantity,
-            'amount':amount,
-            'totalamount':totalamount
-        }
-        return JsonResponse(data)
+                'quantity': cart_item.quantity,
+                'amount': amount,
+                'totalamount': amount,  # Assuming totalamount is the same as amount in this context
+            }
+
+        return JsonResponse(data) 
+                
+    else:
+        return JsonResponse({'error': 'Invalid request method.'}, status=400)
     
 def minus_cart(request):
     if request.method == 'GET':
-        prod_id = request.GET('prod_id')
-        c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
-        c.quantity-=1
-        c.save()
-        cart = Cart.objects.filter(user=user)
-        amount = 0
-        for p in cart:
-            value = p.quantity * p.product.price
-            amount = amount + value
-        totalamount = amount
-        data = {
-            'quantity':c.quantity,
-            'amount':amount,
-            'totalamount':totalamount
-        }
-        return JsonResponse(data)
+        prod_id = request.GET.get('prod_id') 
+        cart_item = Cart.objects.filter(Q(product=prod_id) & Q(user=request.user)).first()
+
+        if cart_item:
+            cart_item.quantity -= 1
+            cart_item.save()
+
+            cart = Cart.objects.filter(user=request.user)
+            amount = sum(item.quantity * item.product.price for item in cart)
+            data = {
+                'quantity': cart_item.quantity,
+                'amount': amount,
+                'totalamount': amount,  # Assuming totalamount is the same as amount in this context
+            }
+            return JsonResponse(data)
+        else:
+            return JsonResponse({'error': 'Cart item not found for the user and product.'}, status=400)
+    else:
+        return JsonResponse({'error': 'Invalid request method.'}, status=400)
     
 def remove_cart(request):
     if request.method == 'GET':
-        prod_id = request.GET('prod_id')
-        c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
-        c.delete()
-        user = request.user
-        cart = Cart.objects.filter(user=user)
-        amount = 0
-        for p in cart:
-            value = p.quantity * p.product.price
-            amount = amount + value
-        totalamount = amount
-        data = {
-            'quantity':c.quantity,
-            'amount':amount,
-            'totalamount':totalamount
-        }
-        return JsonResponse(data)
+        prod_id = request.GET.get('prod_id') 
+        cart_item = Cart.objects.filter(Q(product=prod_id) & Q(user=request.user)).first()
+        if cart_item:
+            cart_item_quantity = cart_item.quantity  # Store the quantity before deletion
+            cart_item.delete()  # Delete the cart item
 
-
+            cart = Cart.objects.filter(user=request.user)
+            amount = sum(item.quantity * item.product.price for item in cart)
+            # totalamount = amount  # Assuming totalamount is the same as amount in this context
+            data = {
+                'quantity': cart_item_quantity,  # Use the stored quantity before deletion
+                'amount': amount,
+                'totalamount': amount,
+            }
+            return JsonResponse(data)
+        else:
+            return JsonResponse({'error': 'Cart item not found for the user and product.'}, status=400)
+    else:
+        return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
 
 class Login(View):
