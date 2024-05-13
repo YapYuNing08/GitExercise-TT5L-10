@@ -28,12 +28,12 @@
                         
                         <td>
                             {% if reservation.is_served %}
-                                <p><i style="color: green;" class="fas fa-check"></i><span class="pl-2">Reservation has been served</span></p>
+                                <p><i style="color: green;" class="fas fa-check"></i><span class="pl-2">Completed</span></p>
                             {% else %}
                                 <form method="POST">
                                     {% csrf_token %}
                                     <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
-                                    <button type="submit" class="btn btn-outline-success">Mark as served</button>
+                                    <button type="submit" class="btn btn-outline-success">Arrived</button>
                                 </form>
                             {% endif %}
                         </td>

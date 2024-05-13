@@ -115,8 +115,7 @@ class Order(View):
         desserts = MenuItem.objects.filter(category__name__contains='Desserts')
         pastries = MenuItem.objects.filter(category__name__contains='Pastries')
         main = MenuItem.objects.filter(category__name__contains='Main')
-        
-
+                
         # pass into context
         context = {
             'beverage': beverage,

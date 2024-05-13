@@ -19,9 +19,9 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from customer.views import Index, About, Order, Signin, Signup, Menu, MenuSearch, Category, CategoryTitle, ProductDetail, CustomerRegistrationView, Login, ProfileView, Reservation, ReservationConfirmation 
+from customer.views import Index, About, Order, Signin, Signup, Menu, MenuSearch, Category, CategoryTitle, ProductDetail, CustomerRegistrationView, Login, ProfileView, Reservation, ReservationConfirmation
 from django.contrib.auth import views as auth_view
-from customer.forms import LoginForm
+from customer.forms import LoginForm, MyPasswordResetForm
 from customer import views
 
 urlpatterns = [
@@ -56,6 +56,8 @@ urlpatterns = [
     # login authentication
     path('registration/', CustomerRegistrationView.as_view(), name='customerregistration'),
     path('login/', Login.as_view(), name='login')
-    # path('password-reset/', PasswordResetView.as_view(), name='password_reset')
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # path('password_reset/', PasswordResetView.as_view(form_class=MyPasswordResetForm), name='password_reset')
+    # path('passwordchange/', PasswordChange.as_view(form_class=MyPasswordChangeForm, success_url='/passwordchangedone'), name='passwordchange')
+    # path('passwordchangedone/', PasswordChangeDoneView.as_view(form_class=MyPasswordChangeForm), name='passwordchangedone')
+    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

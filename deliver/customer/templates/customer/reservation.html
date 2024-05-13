@@ -132,15 +132,38 @@
                   </div>
                   
                   <script>
-                      // Get current date and time
-                      var currentDate = new Date();
-                      var currentTime = currentDate.getHours() + ":" + currentDate.getMinutes();
-                  
-                      // Set min attribute of date input to current date
-                      document.getElementById("date").min = currentDate.toISOString().split('T')[0];
-                  
-                      // Set min attribute of time input to current time
-                      document.getElementById("time").min = currentTime;
+                    // Get current date
+                    var currentDate = new Date();
+                
+                    // Set min attribute of date input to current date
+                    document.getElementById("date").min = currentDate.toISOString().split('T')[0];
+                
+                    // Set min and max attribute of time input to allow reservations from 11am to 11pm with 30-minute intervals
+                    var startTime = 11; // Start time in hours
+                    var endTime = 23;   // End time in hours
+                    var interval = 30;  // Time interval in minutes
+                
+                    var currentTime = currentDate.getHours() * 60 + currentDate.getMinutes(); // Current time in minutes
+                    var minTime = startTime * 60; // Minimum time in minutes
+                    var maxTime = endTime * 60;   // Maximum time in minutes
+                
+                    // Adjust min and max time if the current time is beyond them
+                    minTime = Math.max(minTime, currentTime);
+                    maxTime = Math.min(maxTime, minTime + (Math.floor((maxTime - minTime) / interval) * interval));
+                
+                    // Convert minTime and maxTime back to hours and minutes for setting the min and max attributes
+                    var minHour = Math.floor(minTime / 60);
+                    var minMinute = minTime % 60;
+                    var maxHour = Math.floor(maxTime / 60);
+                    var maxMinute = maxTime % 60;
+                
+                    // Construct min and max time strings
+                    var minTimeString = (minHour < 10 ? '0' : '') + minHour + ':' + (minMinute < 10 ? '0' : '') + minMinute;
+                    var maxTimeString = (maxHour < 10 ? '0' : '') + maxHour + ':' + (maxMinute < 10 ? '0' : '') + maxMinute;
+                
+                    // Set min and max attribute of time input
+                    document.getElementById("time").min = minTimeString;
+                    document.getElementById("time").max = maxTimeString;
                   </script>
                 
                     <button type="button" class="btn btn-red" data-toggle="modal" data-target="#bookingModal">

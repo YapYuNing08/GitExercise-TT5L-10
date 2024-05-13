@@ -19,12 +19,12 @@
                                 <div class="my-3">
                                     <label for="quantity">Quantity: </label>
                                     <a class="minus-cart btn" pid="{{item.product.id}}"><i class="fas fa-minus-square fa-lg"></i></a>
-                                        <span id="quantity">{{item.quantity}}</span>
+                                    <span id="quantity">{{item.quantity}}</span>
                                     <a class="plus-cart btn" pid="{{item.product.id}}"><i class="fas fa-plus-square fa-lg"></i></a>
                                 </div>
-
+                                
                                 <div class="d-flex justify-content-between">
-                                    <a href="#" class="remove-cart btn btn-sm btn-secondary mr-3" pid={{item.product.id}}>Remove item</a>
+                                    <a href="#" class="remove-cart btn btn-sm btn-secondary mr-3" pid="{{item.product.id}}">Remove item</a>
                                     <p class="mb-0"><span><strong>RM{{item.product.price}}</strong></span></p>
                                 </div>
                             </div>
@@ -59,4 +59,25 @@
         {% endif %}
     </div>
 </div>
+
+<script>
+    // JavaScript code for removing items from the cart
+    document.addEventListener('DOMContentLoaded', function() {
+        const removeButtons = document.querySelectorAll('.remove-cart');
+        removeButtons.forEach(button => {
+            button.addEventListener('click', function(event) {
+                const productId = button.getAttribute('pid');
+                // Make an AJAX request to remove the item from the cart
+                // You can use JavaScript fetch or any other method to send the request to the server
+                // Example:
+                // fetch(`/remove_from_cart/${productId}/`)
+                //     .then(response => response.json())
+                //     .then(data => {
+                //         // Update the UI or handle the response accordingly
+                //     })
+                console.log('Item removed with ID:', productId);
+            });
+        });
+    });
+</script>
 {% endblock content %}
