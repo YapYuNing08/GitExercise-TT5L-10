@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.sites',
     'django.contrib.staticfiles',
-    # 'django_seed',
 ]
 
 SITE_ID = 1
@@ -138,7 +137,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static')
+    os.path.join(BASE_DIR, 'customer/static'),
 ]
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
