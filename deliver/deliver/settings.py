@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.sites',
     'django.contrib.staticfiles',
-    'django_seed',
+    # 'django_seed',
 ]
 
 SITE_ID = 1
