@@ -4,15 +4,17 @@
 <div class="container my-5">
     <div class="row">
         <div class="col-sm-3">
-            {% for val in title %}
-                <a href="{% url 'category_title' val.title %}" class="list-group-item list-group-item-action" aria-current="true">{{val.title}}</a>
-            {% endfor%}
+            <a href="{% url 'all_products' %}" class="list-group-item list-group-item-action" aria-current="true">ALL</a>
+            <a href="{% url 'category' 'B' %}" class="list-group-item list-group-item-action" aria-current="true">BEVERAGE</a>
+            <a href="{% url 'category' 'D' %}" class="list-group-item list-group-item-action" aria-current="true">DESSERT</a>
+            <a href="{% url 'category' 'P' %}" class="list-group-item list-group-item-action" aria-current="true">PASTRIES</a>
+            <a href="{% url 'category' 'M' %}" class="list-group-item list-group-item-action" aria-current="true">MAIN</a>
         </div>
 
         <div class="col-sm-9">
-            <div class="row">
+            <div class="row row-cols-2"> <!-- Added row-cols-2 to create 2 columns per row -->
                 {% for prod in product %}
-                    <div class="col text-renter mb-4">
+                    <div class="col text-center mb-4">
                         <a href="{% url 'product_detail' prod.id %}" class="btn">
                             <div>
                                 <img src="{{prod.image.url}}" width="300px" height="200px" />
@@ -20,6 +22,7 @@
                                 <div class="fw-bold text-danger">
                                     RM {{prod.price}}
                                 </div>
+                                <i class="fas fa-shopping-cart"></i>
                             </div>
                         </a>
                     </div>
