@@ -351,9 +351,9 @@ class ProfileView(View):
             user = request.user
             name = form.cleaned_data['name']
             mobile = form.cleaned_data['mobile']
-            address = form.cleaned_data['address']
+            gender = form.cleaned_data['gender']
 
-            reg = Customer(user=user, name=name, mobile=mobile, address=address)
+            reg = Customer(user=user, name=name, mobile=mobile, gender=gender)
             reg.save()
             messages.success(request, "Congratulations! Profile Save Successfully.")
         else:
@@ -379,7 +379,7 @@ class updateAddress(View):
             add = Customer.objects.get(pk=pk)
             add.name = form.cleaned_data['name']
             add.mobile = form.cleaned_data['mobile']
-            add.address = form.cleaned_data['address']
+            add.gender = form.cleaned_data['gender']
             add.save()
             messages.success(request, "Congratulations! Profile Update Successfully.")
         else:

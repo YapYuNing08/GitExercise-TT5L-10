@@ -20,10 +20,10 @@
             <div class="col-sm-6">
                 <div class="card m-2">
                     <div class="card-body">
-                        <h3>Address {{forloop.counter}}</h3>
+                        <h3>Profile {{forloop.counter}}</h3>
                         <p>Name: {{ad.name}}</p>
                         <p>Mobile: {{ad.mobile}}</p>
-                        <p>Address: {{ad.address}}</p>
+                        <p>Gender: {{ad.gender}}</p>
                         <p class="text-center"><a href="{% url 'updateAddress' pk=ad.id %}" type="button" class="btn btn-success">Update</a></p>
                     </div>
                 </div>

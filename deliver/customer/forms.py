@@ -31,9 +31,13 @@ class MyPasswordResetForm(PasswordChangeForm):
 class CustomerProfileForm(forms.ModelForm):
     class Meta:
         model = Customer
-        fields = ['name', 'mobile', 'address']
+        fields = ['name', 'mobile', 'gender']
+        GENDER_CHOICES = [
+        ('M', 'Male'),
+        ('F', 'Female'),
+    ]
         widget = {
             'name':forms.TextInput(attrs={'class':'form-control'}),
             'mobile':forms.NumberInput(attrs={'class':'form-control'}),
-            'address':forms.TextInput(attrs={'class':'form-control'}),
+            'gender': forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.Select(attrs={'class':'form-control'}))
         }
