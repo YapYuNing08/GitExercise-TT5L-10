@@ -98,7 +98,7 @@ class Signin(View):
                 return redirect('restaurant_index')
             else:
                 login(request,user)
-                return redirect('index')
+                return redirect('about')
         else:
             return HttpResponse("Username or Password is incorrect!")
 
