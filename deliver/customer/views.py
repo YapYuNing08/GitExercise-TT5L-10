@@ -368,21 +368,21 @@ def address(request):
 
 
 
-class updateAddress(View):
-    def get(self, request, pk):
-        add = Customer.objects.get(pk=pk)
-        form = CustomerProfileForm(instance=add)
-        return render(request, 'customer/updateAddress.html', locals())
-    def post(self, request, pk):
-        form = CustomerProfileForm(request.POST)
-        if form.is_valid():
-            add = Customer.objects.get(pk=pk)
-            add.name = form.cleaned_data['name']
-            add.mobile = form.cleaned_data['mobile']
-            add.address = form.cleaned_data['address']
-            add.save()
-            messages.success(request, "Congratulations! Profile Update Successfully.")
-        else:
-            messages.warning(request, "Invalid Input Data.")
-        return redirect('address')
+# class updateAddress(View):
+#     def get(self, request, pk):
+#         add = Customer.objects.get(pk=pk)
+#         form = CustomerProfileForm(instance=add)
+#         return render(request, 'customer/updateAddress.html', locals())
+#     def post(self, request, pk):
+#         form = CustomerProfileForm(request.POST)
+#         if form.is_valid():
+#             add = Customer.objects.get(pk=pk)
+#             add.name = form.cleaned_data['name']
+#             add.mobile = form.cleaned_data['mobile']
+#             add.address = form.cleaned_data['address']
+#             add.save()
+#             messages.success(request, "Congratulations! Profile Update Successfully.")
+#         else:
+#             messages.warning(request, "Invalid Input Data.")
+#         return redirect('address')
     
