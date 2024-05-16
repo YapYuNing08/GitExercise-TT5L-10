@@ -171,20 +171,19 @@ class MenuSearch(View):
     def get(self, request, *args, **kwargs):
         query = request.GET.get("q")
         if query:
-            menu_items = MenuItem.objects.filter(
-                Q(name__icontains=query) |
-                Q(price__icontains=query) |
-                Q(description__icontains=query)
+            products = Product.objects.filter(
+                Q(title__icontains=query) |
+                Q(price__icontains=query) 
             )
         else:
-            menu_items = MenuItem.objects.all()
+            products = Product.objects.all()
 
         context = {
-            'menu_items': menu_items,
+            'products': products,
             'query': query
         }
 
-        return render(request, 'customer/menu.html', context)
+        return render(request, 'customer/all_products.html', context)
     
 class Menu(View):
     def get(self, request, *args, **kwargs):
