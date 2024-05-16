@@ -45,7 +45,7 @@ urlpatterns = [
     path("category/<slug:val>", Category.as_view(), name="category"),
     path("category_title/<val>", CategoryTitle.as_view(), name="category_title"),
 
-    path("product_detail/<int:pk>", ProductDetail.as_view(), name="product_detail"),
+    path("product_detail/<int:pk>", ProductDetail.as_view(), name='product_detail'),
     path('profile/', ProfileView.as_view(), name='profile'),
     
     path('address/', views.address, name='address'),
