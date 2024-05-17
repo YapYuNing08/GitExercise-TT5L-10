@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.views import View
 from django.db.models import Q
-from .models import MenuItem, Category, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel
+from .models import MenuItem, Category, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel, OrderPlaced
 from .forms import CustomerRegistrationForm, CustomerProfileForm
 from django.db.models import Count
 from django.core.mail import send_mail
@@ -261,7 +261,26 @@ class Checkout(View):
         totalamount = famount
         return render(request, 'customer/checkout.html', locals())
 
+def order_placed(request):
+    if request.method == 'POST':
+        user = request.user
+        num_items = len(request.POST) // 2  # Divide by 2 because each item has 2 hidden inputs
+        for i in range(1, num_items + 1):
+            product_id = request.POST.get('product_id_' + str(i))  # Get the product ID for the current item
+            quantity = request.POST.get('quantity_' + str(i))  # Get the quantity for the current item
+            
+            cart_item = Cart.objects.filter(user=user, product_id=product_id).first()
+            if cart_item:
+                OrderPlaced.objects.create(user=user, product=cart_item.product, quantity=quantity, status='Pending')
+                cart_item.delete()  # Remove the cart item after ordering
 
+        return redirect('order_confirmation')  # Redirect to the order confirmation page
+
+    return redirect('checkout')  # Redirect to the checkout page if the request method is not POST
+
+def order_confirmation(request):
+    order_placed=OrderPlaced.objects.filter(user=request.user)
+    return render(request, 'customer/order_confirmation.html', locals())
 
 def plus_cart(request):
     if request.method == 'GET':
