@@ -83,7 +83,7 @@
     }
   </style>
 
-<div class="container mb-5">
+<!-- <div class="container mb-5">
     <div class="row justify-content-center mt-1">
         <div class="col-md-5 col-sm-12 p-4 text-center">
             <h1>Order Submitted!</h1>
@@ -122,8 +122,18 @@
             <p>RM{{ total_price }}</p>
         </div>
     </div>
+</div> -->
+<div class="container my-5">
+    <div class="row">
+        {% for op in order_placed %}
+        <div class="col-sm-2">
+            <p>Product: {{op.product.title}}</p>
+            <p>Quantity: {{op.product.quantity}}</p>
+            <p>Price: {{op.product.price}}</p>
+        </div>
+        {% endfor %}
+    </div>
 </div>
-
 <!-- <script>
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('markServedForm').addEventListener('submit', function(event) {
