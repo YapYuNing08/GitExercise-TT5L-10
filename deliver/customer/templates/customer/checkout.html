@@ -1,3 +1,5 @@
+
+
 {% extends 'customer/base.html' %}
 {% load static %}
 {% block content %}
@@ -5,32 +7,88 @@
     {% if messages %}
         {% for msg in messages %}
         <div class="alert alert-danger" role="alert">
-            {{ msg }}
+            {{msg}}
         </div>
         {% endfor %}
     {% endif %}
 
     <div class="row mt-5">
-        <div class="col-sm-12">
+        <div class="col-sm-6">
             <h4>Order Summary</h4>
             <hr>
-            <form method="post" action="{% url 'order_placed' %}">
+            <form method="post" action="{% url 'order_placed' %}" id="order_form">
                 {% csrf_token %}
-                {% for item in cart_items %}
-                    <div class="card mb-2">
-                        <div class="card-body">
-                            <h5>Product: {{ item.product.title }}</h5>
-                            <p>Quantity: {{ item.quantity }}</p>
-                            <p class="fw-bold">Price: RM {{ item.product.price }}</p> 
-                        </div>
-                        <!-- Add hidden input fields for each item and its quantity -->
-                        <input type="hidden" name="product_id_{{ forloop.counter }}" value="{{ item.product.id }}">
-                        <input type="hidden" name="quantity_{{ forloop.counter }}" value="{{ item.quantity }}">
+                {% for item in cart_items_with_total %}
+                <div class="card mb-2">
+                    <div class="card-body d-flex justify-content-between">
+                        <span>{{ item.quantity }} x</span> &nbsp; &nbsp; &nbsp;
+                        <span class="product-title">{{ item.product.title }}</span>
+                        <span class="product-price">RM {{ item.total_price|floatformat:2 }}</span>
                     </div>
+                    <!-- Add hidden input fields for each item and its quantity -->
+                    <input type="hidden" name="product_id_{{ forloop.counter }}" value="{{ item.product.id }}">
+                    <input type="hidden" name="quantity_{{ forloop.counter }}" value="{{ item.quantity }}">
+                </div>
                 {% endfor %}
-                <button type="submit" class="btn btn-warning mt-3 px-5 fw-bold">Place Order</button>
+            </form>
+        </div>
+        
+        <div class="col-sm-4 offset-sm-1">
+            <div>
+            <label for="method">Choose your method: </label>
+                <select>
+                    <option>Dine In</option>
+                    <option>Pick Up</option>
+                    <option>Cash On Delivery</option>
+                </select>
+            </div>
+            <br>
+            <!-- <h4>Select Shipping Address</h4>
+            <hr>
+            <form method="post" id="myform">
+                {% csrf_token %}
+                {% for ad in add %}
+                <div class="card">
+                    <div class="card-body">
+                        <p>Name: {{ad.name}}</p>
+                        <p>Mobile: {{ad.mobile}}</p>
+                        <p>Address: {{ad.address}}</p>
+                    </div>
+                </div>
+                <div class="form-check mt-2 mb-5">
+                    <input class="form-check-input" type="radio" name="custid" id="custadd{{forloop.counter}}" value="{{ad.id}}">
+                    <label class="form-check-label fw-bold" for="custadd{{forloop.counter}}">
+                        Address{{forloop.counter}}
+                    </label>
+                </div>
+                {% endfor %} -->
+                <div class="form-check mb-3">
+                    <h5>Total Price: </h5>
+                    <h5>RM {{ totalamount|floatformat:2 }}</h5>
+                </div>
+                <div class="text-end">
+                    <button type="submit" form="order_form" class="btn btn-warning px-5 fw-bold">Place Order</button>
+                </div> 
             </form>
         </div>
     </div>
 </div>
+<style>
+    
+    .card-body {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .product-title {
+        flex-grow: 1
+    }
+
+    .product-price {
+        text-align: right;
+        min-width: 100px; /* Adjust as needed */
+    }
+</style>
+</style>
 {% endblock content %}
