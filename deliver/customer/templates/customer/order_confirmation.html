@@ -124,21 +124,21 @@
     </div>
 </div> -->
 <div class="container my-5">
-    <h4>Order Summary</h4>
+    <h4>Order History</h4>
     <table class="table table-striped">
         <thead>
             <tr>
+                <th>Order Date</th>
                 <th>Product</th>
                 <th>Quantity</th>
-                <th>Price</th>
             </tr>
         </thead>
         <tbody>
             {% for op in order_placed %}
             <tr>
+                <td>{{ op.ordered_date|date:"Y-m-d" }}</td>
                 <td>{{ op.product.title }}</td>
                 <td>{{ op.quantity }}</td>
-                <td>RM {{ op.product.price|floatformat:2 }}</td>
             </tr>
             {% endfor %}
         </tbody>
