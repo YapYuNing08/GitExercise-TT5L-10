@@ -58,7 +58,8 @@ urlpatterns = [
     path('pluscart/', views.plus_cart),
     path('minuscart/', views.minus_cart),
     path('removecart/', views.remove_cart),
-
+    path('order_placed/', views.order_placed, name='order_placed'), 
+    path('order_confirmation/', views.order_confirmation, name='order_confirmation'),
 
     # login authentication
     path('registration/', CustomerRegistrationView.as_view(), name='customerregistration'),
