@@ -255,11 +255,25 @@ class Checkout(View):
         add = Customer.objects.filter(user=user)
         cart_items = Cart.objects.filter(user=user)
         famount = 0
+        
+        # Calculate total price for each item and overall total
+        cart_items_with_total = []
         for p in cart_items:
-            value = p.quantity * p.product.price
-            famount = famount + value
+            total_price = p.quantity * p.product.price
+            famount += total_price
+            cart_items_with_total.append({
+                'product': p.product,
+                'quantity': p.quantity,
+                'total_price': total_price
+            })
+        
         totalamount = famount
-        return render(request, 'customer/checkout.html', locals())
+        context = {
+            'add': add,
+            'cart_items_with_total': cart_items_with_total,
+            'totalamount': totalamount
+        }
+        return render(request, 'customer/checkout.html', context)
 
 def order_placed(request):
     if request.method == 'POST':
