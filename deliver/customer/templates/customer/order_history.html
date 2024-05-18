@@ -1,50 +1,9 @@
 {% extends 'customer/base.html' %}
 {% block content %}
-
-<!-- <div class="container mb-5">
-    <div class="row justify-content-center mt-1">
-        <div class="col-md-5 col-sm-12 p-4 text-center">
-            <h1>Order Submitted!</h1>
-            <p>Thank you for your order! Your food is being made and will be served soon!</p>
-            <a href="{% url 'index' %}">Go to the homepage</a>
-        </div>
-    </div>
-
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-8 col-sm-12">
-            <h2>Items Ordered</h2>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Item</th>
-                        <th scope="col">Quantity</th>
-                        <th scope="col">Total Price</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in items_with_quantity %}
-                    <tr>
-                        <td>{{ item.item.name }}</td>
-                        <td>{{ item.quantity }}</td>
-                        <td>RM{{ item.total_price }}</td> 
-                    </tr>
-                    {% endfor %}
-                </tbody>                                
-            </table>
-        </div>
-    </div>
-
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-6 col-sm-12">
-            <h2>Total Price</h2>
-            <p>RM{{ total_price }}</p>
-        </div>
-    </div>
-</div> -->
 <div class="container my-5">
-    <h4>Order History</h4>
-    <table class="table table-striped">
-        <thead>
+    <h4 class="text-center">Order History</h4>
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
             <tr>
                 <th>Order Date</th>
                 <th>Product</th>
@@ -66,12 +25,46 @@
 <style>
     .container.my-5 {
         margin-top: 20px; /* Adjust as needed */
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
-    /* Additional styling for table if needed */
+    h4.text-center {
+        font-family: 'Arial', sans-serif;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .table {
+        width: 100%;
+        margin: 20px 0;
+        border-collapse: collapse;
+    }
+
     .table th, .table td {
+        padding: 15px;
         text-align: center;
         vertical-align: middle;
+    }
+
+    .table th {
+        background-color: #343a40;
+        color: #fff;
+    }
+
+    .table-bordered {
+        border: 1px solid #dee2e6;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.075);
     }
 </style>
 
