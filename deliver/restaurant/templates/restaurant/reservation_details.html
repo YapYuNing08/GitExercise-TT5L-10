@@ -28,7 +28,7 @@
                         
                         <td>
                             {% if reservation.is_served %}
-                                <p><i style="color: green;" class="fas fa-check"></i><span class="pl-2">Reservation has been served</span></p>
+                                <p><i style="color: green;" class="fas fa-check"></i><span class="pl-2">Done for Reservation</span></p>
                             {% else %}
                                 <form method="POST">
                                     {% csrf_token %}

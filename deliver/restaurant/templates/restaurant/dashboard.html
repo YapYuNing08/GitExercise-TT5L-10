@@ -3,49 +3,85 @@
 {% block content %}
 {% if user.is_authenticated and user.is_staff and user.is_superuser %}
 <div class="container">
-    <div class="row justify-content-center mt-3">
-        <div class="card col-md-5 mr-3">
-            <h4 class="text-center pt-2">Today's Total Revenue</h4>
-            <h1 class="text-center" style="color: green;">RM{{ total_revenue }}</h1>
-        </div>
-
-        <div class="card col-md-5 mr-3">
-            <h4 class="text-center pt-2">Today's Total Orders</h4>
-            <h1 class="text-center" style="color: #ad0003;">{{ total_orders }}</h1>
-        </div>
-    </div>
-
     <div class="row justify-content-center">
         <div class="col-md-12 mt-5">
-            <table class="table table-hover table-striped">
-                    <thead>
-                        <tr>
-                            <th scope="col">Order ID</th>
-                            <th scope="col">Price</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Phone</th>
-                            <th scope="col">Details</th>
-                        </tr>
-                    </thead>
-                    
-                    <tbody>
-                       {% for order in orders %}
-                        <tr>
-                            <td>{{ order.pk }}</td>
-                            <td>{{ order.price }}</td>
-                            <td>{{ order.name }}</td>
-                            <td>{{ order.phone }}</td>
-                            <td><a href="{% url 'order_details' order.pk %}"><i class="far fa-edit"></i></a></td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
+            <h2>Orders</h2>
+            <table class="table table-hover table-striped spaced-table">
+                <!-- Table header -->
+                <!-- Table body -->
+                {% for order in orders %}
+                <tr>
+                    <!-- Order details -->
+                    <td>{{ order.pk }}</td>
+                    <td>{{ order.user.username }}</td>
+                    <td>{{ order.product.title }}</td>
+                    <td>{{ order.quantity }}</td>
+                    <td>
+                    {% if order.is_served %}
+                        <!-- Display served status -->
+                        <p><i style="color: green;" class="fas fa-check"></i><span class="pl-2">Order has been served</span></p>
+                    {% else %}
+                        <!-- Mark as served form -->
+                        <form method="POST" action="{% url 'mark_as_served' order_id=order.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-success">Mark as served</button>
+                        </form>
+                    {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
             </table>
         </div>
     </div>
 </div>
-{% else  %}
+{% else %}
 <div class="container">
-    <h3> Staff page</h3>
+    <h3>Staff page</h3>
 </div>
 {% endif %}
+
+<style>
+    /* Your CSS styles here */
+</style>
+
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.mark-as-served-form').submit(function(e) {
+            e.preventDefault(); // Prevent the default form submission
+            var orderId = $(this).find('.mark-served-btn').data('order-id');
+            var ajaxUrl = markAsServedUrl.replace('placeholder', orderId); // Ensure markAsServedUrl is correctly defined
+            console.log('Clicked orderId:', orderId); // Check if the click event is firing
+            
+            // Disable the button to prevent multiple clicks
+            $(this).find('.mark-served-btn').prop('disabled', true);
+            
+            // Optionally, change button text or add a loading indicator
+            $(this).find('.mark-served-btn').html('Processing...');
+            
+            $.ajax({
+                url: ajaxUrl,
+                method: 'POST',
+                data: { order_id: orderId, csrfmiddlewaretoken: '{{ csrf_token }}' },
+                success: function(response) {
+                    // Handle success response, e.g., update UI
+                    console.log('Order marked as served');
+                    // Optionally, change button text or add a success message
+                    $(this).find('.mark-served-btn').html('Served');
+                },
+                error: function(xhr, status, error) {
+                    // Handle error response
+                    console.error('Error marking order as served');
+                    // Optionally, change button text or add an error message
+                    $(this).find('.mark-served-btn').html('Error');
+                },
+                complete: function() {
+                    // Re-enable the button after the request is complete
+                    $(this).find('.mark-served-btn').prop('disabled', false);
+                }
+            });
+        });
+    });
+</script> -->
+
 {% endblock content %}

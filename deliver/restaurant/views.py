@@ -1,8 +1,10 @@
 from django.contrib.auth import authenticate, login
-from django.shortcuts import render, HttpResponse, redirect
+from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.views import View
 from django.utils.timezone import datetime
-from customer.models import OrderModel, ReservationModel
+from customer.models import OrderModel, ReservationModel, OrderPlaced
+from django.http import JsonResponse, HttpResponse
+import json
 # from django.contrib.auth.decorators import login_required
 
 class Index(View):
@@ -13,11 +15,11 @@ class Dashboard(View):
     def get(self, request, *args, **kwargs):
         # get the current date
         today = datetime.today()
-        orders = OrderModel.objects.filter(
-            created_on__year=today.year, created_on__month=today.month, created_on__day=today.day)
+        orders = OrderPlaced.objects.filter(
+            ordered_date__year=today.year, ordered_date__month=today.month, ordered_date__day=today.day)
 
         # loop through the orders and add the price value
-        total_revenue = sum(order.price for order in orders)
+        # total_revenue = sum(order.price for order in orders)
 
         total_orders = len(orders)
         
@@ -27,7 +29,7 @@ class Dashboard(View):
         # pass total number of orders and total revenue into template
         context = {
             'orders': orders,
-            'total_revenue': total_revenue,
+            # 'total_revenue': total_revenue,
             'total_orders': total_orders
         }
 
@@ -38,23 +40,17 @@ class Dashboard(View):
 
 class OrderDetails(View):
     def get(self, request, pk, *args, **kwargs):
-        order = OrderModel.objects.get(pk=pk)
+        order = get_object_or_404(OrderPlaced, pk=pk)
         context = {
             'order': order
         }
-
         return render(request, 'restaurant/order_details.html', context)
     
     def post(self, request, pk, *args, **kwargs):
-        order = OrderModel.objects.get(pk=pk)
+        order = get_object_or_404(OrderPlaced, pk=pk)
         order.is_served = True
         order.save()
-
-        context = {
-            'order':order
-        }
-
-        return render(request, 'restaurant/order_details.html', context)
+        return redirect('order_details', pk=pk)
     
 class ReservationDetails(View):
     def get(self, request, pk, *args, **kwargs):
@@ -79,3 +75,11 @@ class ReservationDetails(View):
         }
 
         return redirect('reservation_details', pk=pk)
+    
+class MarkAsServed(View):
+    def post(self, request, order_id, *args, **kwargs):
+        order = get_object_or_404(OrderPlaced, pk=order_id)
+        order.is_served = True
+        order.save()
+        # Optionally, redirect to a different URL or render a template
+        return redirect('dashboard')

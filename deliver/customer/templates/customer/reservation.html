@@ -1,9 +1,7 @@
 {% extends 'customer/base.html' %}
 
 {% block content %}
-
 <style>
-   
     form *{
         font-family: 'Poppins',sans-serif;
         color: #3b2106;
@@ -184,7 +182,86 @@
         </form>
       </div>  
     </div>        
-
-
 </body>
+
+<style>
+  /* General styles */
+  body {
+      font-family: 'Poppins', sans-serif;
+      color: #3b2106;
+  }
+
+  h2 {
+      font-size: 32px;
+      font-weight: 500;
+      line-height: 42px;
+      margin-top: 30px;
+  }
+
+  label {
+      display: block;
+      margin-top: 30px;
+      font-size: 16px;
+      font-weight: 500;
+  }
+
+  input, select {
+      display: block;
+      height: 50px;
+      width: 100%;
+      background-color: rgba(240, 253, 255, 0.667);
+      border-radius: 3px;
+      padding: 0 10px;
+      margin-top: 10px;
+      font-size: 14px;
+      font-weight: 300;
+      color: #3b2106; /* Text color for inputs and selects */
+      border: 1px solid #ccc; /* Border color */
+  }
+
+  ::placeholder {
+      color: #b8a490;
+  }
+
+  button {
+      margin-top: 50px;
+      margin-bottom: 20px;
+      width: 100%;
+      background-color: #ffc107; /* Yellow background for button */
+      color: #080710; /* Text color for button */
+      padding: 15px 0;
+      font-size: 18px;
+      font-weight: 600;
+      border-radius: 5px;
+      cursor: pointer;
+      border: none;
+      transition: background-color 0.3s ease;
+  }
+
+  button:hover {
+      background-color: #ffae42; /* Darker yellow on hover */
+  }
+
+  /* Modal styles */
+  .modal-content {
+      background-color: #f8f9fa;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .modal-title {
+      color: #333;
+  }
+
+  .modal-footer .btn {
+      color: #fff;
+      background-color: #343a40; /* Dark background for modal buttons */
+      border-radius: 3px;
+      transition: background-color 0.3s ease;
+  }
+
+  .modal-footer .btn:hover {
+      background-color: #1e2124; /* Darker background on hover */
+  }
+</style>
 {% endblock content %}
