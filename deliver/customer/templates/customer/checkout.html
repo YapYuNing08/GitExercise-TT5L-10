@@ -1,8 +1,90 @@
-
-
 {% extends 'customer/base.html' %}
 {% load static %}
 {% block content %}
+
+<div class="stepper-wrapper">
+    <div class="stepper-item completed">
+      <div class="step-counter">1</div>
+      <div class="step-name">Add to Cart</div>
+    </div>
+    <div class="stepper-item completed">
+      <div class="step-counter">2</div>
+      <div class="step-name">Place Order</div>
+    </div>
+    <div class="stepper-item active">
+      <div class="step-counter">3</div>
+      <div class="step-name">Submit Order</div>
+    </div>
+  </div>
+
+  <style>
+    .stepper-wrapper {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    }
+    .stepper-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    }
+    .stepper-item::before {
+    position: absolute;
+    content: "";
+    border-bottom: 2px solid #ccc;
+    width: 100%;
+    top: 20px;
+    left: -50%;
+    z-index: 2;
+    }
+    .stepper-item::after {
+    position: absolute;
+    content: "";
+    border-bottom: 2px solid #ccc;
+    width: 100%;
+    top: 20px;
+    left: 50%;
+    z-index: 2;
+    }
+    .stepper-item .step-counter {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ccc;
+    margin-bottom: 6px;
+    }
+    .stepper-item.active .step-counter{
+    font-weight: bold;
+    background-color: khaki;
+    }
+    .stepper-item.completed .step-counter {
+    background-color: khaki;
+    }
+    .stepper-item.completed::after {
+    position: absolute;
+    content: "";
+    border-bottom: 2px solid khaki;
+    width: 100%;
+    top: 20px;
+    left: 50%;
+    z-index: 3;
+    }
+    .stepper-item:first-child::before {
+    content: none;
+    }
+    .stepper-item:last-child::after {
+    content: none;
+    }
+  </style>
+
+
 <div class="container">
     {% if messages %}
         {% for msg in messages %}
@@ -67,7 +149,7 @@
                     <h5>RM {{ totalamount|floatformat:2 }}</h5>
                 </div>
                 <div class="text-end">
-                    <button type="submit" form="order_form" class="btn btn-warning px-5 fw-bold">Place Order</button>
+                    <button type="submit" form="order_form" class="btn btn-warning px-5 fw-bold">Submit Order</button>
                 </div> 
             </form>
         </div>
