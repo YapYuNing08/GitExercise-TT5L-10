@@ -124,23 +124,37 @@
     </div>
 </div> -->
 <div class="container my-5">
-    <div class="row">
-        {% for op in order_placed %}
-        <div class="col-sm-2">
-            <p>Product: {{op.product.title}}</p>
-            <p>Quantity: {{op.product.quantity}}</p>
-            <p>Price: {{op.product.price}}</p>
-        </div>
-        {% endfor %}
-    </div>
+    <h4>Order History</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Order Date</th>
+                <th>Product</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for op in order_placed %}
+            <tr>
+                <td>{{ op.ordered_date|date:"Y-m-d" }}</td>
+                <td>{{ op.product.title }}</td>
+                <td>{{ op.quantity }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
-<!-- <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('markServedForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent form submission
-            alert('Order has been marked as served! Your food will be served soon.');
-        });
-    });
-</script> -->
+
+<style>
+    .container.my-5 {
+        margin-top: 20px; /* Adjust as needed */
+    }
+
+    /* Additional styling for table if needed */
+    .table th, .table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+</style>
 
 {% endblock content %}
