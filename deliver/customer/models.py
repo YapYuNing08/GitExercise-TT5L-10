@@ -87,6 +87,7 @@ class OrderPlaced(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     ordered_date = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, default='Pending')  # Example default value 'Pending'
+    is_served = models.BooleanField(default=False)
     @property
     def total_cost(self):
         return self.quantity*self.product.price
