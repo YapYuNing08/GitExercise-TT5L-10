@@ -80,7 +80,7 @@ class Signup(View):
         my_user = User.objects.create_user(uname,email,pass1)
         my_user.save()
         return redirect('signin')
-        
+    
 class Signin(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/signin.html')
@@ -93,15 +93,16 @@ class Signin(View):
         user = authenticate(request, username=username, password=pass1)
         
         if user is not None:
+            login(request,user)
             if 'admin' in username:
-                login(request,user)
+                
                 return redirect('restaurant_index')
             else:
-                login(request,user)
                 return redirect('about')
         else:
-            return HttpResponse("Username or Password is incorrect!")
-
+            messages.info(request, 'Invalid username or password.')
+            return render(request, 'customer/signin.html')
+        
 class Logout(View):
     def get(self, request, *args, **kwargs):
         logout(request)  # Logs out the user
@@ -348,16 +349,15 @@ class ProfileView(View):
         form = CustomerProfileForm(request.POST)
         if form.is_valid():
             user = request.user
-            name = form.cleaned_data['name']
+            email = user.email
             mobile = form.cleaned_data['mobile']
             gender = form.cleaned_data['gender']
 
-            reg = Customer(user=user, name=name, mobile=mobile, gender=gender)
+            reg = Customer(user=user, email=email, mobile=mobile, gender=gender)
             reg.save()
             messages.success(request, "Congratulations! Profile Save Successfully.")
         else:
-            messages.warning(request, "Invalid Input Data")
-        return render(request, 'customer/profile.html', locals())
+            return redirect('signin.html')
 
 
 
