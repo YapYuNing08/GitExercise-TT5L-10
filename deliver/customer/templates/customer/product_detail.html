@@ -7,18 +7,20 @@
             <img src="{{product.image.url}}" class="image col-xs-6 col-sm-12 col-lg-12 mt-3 text-sm-center w-100 h-75" alt="">
         </div>
         <div class="productdetail col-lg-5">
+            <br><br>
             <h1 style="font-family: Georgia; font-size: 50px;">{{product.title}}</h1>
-            <h5>RM {{product.price}}</h5>
-            <br><br><h4>Product Features</h4>
-            <ul class="fs-5" style="font-family: Rajdhani">
-                <li>{{product.description}}</li>
-            </ul>
-            
+            <h4>RM {{product.price}}</h4>
+            <br>
+            <!-- <br><br><h4><strong>Product Features</strong></h4> -->
+            <strong><p>{{ product.description | linebreaksbr }}</p></strong>
+
+            <a href="{% url 'all_products' %}"  class="btn btn-warning shadow px-5 py-2 ms-2" >Continue Order</a>
             <form action="/add-to-cart" class="d-inline">
                 <input type="hidden" name="prod_id" value="{{product.id}}">
                 <button type="submit" class="btn btn-primary shadow px-5 py-2">Add to Cart</button>
             </form>
-            <a href="{% url 'showcart' %}" class="btn btn-warning shadow px-5 py-2 ms-4">Order Now</a>
+            <!-- <a href="{% url 'showcart' %}" class="btn btn-warning shadow px-5 py-2 ms-4">Order Now</a> -->
+            
 
         </div>
     </div>
