@@ -98,7 +98,7 @@ class Signin(View):
                 return redirect('restaurant_index')
             else:
                 login(request,user)
-                return redirect('index')
+                return redirect('about')
         else:
             return HttpResponse("Username or Password is incorrect!")
 
@@ -291,6 +291,33 @@ def order_placed(request):
         return redirect('order_confirmation')  # Redirect to the order confirmation page
 
     return redirect('checkout')  # Redirect to the checkout page if the request method is not POST
+
+def order_placed(request):
+    if request.method == 'POST':
+        user = request.user
+        num_items = len(request.POST) // 2  # Divide by 2 because each item has 2 hidden inputs
+        ordered_items = []
+
+        for i in range(1, num_items + 1):
+            product_id = request.POST.get('product_id_' + str(i))  # Get the product ID for the current item
+            quantity = request.POST.get('quantity_' + str(i))  # Get the quantity for the current item
+            
+            cart_item = Cart.objects.filter(user=user, product_id=product_id).first()
+            if cart_item:
+                ordered_items.append({
+                    'product': cart_item.product,
+                    'quantity': quantity,
+                    'total_price': cart_item.product.price * int(quantity)
+                })
+                OrderPlaced.objects.create(user=user, product=cart_item.product, quantity=quantity, status='Pending')
+                cart_item.delete()  # Remove the cart item after ordering
+
+        # Pass the ordered items to the new HTML page
+        context = {'ordered_items': ordered_items}
+        return render(request, 'customer/order_summary.html', context)  # Render the order summary page
+
+    return redirect('checkout')  # Redirect to the checkout page if the request method is not POST
+
 
 def order_confirmation(request):
     order_placed=OrderPlaced.objects.filter(user=request.user)
