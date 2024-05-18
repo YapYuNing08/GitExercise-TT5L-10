@@ -98,7 +98,7 @@ class Signin(View):
                 return redirect('restaurant_index')
             else:
                 login(request,user)
-                return redirect('index')
+                return redirect('about')
         else:
             return HttpResponse("Username or Password is incorrect!")
 
@@ -164,7 +164,7 @@ class Order(View):
             'total_price': total_price
         }
 
-        return render(request, 'customer/order_confirmation.html', context)
+        return render(request, 'customer/order_history.html', context)
 
 
 
@@ -288,7 +288,7 @@ def order_placed(request):
                 OrderPlaced.objects.create(user=user, product=cart_item.product, quantity=quantity, status='Pending')
                 cart_item.delete()  # Remove the cart item after ordering
 
-        return redirect('order_confirmation')  # Redirect to the order confirmation page
+        return redirect('order_history')  # Redirect to the order confirmation page
 
     return redirect('checkout')  # Redirect to the checkout page if the request method is not POST
 
@@ -319,9 +319,9 @@ def order_placed(request):
     return redirect('checkout')  # Redirect to the checkout page if the request method is not POST
 
 
-def order_confirmation(request):
+def order_history(request):
     order_placed=OrderPlaced.objects.filter(user=request.user)
-    return render(request, 'customer/order_confirmation.html', locals())
+    return render(request, 'customer/order_history.html', locals())
 
 def plus_cart(request):
     if request.method == 'GET':
