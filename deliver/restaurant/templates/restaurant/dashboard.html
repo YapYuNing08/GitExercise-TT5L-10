@@ -5,12 +5,19 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12 mt-5">
-            <h2>Orders</h2>
+            <h1 class="text-center mb-4">Orders</h1>
             <table class="table table-hover table-striped spaced-table">
                 <!-- Table header -->
+                <thead>
+                    <th>Order ID</th>
+                    <th>Name</th>
+                    <th>Item</th>
+                    <th>Quantity</th>
+                    <th>Status</th>
+                </thead>
                 <!-- Table body -->
                 {% for order in orders %}
-                <tr>
+                <tbody>
                     <!-- Order details -->
                     <td>{{ order.pk }}</td>
                     <td>{{ order.user.username }}</td>
@@ -27,7 +34,7 @@
                             <button type="submit" class="btn btn-outline-success">Mark as served</button>
                         </form>
                     {% endif %}
-                    </td>
+                    </tbody>
                 </tr>
                 {% endfor %}
             </table>
@@ -41,8 +48,39 @@
 {% endif %}
 
 <style>
-    /* Your CSS styles here */
+    h1 {
+        font-family: 'Arial', sans-serif;
+        font-weight: bold;
+        color: #343a40;
+    }
+    .spaced-table tbody tr {
+        margin-bottom: 10px; /* Add margin to the bottom of each row */
+    }
+
+    .spaced-table tbody tr td {
+        padding: 15px; /* Add padding to table cells for better spacing */
+    }
+
+    /* Optional: Add some styles to the table for better appearance */
+    .spaced-table {
+        border-collapse: separate; /* Prevent borders from collapsing */
+        border-spacing: 0 10px; /* Add space between rows */
+    }
+
+    .spaced-table thead th {
+        background-color: #343a40;
+        color: #fff;
+    }
+
+    .spaced-table tbody tr {
+        background-color: #f8f9fa;
+    }
+
+    .spaced-table tbody tr:hover {
+        background-color: #e9ecef;
+    }
 </style>
+
 
 <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
