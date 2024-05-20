@@ -72,10 +72,8 @@ class OrderItem(models.Model):
     def __str__(self):
         return f"{self.quantity} of {self.item.name} in order #{self.order.id}"
     
-
-
 class Cart(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     product = models.ForeignKey(Product,on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
 
@@ -83,7 +81,16 @@ class Cart(models.Model):
     def total_cost(self):
         return self.quantity * self.product.price
     
-
+class OrderPlaced(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    ordered_date = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, default='Pending')  # Example default value 'Pending'
+    is_served = models.BooleanField(default=False)
+    @property
+    def total_cost(self):
+        return self.quantity*self.product.price
     
 class Customer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

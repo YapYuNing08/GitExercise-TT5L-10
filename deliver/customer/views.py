@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.views import View
 from django.db.models import Q
-from .models import MenuItem, Category, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel
+from .models import MenuItem, Category, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel, OrderPlaced
 from .forms import CustomerRegistrationForm, CustomerProfileForm
 from django.db.models import Count
 from django.core.mail import send_mail
@@ -98,7 +98,7 @@ class Signin(View):
                 return redirect('restaurant_index')
             else:
                 login(request,user)
-                return redirect('index')
+                return redirect('about')
         else:
             return HttpResponse("Username or Password is incorrect!")
 
@@ -164,7 +164,7 @@ class Order(View):
             'total_price': total_price
         }
 
-        return render(request, 'customer/order_confirmation.html', context)
+        return render(request, 'customer/order_history.html', context)
 
 
 
@@ -255,13 +255,73 @@ class Checkout(View):
         add = Customer.objects.filter(user=user)
         cart_items = Cart.objects.filter(user=user)
         famount = 0
+        
+        # Calculate total price for each item and overall total
+        cart_items_with_total = []
         for p in cart_items:
-            value = p.quantity * p.product.price
-            famount = famount + value
+            total_price = p.quantity * p.product.price
+            famount += total_price
+            cart_items_with_total.append({
+                'product': p.product,
+                'quantity': p.quantity,
+                'total_price': total_price
+            })
+        
         totalamount = famount
-        return render(request, 'customer/checkout.html', locals())
+        context = {
+            'add': add,
+            'cart_items_with_total': cart_items_with_total,
+            'totalamount': totalamount
+        }
+        return render(request, 'customer/checkout.html', context)
+
+def order_placed(request):
+    if request.method == 'POST':
+        user = request.user
+        num_items = len(request.POST) // 2  # Divide by 2 because each item has 2 hidden inputs
+        for i in range(1, num_items + 1):
+            product_id = request.POST.get('product_id_' + str(i))  # Get the product ID for the current item
+            quantity = request.POST.get('quantity_' + str(i))  # Get the quantity for the current item
+            
+            cart_item = Cart.objects.filter(user=user, product_id=product_id).first()
+            if cart_item:
+                OrderPlaced.objects.create(user=user, product=cart_item.product, quantity=quantity, status='Pending')
+                cart_item.delete()  # Remove the cart item after ordering
+
+        return redirect('order_history')  # Redirect to the order confirmation page
+
+    return redirect('checkout')  # Redirect to the checkout page if the request method is not POST
+
+def order_placed(request):
+    if request.method == 'POST':
+        user = request.user
+        num_items = len(request.POST) // 2  # Divide by 2 because each item has 2 hidden inputs
+        ordered_items = []
+
+        for i in range(1, num_items + 1):
+            product_id = request.POST.get('product_id_' + str(i))  # Get the product ID for the current item
+            quantity = request.POST.get('quantity_' + str(i))  # Get the quantity for the current item
+            
+            cart_item = Cart.objects.filter(user=user, product_id=product_id).first()
+            if cart_item:
+                ordered_items.append({
+                    'product': cart_item.product,
+                    'quantity': quantity,
+                    'total_price': cart_item.product.price * int(quantity)
+                })
+                OrderPlaced.objects.create(user=user, product=cart_item.product, quantity=quantity, status='Pending')
+                cart_item.delete()  # Remove the cart item after ordering
+
+        # Pass the ordered items to the new HTML page
+        context = {'ordered_items': ordered_items}
+        return render(request, 'customer/order_summary.html', context)  # Render the order summary page
+
+    return redirect('checkout')  # Redirect to the checkout page if the request method is not POST
 
 
+def order_history(request):
+    order_placed=OrderPlaced.objects.filter(user=request.user)
+    return render(request, 'customer/order_history.html', locals())
 
 def plus_cart(request):
     if request.method == 'GET':

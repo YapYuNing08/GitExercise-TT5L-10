@@ -1,6 +1,62 @@
 {% extends 'customer/base.html' %}
 
 {% block content %}
+<style>
+    /* General styles */
+    body {
+        font-family: Arial, sans-serif;
+        background-color:antiquewhite;
+        color: #333;
+    }
+
+    .container {
+        margin-top: 50px;
+    }
+
+    /* Card styles */
+    .card {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Button styles */
+    .btn {
+        background-color: #007bff; /* Blue color for buttons */
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        font-size: 16px;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+    }
+
+    /* Text styles */
+    p {
+        line-height: 1.6;
+    }
+</style>
+
+<body>
+<div class="container mb-5">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8 col-sm-12 offset-md-1 p-4 text-center">
+            <h1>Online Food Order System</h1>
+        </div>
+    </div>
+    <div class="row justify-content-center mt-1">
+        <div class="card col-md-5 col-sm-12 offset-md-1 p-4 text-center">
+            <h2>Place an Order!</h2>
+            <a href="{% url 'all_products' %}" class="btn btn-outline-dark">Order Now!</a>
+        </div>
+    </div>
+</div>
+
 <div class="container mb-5">
     <div class="row justify-content-center mt-5">
         <div class="col-md-8 col-sm-12 offset-md-1 p-4 text-center">
@@ -15,4 +71,6 @@
         </div>
     </div>
 </div>
+</body>
+
 {% endblock content %}
