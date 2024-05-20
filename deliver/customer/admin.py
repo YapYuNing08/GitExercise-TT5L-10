@@ -1,5 +1,5 @@
 from django.contrib import admin
-from . models import MenuItem, Category, OrderModel, Product, Cart, Customer, ReservationModel
+from . models import MenuItem, Category, OrderModel, Product, Cart, Customer, ReservationModel, OrderPlaced
 
 admin.site.register(MenuItem)
 admin.site.register(Category)
@@ -16,4 +16,8 @@ class CartModelAdmin(admin.ModelAdmin):
 
 @admin.register(Customer)
 class CustomerModelAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'mobile', 'gender']
+    list_display = ['id', 'user', 'mobile', 'address']
+
+@admin.register(OrderPlaced)
+class OrderPlacedModelAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'product', 'quantity','ordered_date']

@@ -1,6 +1,8 @@
 {% extends 'customer/base.html' %}
 {% load static %}
 {% block content %}
+
+<body>
 <div class="container">
     <div class="row flex justify-content-between">
         <div class="img2 col-lg-5 mt-5">
@@ -9,19 +11,84 @@
         <div class="productdetail col-lg-5">
             <br><br>
             <h1 style="font-family: Georgia; font-size: 50px;">{{product.title}}</h1>
-            <h5>RM {{product.price}}</h5>
-            <br><br><h4><strong>Product Features</strong></h4>
-            <p>{{ product.description | linebreaksbr }}</p>
+            <h4>RM {{product.price}}</h4>
+            <br>
+            <!-- <br><br><h4><strong>Product Features</strong></h4> -->
+            <strong><p>{{ product.description | linebreaksbr }}</p></strong>
 
-            
+            <a href="{% url 'all_products' %}"  class="btn btn-warning shadow px-5 py-2 ms-2" >Continue Order</a>
             <form action="/add-to-cart" class="d-inline">
                 <input type="hidden" name="prod_id" value="{{product.id}}">
                 <button type="submit" class="btn btn-primary shadow px-5 py-2">Add to Cart</button>
             </form>
-            <a href="{% url 'showcart' %}" class="btn btn-warning shadow px-5 py-2 ms-4">Order Now</a>
-            <a href="{% url 'all_products' %}"  class="btn btn-info shadow px-5 py-2 ms-2" >Continue Order</a>
+            <!-- <a href="{% url 'showcart' %}" class="btn btn-warning shadow px-5 py-2 ms-4">Order Now</a> -->
+            
 
         </div>
     </div>
 </div>
+</body>
+
+<style>
+    body {
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    margin-top: 50px;
+}
+
+/* Product image styles */
+.img2 {
+    text-align: center;
+}
+
+.image {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Product details styles */
+.productdetail {
+    padding: 20px;
+    background-color: #f9f4f0; 
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.productdetail h1 {
+    font-family: Georgia;
+    font-size: 36px;
+    color: #333;
+}
+
+.productdetail h4 {
+    color: #555;
+}
+
+.productdetail p {
+    line-height: 1.6;
+    color: #777;
+}
+
+/* Button styles */
+.btn {
+    margin-top: 10px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #ffc107; /* Yellow on hover */
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .productdetail h1 {
+        font-size: 30px;
+    }
+}
+</style>
 {% endblock content%}
