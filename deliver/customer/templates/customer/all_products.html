@@ -9,6 +9,12 @@
                         <i class="fa-solid fa-magnifying-glass"></i>
                         <input class="form-control" name="q" type="text" placeholder="Search Our Menu" aria-label="Search" value="{{ request.GET.q }}">
                     </div>
+
+                    {% if request.GET.q %}
+                    <div class="input-group-append">
+                        <a href="{% url 'all_products' %}" class="btn btn-warning">Clear</a>
+                    </div>
+                    {% endif %}
                 </form>
             </div>
         </div>
@@ -40,6 +46,11 @@
                 {% endfor %}
             </div>
         </div>
+
+        <div>
+            <a href="{% url 'checkout' %}" class="btn btn-success shadow px-5 py-2 mb-5">Check Out</a>
+        </div>
+
     </div>
 </div>
 {% endblock content %}

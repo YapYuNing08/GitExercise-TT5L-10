@@ -39,8 +39,8 @@
                 
             </div>
             <div>
-                    <a href="{% url 'index' %}">Back</a>
-                </div>
+                <a href="{% url 'all_products' %}" class="btn btn-warning shadow px-5 py-2 mt-3">Back</a>
+            </div>
         </div>
 
         <div class="col-sm-4">
@@ -65,6 +65,9 @@
         </div>
         {% else %}
             <h1 class="text-center mb-5">Cart is Empty</h1>
+            <div>
+                <a href="{% url 'all_products' %}" class="btn btn-warning shadow px-5 py-2 mt-3">Back</a>
+            </div>
         {% endif %}
     </div>
 </div>

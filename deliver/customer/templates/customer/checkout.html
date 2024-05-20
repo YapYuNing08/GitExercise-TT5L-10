@@ -17,15 +17,17 @@
             {% for item in cart_items %}
                 <div class="card mb-2">
                     <div class="card-body">
-                        <h5>Products:{{item.product.title}}</h5>
-                        <p>Quantity:{{item.quantity}}</p>
-                        <p class="fw-bold">Price:{{item.product.price}}</p> 
+                        <h5>Products: {{item.product.title}}</h5>
+                        <p>Quantity: {{item.quantity}}</p>
+                        <p class="fw-bold">Price: {{item.product.price}}</p> 
                     </div>
                 </div>
             {% endfor %}
            <!-- <p class="fw-bold">Total Cost: {{totalamount}}</p> -->
            <br>
         </div>
+
+        
         <div class="col-sm-4 offset-sm-1">
             <div>
             <label for="method">Choose your method: </label>
