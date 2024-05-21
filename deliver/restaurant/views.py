@@ -16,8 +16,8 @@ class Dashboard(View):
         # get the current date
         today = datetime.today()
         orders = OrderPlaced.objects.filter(
-            ordered_date__year=today.year, ordered_date__month=today.month, ordered_date__day=today.day)
-
+            ordered_date__year=today.year, ordered_date__month=today.month, ordered_date__day=today.day).order_by('-ordered_date')
+        
         # loop through the orders and add the price value
         # total_revenue = sum(order.price for order in orders)
 
