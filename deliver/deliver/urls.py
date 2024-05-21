@@ -68,5 +68,7 @@ urlpatterns = [
     path('password_reset/', auth_view.PasswordResetView.as_view(template_name='customer/password_reset.html', form_class=MyPasswordResetForm), name='password_reset'),
     path('password_change/', auth_view.PasswordChangeView.as_view(template_name='customer/changepassword.html', form_class=MyPasswordChangeForm),name='password_change'),
     path('password_change_done/', auth_view.PasswordChangeDoneView.as_view(template_name='customer/passwordchangedone.html'), name='password_change_done'),
+
+    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

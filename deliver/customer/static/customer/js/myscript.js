@@ -107,3 +107,14 @@ $('.remove-cart').click(function(){
 //         }
 //     })
 // })
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Show the pop-up after 2 seconds
+    setTimeout(function() {
+        document.getElementById("popup").style.display = "flex";
+    }, 1000);
+});
+
+function closePopup() {
+    document.getElementById("popup").style.display = "none";
+}

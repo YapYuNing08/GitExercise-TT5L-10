@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.views import View
 from django.db.models import Q
-from .models import MenuItem, Category, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel, OrderPlaced
+from .models import MenuItem, Category, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel, OrderPlaced, Ad
 from .forms import CustomerRegistrationForm, CustomerProfileForm
 from django.db.models import Count
 from django.core.mail import send_mail
@@ -56,7 +56,8 @@ class ReservationConfirmation(View):
 
 class About(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'customer/about.html')
+        ad = Ad.objects.filter(is_active=True).first()
+        return render(request, 'customer/about.html', {'ad': ad})
 
 class Signup(View):
     def get(self, request, *args, **kwargs):
