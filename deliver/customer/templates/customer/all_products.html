@@ -1,26 +1,12 @@
 {% extends 'customer/base.html' %}
 {% block content %}
 
-<div class="stepper-wrapper">
-  <div class="stepper-item active">
-    <div class="step-counter">1</div>
-    <div class="step-name">Add to Cart</div>
-  </div>
-  <div class="stepper-item">
-    <div class="step-counter">2</div>
-    <div class="step-name">Place Order</div>
-  </div>
-  <div class="stepper-item">
-    <div class="step-counter">3</div>
-    <div class="step-name">Submit Order</div>
-  </div>
-</div>
-
 <style>
   .stepper-wrapper {
     margin-top: 10px;
     display: flex;
     justify-content: space-between;
+    font-family: Arial, sans-serif;
   }
   .stepper-item {
     position: relative;
@@ -82,55 +68,76 @@
     content: none;
   }
 </style>
-
-<div class="container my-5">
-    <div class="row">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-sm-12 text-center">
-                <form method="GET" action="{% url 'menu-search' %}">
-                    <div class="md-form mt-0 active-cyan-2">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input class="form-control" name="q" type="text" placeholder="Search Our Menu" aria-label="Search" value="{{ request.GET.q }}" >
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="col-sm-3">
-            <a href="{% url 'all_products' %}" class="list-group-item list-group-item-action" aria-current="true">ALL</a>
-            <a href="{% url 'category' 'B' %}" class="list-group-item list-group-item-action" aria-current="true">BEVERAGE</a>
-            <a href="{% url 'category' 'D' %}" class="list-group-item list-group-item-action" aria-current="true">DESSERT</a>
-            <a href="{% url 'category' 'P' %}" class="list-group-item list-group-item-action" aria-current="true">PASTRIES</a>
-            <a href="{% url 'category' 'M' %}" class="list-group-item list-group-item-action" aria-current="true">MAIN</a>
-        </div>
-
-        <div class="col-sm-9">
-            <div class="row row-cols-2"> <!-- Added row-cols-2 to create 2 columns per row -->
-                
-                {% for prod in products %}
-                    <div class="col text-center mb-4">
-                        <a href="{% url 'product_detail' prod.id %}" class="btn">
-                            <div>
-                                <img src="{{ prod.image.url }}" width="300px" height="200px" />
-                                <div class="fw-bold">{{ prod.title }}</div>
-                                <div class="fw-bold text-danger">
-                                    RM {{ prod.price }}
-                                </div>
-                                <i class="fas fa-shopping-cart"></i>
-                            </div>
-                        </a>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
+<body>
+  <div class="stepper-wrapper">
+    <div class="stepper-item active">
+      <div class="step-counter">1</div>
+      <div class="step-name">Add to Cart</div>
     </div>
-</div>
+    <div class="stepper-item">
+      <div class="step-counter">2</div>
+      <div class="step-name">Place Order</div>
+    </div>
+    <div class="stepper-item">
+      <div class="step-counter">3</div>
+      <div class="step-name">Submit Order</div>
+    </div>
+  </div>
+
+
+  <div class="container my-5">
+      <div class="row">
+          <div class="row justify-content-center">
+              <div class="col-md-6 col-sm-12 text-center">
+                  <form method="GET" action="{% url 'menu-search' %}">
+                      <div class="md-form mt-0 active-cyan-2">
+                          <i class="fa-solid fa-magnifying-glass"></i>
+                          <input class="form-control" name="q" type="text" placeholder="Search Our Menu" aria-label="Search" value="{{ request.GET.q }}" >
+                      </div>
+                  </form>
+              </div>
+          </div>
+
+          <div class="col-sm-3">
+              <a href="{% url 'all_products' %}" class="list-group-item list-group-item-action" aria-current="true">ALL</a>
+              <a href="{% url 'category' 'B' %}" class="list-group-item list-group-item-action" aria-current="true">BEVERAGE</a>
+              <a href="{% url 'category' 'D' %}" class="list-group-item list-group-item-action" aria-current="true">DESSERT</a>
+              <a href="{% url 'category' 'P' %}" class="list-group-item list-group-item-action" aria-current="true">PASTRIES</a>
+              <a href="{% url 'category' 'M' %}" class="list-group-item list-group-item-action" aria-current="true">MAIN</a>
+              <br><br>
+              <h6>&nbsp; &nbsp; &nbsp;Nothing to add?</h6>
+              <div><a href="{% url 'showcart' %}" class="btn btn-primary">Place Order</a></div>
+          </div>
+
+          <div class="col-sm-9">
+              <div class="row row-cols-2"> <!-- Added row-cols-2 to create 2 columns per row -->
+                  
+                  {% for prod in products %}
+                      <div class="col text-center mb-4">
+                          <a href="{% url 'product_detail' prod.id %}" class="btn">
+                              <div>
+                                  <img src="{{ prod.image.url }}" width="300px" height="200px" />
+                                  <div class="fw-bold">{{ prod.title }}</div>
+                                  <div class="fw-bold text-danger">
+                                      RM {{ prod.price }}
+                                  </div>
+                                  <i class="fas fa-shopping-cart"></i>
+                              </div>
+                          </a>
+                      </div>
+                  {% endfor %}
+              </div>
+
+          </div>
+      </div>
+  </div>
+</body>
 
 <style>
   .container.my-5 {
     margin-top: 20px;
     padding: 20px;
-    background-color: whitesmoke; 
+    background-color: #F7F3F1; 
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
@@ -186,7 +193,7 @@
   }
 
   .btn:hover {
-    background-color: #f4f1ea;
+    background-color: #f8eed6;
   }
 
 </style>
