@@ -16,7 +16,6 @@ class Product(models.Model):
     description = models.TextField()
     category = models.CharField(choices=category_choices, max_length=2)
     image = models.ImageField(upload_to='product')
-  
 
     def __str__(self):
         return self.title
@@ -96,7 +95,7 @@ class OrderPlaced(models.Model):
 class Customer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    mobile = models.CharField(max_length=50, null=True)
-    gender = models.CharField(max_length=1, choices=[('M', 'Male'), ('F', 'Female')], default='Male')
+    mobile = models.IntegerField(default=0)
+    address = models.CharField(max_length=100)
     def __str__(self):
         return self.name

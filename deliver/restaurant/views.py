@@ -59,7 +59,7 @@ class ReservationDetails(View):
         
         context = {
             'reservation': reservation,
-            'reservations': reservations,
+            'reservations': reservations
         }
 
         return render(request, 'restaurant/reservation_details.html', context)

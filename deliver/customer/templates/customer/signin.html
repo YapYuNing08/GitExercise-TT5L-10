@@ -1,164 +1,122 @@
 <!DOCTYPE html>
+
 <html>
-<head>
-<!-- Required meta tags -->
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <body>
+        <title>Sign In</title>
+     
+       
+        <style media="screen">
+          *,
+    *:before,
+    *:after{
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+    
+    body, .background_image {
+        /* background-color: rgb(118, 28, 28); */
+        background-image: url('media/menu_images/coffee_shop.jpg');
+        background-size: cover; /* Cover the entire element */
+        background-repeat: no-repeat; /* Prevent the background from repeating */
+        z-index: -1;
+    }
 
-    {% if messages %}
-    <div class="notification-container">
-        <div class="notification">
-            {% for message in messages %}
-            <p {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
-            {% endfor %}
-            <img id='cross' src='media/close.png' width="15px" height="15px" alt="">
-        </div>
-    </div>
-    <script>
-        var cross = document.getElementById('cross')
-        cross.addEventListener('click', ()=> {
-            document.getElementsByClassName('notification-container')[0].style.display = 'none';
-        })
-    </script>
-    {% endif %}
-
-    <title>Sign In</title>
-    <style media="screen">
-        *,
-        *:before,
-        *:after {
-            padding: 0;
-            margin: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            background-color: rgb(0, 0, 0);
-            background-image: url('media/menu_images/coffee_shop.jpg');
-            background-size: cover; /* Cover the entire element */
-            background-repeat: no-repeat; /* Prevent the background from repeating */
-            height: 100vh; /* Set the body height to 100% of the viewport height */
-            display: flex; /* Use flexbox to center the form vertically and horizontally */
-            justify-content: center; /* Center horizontally */
-            align-items: center; /* Center vertically */
-            font-family: 'Poppins', sans-serif; /* Use Poppins font */
-            color: #3b2106; /* Set text color */
-        }
-
-        .notification-container {
+    .background{
+        width: 430px;
+        height: 520px;
         position: absolute;
-        top: 10px; /* Position at the top of the page */
-        left: 50%; /* Center horizontally */
-        transform: translateX(-50%); /* Adjust for the width of the element */
-        background-color: rgba(255, 255, 255, 0.9); /* Background color with some transparency */
-        border: 1px solid #ccc; /* Add a border */
-        border-radius: 5px; /* Rounded corners */
-        padding: 10px; /* Add some padding */
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Add a slight shadow */
-        z-index: 1000; /* Ensure it sits above other elements */
-        display: flex;
-        align-items: center;
+        transform: translate(-50%,-50%);
+        left: 50%;
+        top: 50%;
+        
+    }
+   
+    form{
+        height: 520px;
+        width: 400px;
+        background-color: rgba(255, 255, 255, 0.44);
+        position: absolute;
+        transform: translate(-50%,-50%);
+        top: 50%;
+        left: 50%;
+        border-radius: 10px;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.251);
+        box-shadow: 0 0 40px rgba(255, 255, 255, 0.6);
+        padding: 50px 35px;
     }
 
-    .notification {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+    form *{
+        font-family: 'Poppins',sans-serif;
+        color: #3b2106;
+        letter-spacing: 0.5px;
+        outline: none;
+        border: none;
     }
 
-     .notification img {
-        margin-left: 10px; /* Space between text and close button */
-        cursor: pointer; /* Change cursor to pointer on hover */
+    form h3{
+        font-size: 32px;
+        font-weight: 500;
+        line-height: 42px;
+        text-align: center;
     }
-        
-        form {
-            width: 400px;
-            background-color: rgba(255, 255, 255, 0.44);
-            border-radius: 10px;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.251);
-            box-shadow: 0 0 40px rgba(255, 255, 255, 0.6);
-            padding: 50px 35px;
-        }
-        
-        form h3 {
-            font-size: 32px;
-            font-weight: 500;
-            line-height: 42px;
-            text-align: center;
-            margin-bottom: 20px; /* Add some space below the heading */
-        }
-        
-        label {
-            font-size: 16px;
-            font-weight: 500;
-            margin-top: 20px; /* Add some space above each label */
-            display: block;
-        }
-        
-        input {
-            height: 50px;
-            width: 100%;
-            background-color: rgba(240, 253, 255, 0.667);
-            border-radius: 3px;
-            padding: 0 10px;
-            margin-top: 8px;
-            font-size: 14px;
-            font-weight: 300;
-            border: none; /* Remove border */
-            outline: none; /* Remove outline */
-        }
-        
-        ::placeholder {
-            color: #b8a490;
-        }
-        
-        button {
-            margin-top: 30px; /* Adjust the margin */
-            width: 100%;
-            background-color: #fff6dd;
-            color: #080710;
-            padding: 15px 0;
-            font-size: 18px;
-            font-weight: 600;
-            border-radius: 5px;
-            cursor: pointer;
-            border: none; /* Remove border */
-            outline: none; /* Remove outline */
-        }
-        
-        button:hover {
-            background-color: #ffee99; /* Change background color on hover */
-        }
-        
-        a {
-            display: block;
-            text-align: center;
-            margin-top: 20px; /* Add some space above the link */
-            color: #fff; /* Change link color */
-        }
-        
-        a:hover {
-            color: #ccc; /* Change link color on hover */
-        }
-    </style>
+    
+    label{
+        display: block;
+        margin-top: 30px;
+        font-size: 16px;
+        font-weight: 500;
+    }
 
-</head>
-<body>
+    input{
+        display: block;
+        height: 50px;
+        width: 100%;
+        background-color: rgba(240, 253, 255, 0.667);
+        border-radius: 3px;
+        padding: 0 10px;
+        margin-top: 8px;
+        font-size: 14px;
+        font-weight: 300;
+    }
 
-<form method="post">
-    <h3>Login Here</h3>
-    {% csrf_token %}
-    <label for="username">Username</label>
-    <input type="text" placeholder="Enter Username" id="username" name="username">
+    ::placeholder{
+        color: #b8a490;
+    }
 
-    <label for="password">Password</label>
-    <input type="password" placeholder="Password" id="password" name="pass">
+    button{
+        margin-top: 50px;
+        width: 100%;
+        background-color: #fff6dd;
+        color: #080710;
+        padding: 15px 0;
+        font-size: 18px;
+        font-weight: 600;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    
+        </style>
+ 
+ 
+        {% if background %}
+        <div class="background_image"></div>
+        {% endif %}
 
-    <button type="submit">Log In</button>
-    <br><br>
-    <a href="{% url 'signup' %}" >No account? Create now!</a>
-</form>
-
-</body>
+        <form method="post">
+            <h3>Login Here</h3>
+            {% csrf_token %} 
+            <label for="username">Username</label>
+            <input type="text" placeholder="Enter Username" id="username" name="username">
+    
+            <label for="password">Password</label>
+            <input type="password" placeholder="Password" id="password" name="pass">
+    
+            <button type="submit">Log In</button>
+            <br>
+            <br>
+            <a href="{% url 'signup' %}" >No account? Create now!</a> 
+        </form>
+    </body>
 </html>

@@ -29,6 +29,9 @@
         <li class="nav-item">
           <a class="nav-link" href="{% url 'all_products' %}"><i class="fas fa-coffee fa-lg"></i></a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'reservation' %}"><i class="far fa-calendar-alt fa-lg"></i></a>
+        </li>
         
       </ul>
       <ul class="navbar-nav">
@@ -45,9 +48,6 @@
               <li><a class="dropdown-item" href="{% url 'password_change' %}">Change Password</a></li>
               <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
             </ul>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'reservation' %}"><i class="far fa-calendar-alt fa-lg"></i></a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="{% url 'showcart' %}"><i class="fas fa-shopping-cart fa-lg"></i></a>

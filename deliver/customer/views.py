@@ -80,7 +80,7 @@ class Signup(View):
         my_user = User.objects.create_user(uname,email,pass1)
         my_user.save()
         return redirect('signin')
-    
+        
 class Signin(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/signin.html')
@@ -93,17 +93,15 @@ class Signin(View):
         user = authenticate(request, username=username, password=pass1)
         
         if user is not None:
-            login(request,user)
             if 'admin' in username:
-                
+                login(request,user)
                 return redirect('restaurant_index')
             else:
                 login(request,user)
                 return redirect('about')
         else:
-            messages.info(request, 'Invalid username or password.')
-            return render(request, 'customer/signin.html')
-        
+            return HttpResponse("Username or Password is incorrect!")
+
 class Logout(View):
     def get(self, request, *args, **kwargs):
         logout(request)  # Logs out the user
@@ -117,7 +115,8 @@ class Order(View):
         desserts = MenuItem.objects.filter(category__name__contains='Desserts')
         pastries = MenuItem.objects.filter(category__name__contains='Pastries')
         main = MenuItem.objects.filter(category__name__contains='Main')
-                
+        
+
         # pass into context
         context = {
             'beverage': beverage,
@@ -410,15 +409,16 @@ class ProfileView(View):
         form = CustomerProfileForm(request.POST)
         if form.is_valid():
             user = request.user
-            email = user.email
+            name = form.cleaned_data['name']
             mobile = form.cleaned_data['mobile']
-            gender = form.cleaned_data['gender']
+            address = form.cleaned_data['address']
 
-            reg = Customer(user=user, email=email, mobile=mobile, gender=gender)
+            reg = Customer(user=user, name=name, mobile=mobile, address=address)
             reg.save()
             messages.success(request, "Congratulations! Profile Save Successfully.")
         else:
-            return redirect('signin.html')
+            messages.warning(request, "Invalid Input Data")
+        return render(request, 'customer/profile.html', locals())
 
 
 
@@ -439,7 +439,7 @@ class updateAddress(View):
             add = Customer.objects.get(pk=pk)
             add.name = form.cleaned_data['name']
             add.mobile = form.cleaned_data['mobile']
-            add.gender = form.cleaned_data['gender']
+            add.address = form.cleaned_data['address']
             add.save()
             messages.success(request, "Congratulations! Profile Update Successfully.")
         else:
