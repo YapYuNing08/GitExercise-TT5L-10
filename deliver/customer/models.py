@@ -88,6 +88,7 @@ class OrderPlaced(models.Model):
     ordered_date = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, default='Pending')  # Example default value 'Pending'
     is_served = models.BooleanField(default=False)
+    points = models.IntegerField(default=0)
     @property
     def total_cost(self):
         return self.quantity*self.product.price
@@ -96,6 +97,16 @@ class Customer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     mobile = models.IntegerField(default=0)
+    points = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+    
+class RedemptionOption(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    points_required = models.IntegerField()
+    image = models.ImageField(upload_to='redemption_images/')
 
     def __str__(self):
         return self.name
