@@ -7,6 +7,9 @@
             <h1>Order Submitted!</h1>
             <p>Thank you for your order! Your food is being made and will be served soon!</p>
             <a href="{% url 'about' %}" class="btn btn-primary">Go to the homepage</a>
+            <br><br>
+            <!-- Display total points earned from the current order -->
+            <p>Total Points Earned: {{ total_points }}</p>
         </div>
     </div>
 
