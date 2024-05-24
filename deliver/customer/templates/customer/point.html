@@ -1,0 +1,79 @@
+{% extends 'customer/base.html' %}
+
+{% block content %}
+<style>
+    .container-rewards {
+        color: #654321;
+        /* font-family: Arial, sans-serif; */
+    }
+
+    .card-reward {
+        background-color: #faf5e3;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s ease-in-out;
+    }
+
+    .card-reward:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-title-reward {
+        font-size: 1.5rem;
+        color: #72370d;
+        margin-bottom: 10px;
+    }
+
+    .points-required {
+        color: #ff4500;
+        font-weight: bold;
+    }
+</style>
+
+<div class="container container-rewards my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-sm-12 p-4 text-center card-reward">
+            <h1 class="display-4 mb-4">Rewards</h1>
+            <h3 class="text-info"><strong>Points: {{ initial_points }}</strong></h3>
+            <hr class="my-4">
+
+            <div class="row row-cols-1 row-cols-md-2">
+                {% for option in redemption_options %}
+                <div class="col mb-4">
+                    <div class="card h-100 border border-dark rounded shadow">
+                        <img src="{{ option.image.url }}" class="card-img-top" alt="{{ option.name }}" height="200">
+                        <div class="card-body">
+                            <h5 class="card-title card-title-reward">{{ option.name }}</h5>
+                            <p class="card-text"><strong>Points Required: <span class="points-required">{{ option.points_required }}</span></strong></p>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal{{ option.id }}">
+                                View Details
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="modal{{ option.id }}" tabindex="-1" role="dialog" aria-labelledby="modal{{ option.id }}Label" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modal{{ option.id }}Label">{{ option.name }}</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <img src="{{ option.image.url }}" alt="{{ option.name }}" width="300px" height="200px" />
+                                    <p><strong>{{ option.description | linebreaksbr }}</strong></p>
+                                    <p>Points Required: {{ option.points_required }}</p>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.views import View
 from django.db.models import Q
-from .models import MenuItem, Category, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel, OrderPlaced
+from .models import MenuItem, Category, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel, OrderPlaced, RedemptionOption
 from .forms import CustomerRegistrationForm, CustomerProfileForm
 from django.db.models import Count
 from django.core.mail import send_mail
@@ -9,8 +9,19 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
 
-
+def point(request):
+    # Retrieve or create the Customer profile
+    user_profile, created = Customer.objects.get_or_create(user=request.user)
+    # Get the points associated with the user
+    initial_points = user_profile.points
+    # Get redemption options
+    redemption_options = RedemptionOption.objects.all()
+    # Pass the initial_points and redemption_options to the template
+    context = {'initial_points': initial_points, 'redemption_options': redemption_options}
+    return render(request, 'customer/point.html', context)
+    
 class Index(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/index.html')
@@ -298,10 +309,12 @@ def order_placed(request):
         num_items = len(request.POST) // 2  # Divide by 2 because each item has 2 hidden inputs
         ordered_items = []
 
+        total_points = 0  # Initialize total points for the order
+
         for i in range(1, num_items + 1):
             product_id = request.POST.get('product_id_' + str(i))  # Get the product ID for the current item
             quantity = request.POST.get('quantity_' + str(i))  # Get the quantity for the current item
-            
+
             cart_item = Cart.objects.filter(user=user, product_id=product_id).first()
             if cart_item:
                 ordered_items.append({
@@ -309,18 +322,28 @@ def order_placed(request):
                     'quantity': quantity,
                     'total_price': cart_item.product.price * int(quantity)
                 })
-                OrderPlaced.objects.create(user=user, product=cart_item.product, quantity=quantity, status='Pending')
+
+                # Calculate points based on the total price of the item
+                item_points = int(cart_item.product.price)  # Example: 1 point per dollar spent
+                total_points += item_points * int(quantity)
+
+                OrderPlaced.objects.create(user=user, product=cart_item.product, quantity=quantity, status='Pending', points=item_points)
                 cart_item.delete()  # Remove the cart item after ordering
 
-        # Pass the ordered items to the new HTML page
-        context = {'ordered_items': ordered_items}
+        user_profile, created = Customer.objects.get_or_create(user=request.user)
+        initial_points = user_profile.points
+
+        user_profile.points += total_points  # Add the earned points
+        user_profile.save()
+
+        # Pass the ordered items and total points to the new HTML page
+        context = {'ordered_items': ordered_items, 'total_points': total_points, 'initial_points': initial_points}
         return render(request, 'customer/order_summary.html', context)  # Render the order summary page
 
     return redirect('checkout')  # Redirect to the checkout page if the request method is not POST
 
-
 def order_history(request):
-    order_placed=OrderPlaced.objects.filter(user=request.user)
+    order_placed=OrderPlaced.objects.filter(user=request.user).order_by('-ordered_date')
     return render(request, 'customer/order_history.html', locals())
 
 def plus_cart(request):
@@ -411,9 +434,8 @@ class ProfileView(View):
             user = request.user
             name = form.cleaned_data['name']
             mobile = form.cleaned_data['mobile']
-            address = form.cleaned_data['address']
 
-            reg = Customer(user=user, name=name, mobile=mobile, address=address)
+            reg = Customer(user=user, name=name, mobile=mobile)
             reg.save()
             messages.success(request, "Congratulations! Profile Save Successfully.")
         else:
@@ -439,7 +461,6 @@ class updateAddress(View):
             add = Customer.objects.get(pk=pk)
             add.name = form.cleaned_data['name']
             add.mobile = form.cleaned_data['mobile']
-            add.address = form.cleaned_data['address']
             add.save()
             messages.success(request, "Congratulations! Profile Update Successfully.")
         else:

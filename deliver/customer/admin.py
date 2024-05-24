@@ -1,5 +1,5 @@
 from django.contrib import admin
-from . models import MenuItem, Category, OrderModel, Product, Cart, Customer, ReservationModel, OrderPlaced
+from . models import MenuItem, Category, OrderModel, Product, Cart, Customer, ReservationModel, OrderPlaced, RedemptionOption
 
 admin.site.register(MenuItem)
 admin.site.register(Category)
@@ -16,8 +16,12 @@ class CartModelAdmin(admin.ModelAdmin):
 
 @admin.register(Customer)
 class CustomerModelAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'mobile', 'address']
+    list_display = ['id', 'user', 'mobile','points']
 
 @admin.register(OrderPlaced)
 class OrderPlacedModelAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'product', 'quantity','ordered_date']
+
+@admin.register(RedemptionOption)
+class RedemptionOptionModelAdmin(admin.ModelAdmin):
+    list_display = ['name', 'description', 'points_required', 'image']
