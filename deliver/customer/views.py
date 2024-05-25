@@ -11,6 +11,27 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 
+def redeem_item(request):
+    if request.method == 'POST':
+        option_id = request.POST.get('option_id')
+        option = RedemptionOption.objects.get(pk=option_id)
+        
+        customer = request.user.customer
+        if customer.points >= option.points_required:
+            # Deduct points
+            customer.points -= option.points_required
+            customer.save()
+
+            # Add success message
+            messages.success(request, f"Successfully redeemed {option.name}! Your remaining points: {customer.points}")
+        else:
+            messages.error(request, "You do not have enough points to redeem this item.")
+
+            return redirect('point')
+
+    # Handle GET requests or invalid form submissions
+    return redirect('point')
+
 def point(request):
     # Retrieve or create the Customer profile
     user_profile, created = Customer.objects.get_or_create(user=request.user)
@@ -298,7 +319,7 @@ def order_placed(request):
             if cart_item:
                 OrderPlaced.objects.create(user=user, product=cart_item.product, quantity=quantity, status='Pending')
                 cart_item.delete()  # Remove the cart item after ordering
-
+        
         return redirect('order_history')  # Redirect to the order confirmation page
 
     return redirect('checkout')  # Redirect to the checkout page if the request method is not POST
@@ -313,19 +334,23 @@ def order_placed(request):
 
         for i in range(1, num_items + 1):
             product_id = request.POST.get('product_id_' + str(i))  # Get the product ID for the current item
-            quantity = request.POST.get('quantity_' + str(i))  # Get the quantity for the current item
+            quantity = int(request.POST.get('quantity_' + str(i)))  # Get the quantity for the current item
 
             cart_item = Cart.objects.filter(user=user, product_id=product_id).first()
             if cart_item:
                 ordered_items.append({
                     'product': cart_item.product,
                     'quantity': quantity,
-                    'total_price': cart_item.product.price * int(quantity)
+                    'total_price': cart_item.product.price * quantity
                 })
 
                 # Calculate points based on the total price of the item
                 item_points = int(cart_item.product.price)  # Example: 1 point per dollar spent
-                total_points += item_points * int(quantity)
+                total_points += item_points * quantity
+
+                # Increment the quantity_sold field in the Product model
+                cart_item.product.quantity_sold += quantity
+                cart_item.product.save()
 
                 OrderPlaced.objects.create(user=user, product=cart_item.product, quantity=quantity, status='Pending', points=item_points)
                 cart_item.delete()  # Remove the cart item after ordering
@@ -369,7 +394,7 @@ def plus_cart(request):
                 
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
-    
+
 def minus_cart(request):
     if request.method == 'GET':
         prod_id = request.GET.get('prod_id') 
@@ -391,7 +416,7 @@ def minus_cart(request):
             return JsonResponse({'error': 'Cart item not found for the user and product.'}, status=400)
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
-    
+
 def remove_cart(request):
     if request.method == 'GET':
         prod_id = request.GET.get('prod_id') 
@@ -402,7 +427,6 @@ def remove_cart(request):
 
             cart = Cart.objects.filter(user=request.user)
             amount = sum(item.quantity * item.product.price for item in cart)
-            # totalamount = amount  # Assuming totalamount is the same as amount in this context
             data = {
                 'quantity': cart_item_quantity,  # Use the stored quantity before deletion
                 'amount': amount,
