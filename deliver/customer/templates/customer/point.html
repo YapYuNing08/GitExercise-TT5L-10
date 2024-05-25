@@ -1,42 +1,19 @@
 {% extends 'customer/base.html' %}
 
 {% block content %}
-<style>
-    .container-rewards {
-        color: #654321;
-        /* font-family: Arial, sans-serif; */
-    }
-
-    .card-reward {
-        background-color: #faf5e3;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        transition: box-shadow 0.3s ease-in-out;
-    }
-
-    .card-reward:hover {
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    }
-
-    .card-title-reward {
-        font-size: 1.5rem;
-        color: #72370d;
-        margin-bottom: 10px;
-    }
-
-    .points-required {
-        color: #ff4500;
-        font-weight: bold;
-    }
-</style>
-
 <div class="container container-rewards my-5">
     <div class="row justify-content-center">
         <div class="col-md-8 col-sm-12 p-4 text-center card-reward">
             <h1 class="display-4 mb-4">Rewards</h1>
             <h3 class="text-info"><strong>Points: {{ initial_points }}</strong></h3>
             <hr class="my-4">
+            {% if messages %}
+                {% for message in messages %}
+                <div class="custom-alert {% if message.tags %}custom-alert-{{ message.tags }}{% else %}custom-alert-info{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
 
             <div class="row row-cols-1 row-cols-md-2">
                 {% for option in redemption_options %}
@@ -65,7 +42,11 @@
                                     <img src="{{ option.image.url }}" alt="{{ option.name }}" width="300px" height="200px" />
                                     <p><strong>{{ option.description | linebreaksbr }}</strong></p>
                                     <p>Points Required: {{ option.points_required }}</p>
-                                    
+                                    <form id="redeemForm" action="{% url 'redeem_item' %}" method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="option_id" value="{{ option.id }}">
+                                        <button type="submit" class="btn btn-primary">Redeem</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -76,4 +57,53 @@
         </div>
     </div>
 </div>
+
+<style>
+    .container-rewards {
+        color: #654321;
+        /* font-family: Arial, sans-serif; */
+    }
+
+    .card-reward {
+        background-color: #faf5e3;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s ease-in-out;
+    }
+
+    .card-reward:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-title-reward {
+        font-size: 1.5rem;
+        color: #72370d;
+        margin-bottom: 10px;
+    }
+
+    .points-required {
+        color: #ff4500;
+        font-weight: bold;
+    }
+
+    .custom-alert {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+
+    .custom-alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .custom-alert-error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+</style>
 {% endblock content %}
