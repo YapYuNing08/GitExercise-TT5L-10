@@ -2,22 +2,18 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.views import View
 from django.utils.timezone import datetime
-from customer.models import OrderModel, ReservationModel, OrderPlaced
+from customer.models import OrderModel, ReservationModel, OrderPlaced, Product
 from django.http import JsonResponse, HttpResponse
 import json
 # from django.contrib.auth.decorators import login_required
 
 class Index(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'restaurant/index.html')
-
-class Dashboard(View):
-    def get(self, request, *args, **kwargs):
         # get the current date
         today = datetime.today()
         orders = OrderPlaced.objects.filter(
-            ordered_date__year=today.year, ordered_date__month=today.month, ordered_date__day=today.day)
-
+            ordered_date__year=today.year, ordered_date__month=today.month, ordered_date__day=today.day).order_by('-ordered_date')
+        
         # loop through the orders and add the price value
         # total_revenue = sum(order.price for order in orders)
 
@@ -33,7 +29,7 @@ class Dashboard(View):
             'total_orders': total_orders
         }
 
-        return render(request, 'restaurant/dashboard.html', context)
+        return render(request, 'restaurant/index.html', context)
 
     def test_func(self):
         return self.request.user.groups.filter(name='Staff').exists()
@@ -82,4 +78,11 @@ class MarkAsServed(View):
         order.is_served = True
         order.save()
         # Optionally, redirect to a different URL or render a template
-        return redirect('dashboard')
+        return redirect('restaurant_index')
+    
+class Dashboard(View):
+    def get(self, request, *args, **kwargs):
+        products = Product.objects.all()
+        sales_per_item = [{'product': product, 'total_sales': product.price * product.quantity_sold} for product in products]
+        total_revenue = sum(item['total_sales'] for item in sales_per_item)
+        return render(request, 'restaurant/dashboard.html', {'sales_per_item': sales_per_item, 'total_revenue': total_revenue})
