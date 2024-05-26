@@ -1,125 +1,82 @@
 {% extends 'restaurant/base.html' %}
 
 {% block content %}
-{% if user.is_authenticated and user.is_staff and user.is_superuser %}
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-12 mt-5">
-            <h1 class="text-center mb-4">Orders</h1>
-            <table class="table table-hover table-striped spaced-table">
-                <!-- Table header -->
-                <thead>
-                    <th>Order ID</th>
-                    <th>Name</th>
-                    <th>Item</th>
-                    <th>Quantity</th>
-                    <th>Status</th>
-                </thead>
-                <!-- Table body -->
-                {% for order in orders %}
-                <tbody>
-                    <!-- Order details -->
-                    <td>{{ order.pk }}</td>
-                    <td>{{ order.user.username }}</td>
-                    <td>{{ order.product.title }}</td>
-                    <td>{{ order.quantity }}</td>
-                    <td>
-                    {% if order.is_served %}
-                        <!-- Display served status -->
-                        <p><i style="color: green;" class="fas fa-check"></i><span class="pl-2">Order has been served</span></p>
-                    {% else %}
-                        <!-- Mark as served form -->
-                        <form method="POST" action="{% url 'mark_as_served' order_id=order.pk %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-success">Mark as served</button>
-                        </form>
-                    {% endif %}
-                    </tbody>
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
-    </div>
-</div>
-{% else %}
-<div class="container">
-    <h3>Staff page</h3>
-</div>
-{% endif %}
+<body>
+    <h1>Today's Sales</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Price</th>
+                <th>Quantity Sold</th>
+                <th>Sales Per Item</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in sales_per_item %}
+            <tr>
+                <td>{{ item.product.title }}</td>
+                <td>RM {{ item.product.price }}</td>
+                <td>{{ item.product.quantity_sold }}</td>
+                <td>RM {{ item.total_sales|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h2>Todays's Total Revenue: RM {{ total_revenue|floatformat:2 }}</h2>
+</body>
 
 <style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        color: #4a2c2a;
+    }
+
     h1 {
-        font-family: 'Arial', sans-serif;
+        color: #4a2c2a;
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    h2 {
+        color: #4a2c2a;
+        text-align: center;
+        margin-top: 10px;
+        font-size: 24px;
         font-weight: bold;
-        color: #343a40;
-    }
-    .spaced-table tbody tr {
-        margin-bottom: 10px; /* Add margin to the bottom of each row */
     }
 
-    .spaced-table tbody tr td {
-        padding: 15px; /* Add padding to table cells for better spacing */
+
+    table {
+        width: 80%;
+        margin: 20px auto;
+        border-collapse: collapse;
+        box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
     }
 
-    /* Optional: Add some styles to the table for better appearance */
-    .spaced-table {
-        border-collapse: separate; /* Prevent borders from collapsing */
-        border-spacing: 0 10px; /* Add space between rows */
+    th, td {
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        text-align: center;
     }
 
-    .spaced-table thead th {
-        background-color: #343a40;
-        color: #fff;
+    th {
+        background-color: #d2b48c;
+        color: #4a2c2a;
     }
 
-    .spaced-table tbody tr {
-        background-color: #f8f9fa;
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
     }
 
-    .spaced-table tbody tr:hover {
-        background-color: #e9ecef;
+    tr:hover {
+        background-color: #f1e3c3;
+    }
+
+    td {
+        color: #4a2c2a;
     }
 </style>
-
-
-<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('.mark-as-served-form').submit(function(e) {
-            e.preventDefault(); // Prevent the default form submission
-            var orderId = $(this).find('.mark-served-btn').data('order-id');
-            var ajaxUrl = markAsServedUrl.replace('placeholder', orderId); // Ensure markAsServedUrl is correctly defined
-            console.log('Clicked orderId:', orderId); // Check if the click event is firing
-            
-            // Disable the button to prevent multiple clicks
-            $(this).find('.mark-served-btn').prop('disabled', true);
-            
-            // Optionally, change button text or add a loading indicator
-            $(this).find('.mark-served-btn').html('Processing...');
-            
-            $.ajax({
-                url: ajaxUrl,
-                method: 'POST',
-                data: { order_id: orderId, csrfmiddlewaretoken: '{{ csrf_token }}' },
-                success: function(response) {
-                    // Handle success response, e.g., update UI
-                    console.log('Order marked as served');
-                    // Optionally, change button text or add a success message
-                    $(this).find('.mark-served-btn').html('Served');
-                },
-                error: function(xhr, status, error) {
-                    // Handle error response
-                    console.error('Error marking order as served');
-                    // Optionally, change button text or add an error message
-                    $(this).find('.mark-served-btn').html('Error');
-                },
-                complete: function() {
-                    // Re-enable the button after the request is complete
-                    $(this).find('.mark-served-btn').prop('disabled', false);
-                }
-            });
-        });
-    });
-</script> -->
 
 {% endblock content %}
