@@ -93,9 +93,11 @@ class OrderPlaced(models.Model):
         return self.quantity*self.product.price
     
 class Customer(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    mobile = models.CharField(max_length=50, null=True)
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    full_name = models.CharField(max_length=100, null=True)
+    phone = models.CharField(max_length=100, null=True)
+    email = models.CharField(max_length=200, null=True)
+    profile_pic = models.ImageField(default="default_image.png",null=True, blank=True, upload_to='media/')
     
     def __str__(self):
-        return self.name
+        return self.full_name

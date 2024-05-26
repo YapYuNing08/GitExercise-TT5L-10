@@ -31,9 +31,5 @@ class MyPasswordResetForm(PasswordChangeForm):
 class CustomerProfileForm(forms.ModelForm):
     class Meta:
         model = Customer
-        fields = ['name', 'mobile']
-        widget = {
-            'name':forms.TextInput(attrs={'class':'form-control'}),
-            'mobile':forms.NumberInput(attrs={'class':'form-control'}),
-            
-        }
+        fields = '__all__'
+        exclude = ['user']
