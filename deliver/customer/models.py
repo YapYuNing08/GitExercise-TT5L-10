@@ -100,4 +100,4 @@ class Customer(models.Model):
     profile_pic = models.ImageField(default="default_image.png",null=True, blank=True, upload_to='media/')
     
     def __str__(self):
-        return self.full_name
+        return self.full_name if self.full_name else "Unnamed Customer"
