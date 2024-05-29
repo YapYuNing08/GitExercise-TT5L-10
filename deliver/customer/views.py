@@ -1,15 +1,48 @@
-from django.shortcuts import render, HttpResponse, redirect
+from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.views import View
 from django.db.models import Q
-from .models import MenuItem, Category, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel, OrderPlaced, RedemptionOption
+from .models import MenuItem, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel, OrderPlaced, RedemptionOption, RedeemedItem
 from .forms import CustomerRegistrationForm, CustomerProfileForm
 from django.db.models import Count
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import check_password
+
+def verify_item(request):
+    if request.method == 'POST':
+        redemption_id = request.POST.get('redemption_id')
+        admin_password = request.POST.get('admin_password')
+        try:
+            # Retrieve the superuser with username 'admin'
+            superuser = User.objects.get(username='admin')
+
+            # Check if the provided password matches the superuser's password
+            if check_password(admin_password, superuser.password):
+                # Assuming Redemption model has a foreign key to the user who redeemed it
+                redemption = RedeemedItem.objects.get(id=redemption_id)
+                # Remove the item from redeemed items
+                redemption.delete()
+                # Your verification logic here
+                messages.success(request, 'Item has been claimed successfully.')
+                # Redirect or render your response
+                return redirect('point')
+            else:
+                # Incorrect password, display error message
+                messages.error(request, 'Incorrect admin password. Please try again.')
+                # Redirect or render your response
+                return redirect('point')
+            
+        except User.DoesNotExist:
+            # Handle if the superuser 'admin' does not exist
+            messages.error(request, 'Admin user not found.')
+            # Redirect or render your response
+            return redirect('point')
+
+    return redirect('point')  # Redirect back to the rewards page if not a POST request
 
 def redeem_item(request):
     if request.method == 'POST':
@@ -21,26 +54,23 @@ def redeem_item(request):
             # Deduct points
             customer.points -= option.points_required
             customer.save()
-
+            
+            # Record the redemption
+            RedeemedItem.objects.create(customer=customer, option=option)
+            
             # Add success message
-            messages.success(request, f"Successfully redeemed {option.name}! Your remaining points: {customer.points}")
+            messages.success(request, f"Successfully redeemed {option.name}!")
         else:
             messages.error(request, "You do not have enough points to redeem this item.")
-
-            return redirect('point')
-
-    # Handle GET requests or invalid form submissions
-    return redirect('point')
+        
+        return redirect('point')
 
 def point(request):
-    # Retrieve or create the Customer profile
     user_profile, created = Customer.objects.get_or_create(user=request.user)
-    # Get the points associated with the user
     initial_points = user_profile.points
-    # Get redemption options
     redemption_options = RedemptionOption.objects.all()
-    # Pass the initial_points and redemption_options to the template
-    context = {'initial_points': initial_points, 'redemption_options': redemption_options}
+    redeemed_items = RedeemedItem.objects.filter(customer=user_profile)
+    context = {'initial_points': initial_points, 'redemption_options': redemption_options, 'redeemed_items': redeemed_items}
     return render(request, 'customer/point.html', context)
     
 class Index(View):
