@@ -111,3 +111,8 @@ class RedemptionOption(models.Model):
 
     def __str__(self):
         return self.name
+    
+class RedeemedItem(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    option = models.ForeignKey(RedemptionOption, on_delete=models.CASCADE)
+    date_redeemed = models.DateTimeField(auto_now_add=True)
