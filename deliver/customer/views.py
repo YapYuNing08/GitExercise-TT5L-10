@@ -1,4 +1,4 @@
-from django.shortcuts import render, HttpResponse, redirect
+from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.views import View
 from django.db.models import Q
 from .models import MenuItem, Category, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel, OrderPlaced, Ad
@@ -182,7 +182,7 @@ class MenuSearch(View):
 
         context = {
             'products': products,
-            'query': query
+            'query': query,
         }
 
         return render(request, 'customer/all_products.html', context)
@@ -198,7 +198,13 @@ class Menu(View):
 def all_products(request):
     # categories = Category.objects.all()
     products = Product.objects.all()
-    return render(request, 'customer/all_products.html', {'products': products})
+    query = request.GET.get('q')
+    if query:
+        products = products.filter(title__icontains=query)
+
+    latest_orders = OrderPlaced.objects.filter(user=request.user).order_by('-id')[:2]
+
+    return render(request, 'customer/all_products.html', {'products': products, 'latest_orders': latest_orders})
 
 
 class Category(View):
@@ -447,3 +453,12 @@ class updateAddress(View):
             messages.warning(request, "Invalid Input Data.")
         return redirect('address')
     
+
+def order_again(request, order_id):
+    previous_order = get_object_or_404(OrderPlaced, id=order_id, user=request.user)
+    
+    # Create a new cart item for each product in the previous order
+    Cart.objects.create(user=request.user, product=previous_order.product, quantity=previous_order.quantity)
+    
+    # Redirect to the cart page
+    return redirect('/cart')

@@ -69,6 +69,8 @@ urlpatterns = [
     path('password_change/', auth_view.PasswordChangeView.as_view(template_name='customer/changepassword.html', form_class=MyPasswordChangeForm),name='password_change'),
     path('password_change_done/', auth_view.PasswordChangeDoneView.as_view(template_name='customer/passwordchangedone.html'), name='password_change_done'),
 
-    
+    # path('order_again/<int:order_id>/', views.order_again, name='order_again'),
+    # path('order-again/', order_again, name='order_again'),
+    path('order_again/<int:order_id>/', views.order_again, name='order_again'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

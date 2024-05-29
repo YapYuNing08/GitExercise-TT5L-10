@@ -84,3 +84,6 @@ class MarkAsServed(View):
         # Optionally, redirect to a different URL or render a template
         return redirect('dashboard')
     
+
+
+    

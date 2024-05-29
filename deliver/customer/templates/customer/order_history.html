@@ -1,13 +1,14 @@
 {% extends 'customer/base.html' %}
 {% block content %}
 <div class="container my-5">
-    <h4 class="text-center">Order History</h4>
+    <h1 class="text-center">Order History</h1>
     <table class="table table-striped table-bordered table-hover">
         <thead class="thead-dark">
             <tr>
                 <th>Order Date</th>
                 <th>Product</th>
                 <th>Quantity</th>
+                <th>Order Again</th> 
             </tr>
         </thead>
         <tbody>
@@ -16,74 +17,12 @@
                 <td>{{ op.ordered_date|date:"Y-m-d" }}</td>
                 <td>{{ op.product.title }}</td>
                 <td>{{ op.quantity }}</td>
+                <td>
+                    <a href="{% url 'order_again' op.id %}" class="btn btn-primary">Order Again</a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
-
-<style>
-    .container.my-5 {
-        margin-top: 20px;
-        padding: 20px;
-        background-color: #f9f4f0;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    h4.text-center {
-        font-family: 'Arial', sans-serif;
-        font-weight: bold;
-        margin-bottom: 20px;
-        color: #5c4033; /* Dark brown */
-    }
-
-    .table {
-        width: 100%;
-        margin: 20px 0;
-        border-collapse: collapse;
-    }
-
-    .table th, .table td {
-        padding: 15px;
-        text-align: center;
-        vertical-align: middle;
-        border: 1px solid #d3b8ae;
-    }
-
-    .table th {
-        background-color: #8b4513; /* Saddle brown */
-        color: #fff;
-        font-family: 'Arial', sans-serif;
-        font-weight: bold;
-    }
-
-    .table-striped tbody tr:nth-of-type(odd) {
-        background-color: #f5e0c3;
-    }
-
-    .table-hover tbody tr:hover {
-        background-color: #e3d2b4;
-    }
-
-    .table td {
-        background-color: #ffffff;
-        color: #5c4033;
-        font-family: 'Arial', sans-serif;
-        font-size: 14px;
-    }
-
-    .table th, .table td {
-        transition: background-color 0.3s ease;
-    }
-
-    .table th:hover, .table td:hover {
-        background-color: #f0e5d8;
-    }
-
-    .table-bordered {
-        border: 1px solid #d3b8ae;
-    }
-</style>
-
 {% endblock content %}

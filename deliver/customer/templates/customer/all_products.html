@@ -85,34 +85,32 @@
 
 <div class="container my-5">
     <div class="row">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-sm-12 text-center">
-                <form method="GET" action="{% url 'menu-search' %}">
-                    <div class="md-form mt-0 active-cyan-2">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input class="form-control" name="q" type="text" placeholder="Search Our Menu" aria-label="Search" value="{{ request.GET.q }}" >
-                    </div>
-
-                    {% if request.GET.q %}
-                    <div class="input-group-append">
-                        <a href="{% url 'all_products' %}" class="btn btn-warning">Clear</a>
-                    </div>
-                    {% endif %}
-                </form>
-            </div>
-        </div>
-
         <div class="col-sm-3">
             <a href="{% url 'all_products' %}" class="list-group-item list-group-item-action" aria-current="true">ALL</a>
             <a href="{% url 'category' 'B' %}" class="list-group-item list-group-item-action" aria-current="true">BEVERAGE</a>
             <a href="{% url 'category' 'D' %}" class="list-group-item list-group-item-action" aria-current="true">DESSERT</a>
             <a href="{% url 'category' 'P' %}" class="list-group-item list-group-item-action" aria-current="true">PASTRIES</a>
             <a href="{% url 'category' 'M' %}" class="list-group-item list-group-item-action" aria-current="true">MAIN</a>
+
+            <!-- Order Again Section -->
+            <div class="order-again my-5">
+                <h6>Order Again</h6>
+                <ul class="list-group">
+                    {% for order in latest_orders %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ order.product.title }}</strong> (Quantity: {{ order.quantity }})
+                        </div>
+                        <a href="{% url 'order_again' order.id %}" class="btn btn-success btn-sm">Order Again</a>
+                    </li>
+                    {% endfor %}
+                    <a href="{% url 'order_history' %}" class="view-order-history">View All</a>
+                </ul>
+            </div>
         </div>
 
         <div class="col-sm-9">
-            <div class="row row-cols-2"> <!-- Added row-cols-2 to create 2 columns per row -->
-                
+            <div class="row row-cols-2"> 
                 {% for prod in products %}
                     <div class="col text-center mb-4">
                         <a href="{% url 'product_detail' prod.id %}" class="btn">
@@ -129,11 +127,10 @@
                 {% endfor %}
             </div>
         </div>
+    </div>
 
-        <div>
-            <a href="{% url 'checkout' %}" class="btn btn-success shadow px-5 py-2 mb-5">Check Out</a>
-        </div>
-
+    <div class="text-center">
+        <a href="{% url 'checkout' %}" class="btn btn-success shadow px-5 py-2 mb-5">Check Out</a>
     </div>
 </div>
 
@@ -146,42 +143,6 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 
-  h4.text-center {
-    font-family: 'Arial', sans-serif;
-    font-weight: bold;
-    margin-bottom: 20px;
-    color: #6f4e37; /* Brown text color */
-  }
-
-  .table {
-    width: 100%;
-    margin: 20px 0;
-    border-collapse: collapse;
-  }
-
-  .table th, .table td {
-    padding: 15px;
-    text-align: center;
-    vertical-align: middle;
-  }
-
-  .table th {
-    background-color: #6f4e37; /* Brown header background */
-    color: #fff; /* White text */
-  }
-
-  .table-bordered {
-    border: 1px solid #dee2e6;
-  }
-
-  .table-striped tbody tr:nth-of-type(odd) {
-    background-color: rgba(111, 78, 55, 0.05); /* Light brown stripe */
-  }
-
-  .table-hover tbody tr:hover {
-    background-color: rgba(111, 78, 55, 0.075); /* Light brown hover */
-  }
-
   .list-group-item-action {
     color: #6f4e37; /* Brown text */
     font-weight: bold;
@@ -191,13 +152,26 @@
     background-color: #f4f1ea; /* Light brown background on hover */
   }
 
-  .btn-outline-success {
-    border-color: #6f4e37; /* Brown border */
-    color: #6f4e37; /* Brown text */
+  .order-again {
+    background-color: #fff; /* White background */
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 
-  .btn:hover {
-    background-color: #f4f1ea;
+  .order-again h6 {
+    font-weight: bold;
+    color: #6f4e37;
+    margin-bottom: 20px;
+  }
+
+  .order-again .list-group-item {
+    padding: 10px;
+  }
+
+  .order-again .btn {
+    font-size: 12px;
+    padding: 5px 10px;
   }
 
 </style>
