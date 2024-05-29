@@ -1,158 +1,70 @@
 {% extends 'customer/base.html' %}
-{% load static %}
+
 {% block content %}
-
-<div class="stepper-wrapper">
-    <div class="stepper-item completed">
-      <div class="step-counter">1</div>
-      <div class="step-name">Add to Cart</div>
-    </div>
-    <div class="stepper-item completed">
-      <div class="step-counter">2</div>
-      <div class="step-name">Place Order</div>
-    </div>
-    <div class="stepper-item active">
-      <div class="step-counter">3</div>
-      <div class="step-name">Submit Order</div>
-    </div>
-  </div>
-
-  <style>
-    .stepper-wrapper {
-    margin-top: 10px;
-    display: flex;
-    justify-content: space-between;
-    }
-    .stepper-item {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex: 1;
-    }
-    .stepper-item::before {
-    position: absolute;
-    content: "";
-    border-bottom: 2px solid #ccc;
-    width: 100%;
-    top: 20px;
-    left: -50%;
-    z-index: 2;
-    }
-    .stepper-item::after {
-    position: absolute;
-    content: "";
-    border-bottom: 2px solid #ccc;
-    width: 100%;
-    top: 20px;
-    left: 50%;
-    z-index: 2;
-    }
-    .stepper-item .step-counter {
-    position: relative;
-    z-index: 5;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #ccc;
-    margin-bottom: 6px;
-    }
-    .stepper-item.active .step-counter{
-    font-weight: bold;
-    background-color: khaki;
-    }
-    .stepper-item.completed .step-counter {
-    background-color: khaki;
-    }
-    .stepper-item.completed::after {
-    position: absolute;
-    content: "";
-    border-bottom: 2px solid khaki;
-    width: 100%;
-    top: 20px;
-    left: 50%;
-    z-index: 3;
-    }
-    .stepper-item:first-child::before {
-    content: none;
-    }
-    .stepper-item:last-child::after {
-    content: none;
-    }
-  </style>
-
-
-<div class="container">
-    {% if messages %}
-        {% for msg in messages %}
-        <div class="alert alert-danger" role="alert">
-            {{msg}}
+<div class="container mb-5">
+    <div class="row justify-content-center mt-1">
+        <div class="col-md-5 col-sm-12 p-4 text-center">
+            <h1>Order Submitted!</h1>
+            <p>Thank you for your order! Your food is being made and will be served soon!</p>
+            <br>
+            <!-- Display total points earned from the current order -->
+            <h4>Total Points Earned: {{ total_points }}</h4>
         </div>
-        {% endfor %}
-    {% endif %}
+    </div>
 
-    <div class="row mt-5">
-        <div class="col-sm-6">
-            <h4>Order Summary</h4>
-            <hr>
-            <form method="post" action="{% url 'order_placed' %}" id="order_form">
-                {% csrf_token %}
-                {% for item in cart_items_with_total %}
-                <div class="card mb-2">
-                    <div class="card-body d-flex justify-content-between">
-                        <span>{{ item.quantity }} x</span> &nbsp; &nbsp; &nbsp;
-                        <span class="product-title">{{ item.product.title }}</span>
-                        <span class="product-price">RM {{ item.total_price|floatformat:2 }}</span>
-                    </div>
-                    <!-- Add hidden input fields for each item and its quantity -->
-                    <input type="hidden" name="product_id_{{ forloop.counter }}" value="{{ item.product.id }}">
-                    <input type="hidden" name="quantity_{{ forloop.counter }}" value="{{ item.quantity }}">
-                </div>
-                {% endfor %}
-            </form>
-        </div>
-        
-        <div class="col-sm-4 offset-sm-1">
-            <div>
-            <label for="method">Choose your method: </label>
-                <select>
-                    <option>Dine In</option>
-                    <option>Pick Up</option>
-                    <option>Cash On Delivery</option>
-                </select>
+    <div class="row justify-content-center mt-3">
+        <div class="col-md-8 col-sm-12 text-center">
+            <h2>Items Ordered: </h2>
+            <div class="ordered-items">
+                {% if ordered_items %}
+                    {% for item in ordered_items %}
+                        <div class="ordered-item">
+                            <span class="quantity">{{ item.quantity }} x</span>
+                            <span class="product-title">{{ item.product.title }}</span>
+                            <!-- <span class="product-price">RM {{ item.total_price|floatformat:2 }}</span> -->
+                        </div>
+                    {% endfor %}
+                {% else %}
+                <p class="text-muted">No items in your order.</p>
+                {% endif %}
             </div>
             <br>
-            
-                <div class="form-check mb-3">
-                    <h5>Total Price: </h5>
-                    <h5>RM {{ totalamount|floatformat:2 }}</h5>
-                </div>
-                <div class="text-end">
-                    <button type="submit" form="order_form" class="btn btn-warning px-5 fw-bold">Submit Order</button>
-                </div> 
-            </form>
+            <a href="{% url 'about' %}" class="btn btn-primary">Go to the homepage</a>
         </div>
     </div>
-</div>
+</div> 
+
 <style>
-    
-    .card-body {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+.ordered-item {
+    display: inline-block;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+}
 
-    .product-title {
-        flex-grow: 1
-    }
+.quantity {
+    font-weight: bold;
+    width: 100px;
+    text-align: left;
+}
 
-    .product-price {
-        text-align: right;
-        min-width: 100px; /* Adjust as needed */
-    }
+.product-title {
+    flex-grow: 1;
+    margin-left: 10px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.ordered-items {
+    margin-top: 20px;
+}
+
+/* Style for the 'No items in your order' message */
+.text-muted {
+    font-style: italic;
+}
 </style>
-
 {% endblock content %}
