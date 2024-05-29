@@ -2,28 +2,47 @@
 
 {% block content %}
 <body>
-    <h1>Today's Sales</h1>
+    <h1>Sales Report</h1>
     <table>
         <thead>
             <tr>
                 <th>Title</th>
                 <th>Price</th>
-                <th>Quantity Sold</th>
-                <th>Sales Per Item</th>
+                <th>Quantity Sold Per Day</th>
+                <th>Total Quantity Sold</th>
+                <th>Sales Per Day</th>
+                <th>Total Sales</th>
             </tr>
         </thead>
         <tbody>
             {% for item in sales_per_item %}
             <tr>
-                <td>{{ item.product.title }}</td>
-                <td>RM {{ item.product.price }}</td>
-                <td>{{ item.product.quantity_sold }}</td>
-                <td>RM {{ item.total_sales|floatformat:2 }}</td>
+                <td class="np">{{ item.product.title }}</td>
+                <td class="np">RM {{ item.product.price }}</td>
+                <td class="per-day-column">
+                    {% for today_item in sales_per_item_today %}
+                        {% if today_item.product == item.product %}
+                            {{ today_item.quantity_sold_today }}
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                <td class="total-column">{{ item.product.quantity_sold }}</td>
+                <td class="per-day-column">
+                    {% for today_item in sales_per_item_today %}
+                        {% if today_item.product == item.product %}
+                            RM {{ today_item.total_sales_today|floatformat:2 }}
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                <td class="total-column">RM {{ item.total_sales|floatformat:2 }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    <h2>Todays's Total Revenue: RM {{ total_revenue|floatformat:2 }}</h2>
+    <div class="total-revenue-container">
+        <h2>Today's Revenue: RM {{ total_revenue_today|floatformat:2 }}</h2>
+        <h2>Total Revenue: RM {{ total_revenue|floatformat:2 }}</h2>
+    </div>
 </body>
 
 <style>
@@ -37,16 +56,22 @@
         color: #4a2c2a;
         text-align: center;
         margin-top: 20px;
+        font-weight: bold;
+    }
+
+    .total-revenue-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 200px;
+        margin-top: 10px;
     }
 
     h2 {
         color: #4a2c2a;
-        text-align: center;
-        margin-top: 10px;
         font-size: 24px;
         font-weight: bold;
     }
-
 
     table {
         width: 80%;
@@ -66,12 +91,33 @@
         color: #4a2c2a;
     }
 
-    tr:nth-child(even) {
-        background-color: #f9f9f9;
+    .per-day-column {
+        background-color: #fbf3df; 
     }
 
-    tr:hover {
-        background-color: #f1e3c3;
+    .total-column {
+        background-color: #fbeecc;
+    }
+
+    /* tr:nth-child(even) .per-day-column {
+        background-color: #e8d7b5; 
+    }
+
+    tr:nth-child(even) .total-column {
+        background-color: #e0e0e0; 
+    } */
+
+
+    tr:hover .np {
+        background-color: #ececeb; 
+    }
+
+    tr:hover .per-day-column {
+        background-color: #f8ecd0; 
+    }
+
+    tr:hover .total-column {
+        background-color: #f5e4bc; 
     }
 
     td {
