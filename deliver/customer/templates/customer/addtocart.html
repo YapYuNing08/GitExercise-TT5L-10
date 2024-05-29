@@ -9,11 +9,11 @@
     </div>
     <div class="stepper-item active">
       <div class="step-counter">2</div>
-      <div class="step-name">Place Order</div>
+      <div class="step-name">Checkout</div>
     </div>
     <div class="stepper-item">
       <div class="step-counter">3</div>
-      <div class="step-name">Submit Order</div>
+      <div class="step-name">Place Order</div>
     </div>
   </div>
 
@@ -143,17 +143,42 @@
                         </li>
                     </ul>
                
-                    <div class="d-grid"><a href="{% url 'checkout' %}" class="btn btn-primary">Place Order</a></div>
+                    <div class="d-grid"><a href="{% url 'checkout' %}" class="btn btn-primary">Checkout</a></div>
                 </div>
             </div>
         </div>
         {% else %}
-            <h1 class="text-center mb-5">Cart is Empty</h1>
+            <h1 class="text-center">Looks like your</h1>
+            <h1 class="text-center">cart is empty!</h1>
+            <div class="button-container">
+                <a href="{% url 'all_products' %}" class="btn btn-primary">View Menu</a>
+            </div>
         {% endif %}
     </div>
 </div>
 
 <style>
+    .button-container {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .btn-primary {
+        display: inline-block;
+        padding: 10px 20px; /* Increase padding for larger button */
+        font-size: 15px; /* Increase font size */
+        color: #ffffff;
+        background-color: #f0ad4e;
+        border: none;
+        border-radius: 5px; /* Slightly increase border-radius for larger button */
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .btn-primary:hover {
+        background-color: #ec971f;
+    }
+
     .btn-warning {
     background-color: #d2b48c;
     color: #4a2c2a;
