@@ -6,6 +6,9 @@ from customer.models import OrderModel, ReservationModel, OrderPlaced, Ad
 from django.http import JsonResponse, HttpResponse
 import json
 # from django.contrib.auth.decorators import login_required
+# from django.contrib.admin.views.decorators import staff_member_required
+from customer.forms import AdForm
+from customer.models import Ad
 
 class Index(View):
     def get(self, request, *args, **kwargs):
@@ -84,6 +87,20 @@ class MarkAsServed(View):
         # Optionally, redirect to a different URL or render a template
         return redirect('dashboard')
     
+
+# def edit_ad(request):
+#     # ad = Ad.objects.filter(active=True).first()
+#     ad = Ad.objects.filter(is_active=True).first()
+
+#     if request.method == 'POST':
+#         form = AdForm(request.POST, request.FILES, instance=ad)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('about')
+#     else:
+#         form = AdForm(instance=ad)
+
+#     return render(request, 'edit_ad.html', {'form': form})
 
 
     

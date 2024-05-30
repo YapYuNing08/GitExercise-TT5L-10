@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField, PasswordChangeForm
 from django.contrib.auth.models import User
-from . models import Customer
+from . models import Customer, Ad
 
 class LoginForm(AuthenticationForm):
     username = UsernameField(widget=forms.TextInput(attrs={'autofocus':'True', 'class':'form-control'}))
@@ -37,3 +37,9 @@ class CustomerProfileForm(forms.ModelForm):
             'mobile':forms.NumberInput(attrs={'class':'form-control'}),
             'address':forms.TextInput(attrs={'class':'form-control'}),
         }
+
+
+class AdForm(forms.ModelForm):
+    class Meta:
+        model = Ad
+        fields = ['title', 'description', 'image']
