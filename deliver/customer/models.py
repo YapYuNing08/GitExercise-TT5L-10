@@ -100,6 +100,7 @@ class Customer(models.Model):
     phone = models.CharField(max_length=100, null=True)
     email = models.CharField(max_length=200, null=True)
     profile_pic = models.ImageField(default="default_image.png",null=True, blank=True, upload_to='media/')
+    points = models.IntegerField(default=0)
     
     def __str__(self):
         return self.full_name if self.full_name else "Unnamed Customer"
