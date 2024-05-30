@@ -1,0 +1,23 @@
+{% extends 'admin/base_site.html' %}
+
+{% block content %}
+  <h1>Verified Redeemed Items</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Customer</th>
+        <th>Date Redeemed</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in verified_items %}
+        <tr>
+          <td>{{ item.option.name }}</td>
+          <td>{{ item.customer.user.username }}</td>
+          <td>{{ item.date_redeemed }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

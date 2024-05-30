@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.views import View
 from django.utils.timezone import datetime
-from customer.models import OrderModel, ReservationModel, OrderPlaced, Product
+from customer.models import OrderModel, ReservationModel, OrderPlaced, Product, RedeemedItem
 from django.http import JsonResponse, HttpResponse
 import json
 # from django.contrib.auth.decorators import login_required
@@ -15,12 +15,8 @@ class Index(View):
             ordered_date__year=today.year, ordered_date__month=today.month, ordered_date__day=today.day).order_by('-ordered_date')
         
         # loop through the orders and add the price value
-        # total_revenue = sum(order.price for order in orders)
 
         total_orders = len(orders)
-        
-        # for order in orders:
-        #     total_revenue += order.price
 
         # pass total number of orders and total revenue into template
         context = {

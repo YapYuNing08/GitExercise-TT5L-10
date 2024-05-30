@@ -8,4 +8,5 @@ urlpatterns = [
     path('restaurant/index/', Index.as_view(), name='restaurant_index'),
     path('restaurant/reservation_details/<int:pk>/', ReservationDetails.as_view(), name='reservation_details'),
     path('mark_as_served/<int:order_id>/', MarkAsServed.as_view(), name='mark_as_served'),
+    # path('admin/verified-redeemed-items/', views.verified_redeemed_items, name='verified_redeemed_items'),
     ]

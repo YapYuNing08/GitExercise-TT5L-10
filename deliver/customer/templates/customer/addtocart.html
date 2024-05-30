@@ -112,8 +112,12 @@
                                 </div>
 
                                 <div class="d-flex justify-content-between">
-                                    <a href="#" class="remove-cart btn btn-sm btn-secondary mr-3" pid={{item.product.id}}>Remove item</a>
-                                    <p class="mb-0"><span><strong>RM {{item.product.price}}</strong></span></p>
+                                    <a href="#" class="remove-cart btn btn-sm btn-secondary mr-3" pid="{{item.product.id}}">Remove item</a>
+                                    <p class="mb-0">
+                                        <span id="total-price-{{ item.product.id }}" data-price-per-unit="{{ item.product.price }}">
+                                            RM {% widthratio item.quantity 1 item.product.price %}
+                                        </span>
+                                    </p>
                                 </div>
                             </div>
                             
@@ -202,4 +206,58 @@
     margin-top: -10px; /* Adjust this value as needed */
 }
 </style>
+
+<script>
+    $(document).ready(function(){
+        $('.plus-cart, .minus-cart').click(function(){
+            var id = $(this).closest('.cart-item').data('id');
+            var eml = $(this).siblings('#quantity');
+            
+            $.ajax({
+                type: "GET",
+                url: "/pluscart",
+                data: {
+                    prod_id: id
+                },
+                success: function(data){
+                    eml.text(data.quantity);
+                    updateTotalAmount(data.amount, data.totalamount);
+                    updateCartItemPrice(id, data.quantity);
+                },
+                error: function(xhr, status, error){
+                    console.error("Error in plus_cart:", status, error);
+                }
+            });
+        });
+    
+        $('.remove-cart').click(function(){
+            var id = $(this).closest('.cart-item').data('id');
+            
+            $.ajax({
+                type: "GET",
+                url: "/removecart",
+                data: {
+                    prod_id: id
+                },
+                success: function(data){
+                    updateTotalAmount(data.amount, data.totalamount);
+                    $('.cart-item[data-id="' + id + '"]').remove();
+                },
+                error: function(xhr, status, error){
+                    console.error("Error in remove_cart:", status, error);
+                }
+            });
+        });
+    
+        function updateTotalAmount(amount, totalamount) {
+            $('#amount').text('RM ' + amount.toFixed(2));
+            $('#totalamount').text('RM ' + totalamount.toFixed(2));
+        }
+    
+        function updateCartItemPrice(id, quantity) {
+            var pricePerUnit = parseFloat($('#total-price-' + id).data('price-per-unit'));
+            $('#total-price-' + id).text('RM ' + (quantity * pricePerUnit).toFixed(2));
+        }
+    });
+    </script>
 {% endblock content %}
