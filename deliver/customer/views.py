@@ -414,21 +414,21 @@ class Login(View):
 
 class ProfileView(View):
     def get(self, request):
-        form = CustomerProfileForm()
-        return render(request, 'customer/profile.html', locals())
-    def post(self, request):
-        form = CustomerProfileForm(request.POST)
-        if form.is_valid():
-            user = request.user
-            name = form.cleaned_data['name']
-            mobile = form.cleaned_data['mobile']
+        customer = request.user.customer
+        form = CustomerProfileForm(instance=customer)
+        return render(request, 'customer/profile.html', {'form': form})
 
-            reg = Customer(user=user, name=name, mobile=mobile)
-            reg.save()
-            messages.success(request, "Congratulations! Profile Save Successfully.")
-        else:
-            messages.warning(request, "Invalid Input Data")
-        return render(request, 'customer/profile.html', locals())
+    def post(self, request):
+        customer = request.user.customer
+        form = CustomerProfileForm(request.POST, request.FILES, instance=customer)
+        if form.is_valid():
+            form.save()
+            return redirect('profile_info')
+        return render(request, 'customer/profile.html', {'form': form})
+    
+def profile_info_view(request):
+    customer = request.user.customer
+    return render(request, 'customer/profile_info.html', {'customer': customer})
 
 
 
