@@ -95,13 +95,14 @@ class OrderPlaced(models.Model):
         return self.quantity*self.product.price
     
 class Customer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    mobile = models.IntegerField(default=0)
-    points = models.IntegerField(default=0)
-
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    full_name = models.CharField(max_length=100, null=True)
+    phone = models.CharField(max_length=100, null=True)
+    email = models.CharField(max_length=200, null=True)
+    profile_pic = models.ImageField(default="default_image.png",null=True, blank=True, upload_to='media/')
+    
     def __str__(self):
-        return self.name
+        return self.full_name if self.full_name else "Unnamed Customer"
     
 class RedemptionOption(models.Model):
     name = models.CharField(max_length=100)
