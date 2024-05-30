@@ -51,6 +51,7 @@ urlpatterns = [
 
     path("product_detail/<int:pk>", ProductDetail.as_view(), name="product_detail"),
     path('profile/', ProfileView.as_view(), name='profile'),
+    path('profile_info/', views.profile_info_view, name='profile_info'),
     
     path('address/', views.address, name='address'),
     path('updateAddress/<int:pk>', views.updateAddress.as_view(), name='updateAddress'),
