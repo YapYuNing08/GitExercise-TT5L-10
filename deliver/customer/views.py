@@ -1,47 +1,16 @@
-from django.shortcuts import render, HttpResponse, redirect
+from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.views import View
 from django.db.models import Q
-from .models import MenuItem, Category, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel, OrderPlaced, RedemptionOption
+from .models import MenuItem, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel, OrderPlaced, RedemptionOption, RedeemedItem
 from .forms import CustomerRegistrationForm, CustomerProfileForm
 from django.db.models import Count
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
-
-def redeem_item(request):
-    if request.method == 'POST':
-        option_id = request.POST.get('option_id')
-        option = RedemptionOption.objects.get(pk=option_id)
-        
-        customer = request.user.customer
-        if customer.points >= option.points_required:
-            # Deduct points
-            customer.points -= option.points_required
-            customer.save()
-
-            # Add success message
-            messages.success(request, f"Successfully redeemed {option.name}! Your remaining points: {customer.points}")
-        else:
-            messages.error(request, "You do not have enough points to redeem this item.")
-
-            return redirect('point')
-
-    # Handle GET requests or invalid form submissions
-    return redirect('point')
-
-def point(request):
-    # Retrieve or create the Customer profile
-    user_profile, created = Customer.objects.get_or_create(user=request.user)
-    # Get the points associated with the user
-    initial_points = user_profile.points
-    # Get redemption options
-    redemption_options = RedemptionOption.objects.all()
-    # Pass the initial_points and redemption_options to the template
-    context = {'initial_points': initial_points, 'redemption_options': redemption_options}
-    return render(request, 'customer/point.html', context)
+from django.contrib.auth.hashers import check_password
     
 class Index(View):
     def get(self, request, *args, **kwargs):
@@ -371,27 +340,27 @@ def order_history(request):
     order_placed=OrderPlaced.objects.filter(user=request.user).order_by('-ordered_date')
     return render(request, 'customer/order_history.html', locals())
 
+
 def plus_cart(request):
     if request.method == 'GET':
         prod_id = request.GET.get('prod_id') 
         cart_item = Cart.objects.filter(Q(product=prod_id) & Q(user=request.user)).first()
-   
+
         if cart_item:
             cart_item.quantity += 1
             cart_item.save()
-
         else:
-            Cart.objects.create(user=request.user, product_id=prod_id, quantity=1)
+            cart_item = Cart.objects.create(user=request.user, product_id=prod_id, quantity=1)
+
         cart = Cart.objects.filter(user=request.user)
         amount = sum(item.quantity * item.product.price for item in cart)
         data = {
-                'quantity': cart_item.quantity,
-                'amount': amount,
-                'totalamount': amount,  # Assuming totalamount is the same as amount in this context
-            }
+            'quantity': cart_item.quantity,
+            'amount': amount,
+            'totalamount': amount,
+        }
 
-        return JsonResponse(data) 
-                
+        return JsonResponse(data)
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
@@ -409,7 +378,7 @@ def minus_cart(request):
             data = {
                 'quantity': cart_item.quantity,
                 'amount': amount,
-                'totalamount': amount,  # Assuming totalamount is the same as amount in this context
+                'totalamount': amount,
             }
             return JsonResponse(data)
         else:
@@ -419,16 +388,16 @@ def minus_cart(request):
 
 def remove_cart(request):
     if request.method == 'GET':
-        prod_id = request.GET.get('prod_id') 
+        prod_id = request.GET.get('prod_id')
         cart_item = Cart.objects.filter(Q(product=prod_id) & Q(user=request.user)).first()
         if cart_item:
-            cart_item_quantity = cart_item.quantity  # Store the quantity before deletion
-            cart_item.delete()  # Delete the cart item
+            cart_item_quantity = cart_item.quantity
+            cart_item.delete()
 
             cart = Cart.objects.filter(user=request.user)
             amount = sum(item.quantity * item.product.price for item in cart)
             data = {
-                'quantity': cart_item_quantity,  # Use the stored quantity before deletion
+                'quantity': cart_item_quantity,
                 'amount': amount,
                 'totalamount': amount,
             }
@@ -438,14 +407,9 @@ def remove_cart(request):
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
-
 class Login(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/login.html')
-    
-# class PasswordResetView(View):
-#     def get(self, request, *args, **kwargs):
-#         return render(request, 'customer/login.html')
     
 
 class ProfileView(View):
@@ -491,3 +455,63 @@ class updateAddress(View):
             messages.warning(request, "Invalid Input Data.")
         return redirect('address')
     
+def point(request):
+    user_profile, created = Customer.objects.get_or_create(user=request.user)
+    initial_points = user_profile.points
+    redemption_options = RedemptionOption.objects.all()
+    redeemed_items = RedeemedItem.objects.filter(customer=user_profile)
+    context = {'initial_points': initial_points, 'redemption_options': redemption_options, 'redeemed_items': redeemed_items}
+    return render(request, 'customer/point.html', context)
+
+def redeem_item(request):
+    if request.method == 'POST':
+        option_id = request.POST.get('option_id')
+        option = RedemptionOption.objects.get(pk=option_id)
+        
+        customer = request.user.customer
+        if customer.points >= option.points_required:
+            # Deduct points
+            customer.points -= option.points_required
+            customer.save()
+            
+            # Record the redemption
+            RedeemedItem.objects.create(customer=customer, option=option)
+            
+            # Add success message
+            messages.success(request, f"Successfully redeemed {option.name}!")
+        else:
+            messages.error(request, "You do not have enough points to redeem this item.")
+        
+        return redirect('point')
+
+def verify_item(request):
+    if request.method == 'POST':
+        redemption_id = request.POST.get('redemption_id')
+        admin_password = request.POST.get('admin_password')
+        try:
+            # Retrieve the superuser with username 'admin'
+            superuser = User.objects.get(username='admin')
+
+            # Check if the provided password matches the superuser's password
+            if check_password(admin_password, superuser.password):
+                # Assuming Redemption model has a foreign key to the user who redeemed it
+                redemption = RedeemedItem.objects.get(id=redemption_id)
+                # Remove the item from redeemed items
+                redemption.delete()
+                # Your verification logic here
+                messages.success(request, 'Item has been claimed successfully.')
+                # Redirect or render your response
+                return redirect('point')
+            else:
+                # Incorrect password, display error message
+                messages.error(request, 'Incorrect admin password. Please try again.')
+                # Redirect or render your response
+                return redirect('point')
+            
+        except User.DoesNotExist:
+            # Handle if the superuser 'admin' does not exist
+            messages.error(request, 'Admin user not found.')
+            # Redirect or render your response
+            return redirect('point')
+
+    return redirect('point')  # Redirect back to the rewards page if not a POST request
