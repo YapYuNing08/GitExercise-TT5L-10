@@ -308,9 +308,12 @@ def order_placed(request):
             cart_item = Cart.objects.filter(user=user, product_id=product_id).first()
             if cart_item:
                 ordered_items.append({
-                    'product': cart_item.product,
+                    'product_id': cart_item.product.id,
+                    'title': cart_item.product.title,
+                    'price': cart_item.product.price,
                     'quantity': quantity,
-                    'total_price': cart_item.product.price * quantity
+                    'total_price': cart_item.product.price * quantity,
+                    'is_served': False  # Initial status is not served
                 })
 
                 # Calculate points based on the total price of the item
@@ -321,7 +324,7 @@ def order_placed(request):
                 cart_item.product.quantity_sold += quantity
                 cart_item.product.save()
 
-                OrderPlaced.objects.create(user=user, product=cart_item.product, quantity=quantity, status='Pending', points=item_points)
+                OrderPlaced.objects.create(user=user, product=cart_item.product, quantity=quantity, food_status='Pending', points=item_points)
                 cart_item.delete()  # Remove the cart item after ordering
 
         user_profile, created = Customer.objects.get_or_create(user=request.user)
@@ -332,13 +335,12 @@ def order_placed(request):
 
         # Pass the ordered items and total points to the new HTML page
         context = {'ordered_items': ordered_items, 'total_points': total_points, 'initial_points': initial_points}
-        return render(request, 'customer/order_summary.html', context)  # Render the order summary page
+    return render(request, 'customer/order_summary.html', context)
 
-    return redirect('checkout')  # Redirect to the checkout page if the request method is not POST
 
 def order_history(request):
-    order_placed=OrderPlaced.objects.filter(user=request.user).order_by('-ordered_date')
-    return render(request, 'customer/order_history.html', locals())
+    order_placed = OrderPlaced.objects.filter(user=request.user).order_by('-ordered_date')
+    return render(request, 'customer/order_history.html', {'order_placed': order_placed})
 
 
 def plus_cart(request):
@@ -417,7 +419,7 @@ class ProfileView(View):
         customer = request.user.customer
         form = CustomerProfileForm(instance=customer)
         return render(request, 'customer/profile.html', {'form': form})
-
+    
     def post(self, request):
         customer = request.user.customer
         form = CustomerProfileForm(request.POST, request.FILES, instance=customer)
@@ -425,12 +427,10 @@ class ProfileView(View):
             form.save()
             return redirect('profile_info')
         return render(request, 'customer/profile.html', {'form': form})
-    
+
 def profile_info_view(request):
     customer = request.user.customer
     return render(request, 'customer/profile_info.html', {'customer': customer})
-
-
 
 def address(request):
     add = Customer.objects.filter(user=request.user)
