@@ -78,38 +78,19 @@ $('.remove-cart').click(function(){
 })
 
 
-// $('.plus-wishlist').click(function(){
-//     var id=$(this).attr("pid").toString();
-//     $.ajax({
-//         type:"GET",
-//         url:"/pluswishlist",
-//         data:{
-//             prod_id:id
-//         },
-//         success:function(data){
-//             //alert(data.message)
-//             window.location.href = `http://localhost:8000/product-detail/${id}`
-//         }
-//     })
-// })
+// document.addEventListener("DOMContentLoaded", function() {
+//     // Show the pop-up after 1 seconds
+//     setTimeout(function() {
+//         document.getElementById("popup").style.display = "flex";
+//     }, 1000);
+// });
 
-
-// $('.minus-wishlist').click(function(){
-//     var id=$(this).attr("pid").toString();
-//     $.ajax({
-//         type:"GET",
-//         url:"/minuswishlist",
-//         data:{
-//             prod_id:id
-//         },
-//         success:function(data){
-//             window.location.href = `http://localhost:8000/product-detail/${id}`
-//         }
-//     })
-// })
+// function closePopup() {
+//     document.getElementById("popup").style.display = "none";
+// }
 
 document.addEventListener("DOMContentLoaded", function() {
-    // Show the pop-up after 2 seconds
+    // Show the pop-up after 1 second
     setTimeout(function() {
         document.getElementById("popup").style.display = "flex";
     }, 1000);

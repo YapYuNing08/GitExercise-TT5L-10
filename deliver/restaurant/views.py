@@ -2,32 +2,21 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.views import View
 from django.utils.timezone import datetime
-from customer.models import OrderModel, ReservationModel, OrderPlaced, Ad
+from customer.models import OrderModel, ReservationModel, OrderPlaced, Product, RedeemedItem
 from django.http import JsonResponse, HttpResponse
 import json
 # from django.contrib.auth.decorators import login_required
-# from django.contrib.admin.views.decorators import staff_member_required
-from customer.forms import AdForm
-from customer.models import Ad
 
 class Index(View):
-    def get(self, request, *args, **kwargs):
-        return render(request, 'restaurant/index.html')
-
-class Dashboard(View):
     def get(self, request, *args, **kwargs):
         # get the current date
         today = datetime.today()
         orders = OrderPlaced.objects.filter(
             ordered_date__year=today.year, ordered_date__month=today.month, ordered_date__day=today.day).order_by('-ordered_date')
-
+        
         # loop through the orders and add the price value
-        # total_revenue = sum(order.price for order in orders)
 
         total_orders = len(orders)
-        
-        # for order in orders:
-        #     total_revenue += order.price
 
         # pass total number of orders and total revenue into template
         context = {
@@ -36,7 +25,7 @@ class Dashboard(View):
             'total_orders': total_orders
         }
 
-        return render(request, 'restaurant/dashboard.html', context)
+        return render(request, 'restaurant/index.html', context)
 
     def test_func(self):
         return self.request.user.groups.filter(name='Staff').exists()
@@ -85,22 +74,39 @@ class MarkAsServed(View):
         order.is_served = True
         order.save()
         # Optionally, redirect to a different URL or render a template
-        return redirect('dashboard')
+        return redirect('restaurant_index')
     
+class Dashboard(View):
+    def get(self, request, *args, **kwargs):
+        today = datetime.today().date()
 
-# def edit_ad(request):
-#     # ad = Ad.objects.filter(active=True).first()
-#     ad = Ad.objects.filter(is_active=True).first()
+        products = Product.objects.all()
 
-#     if request.method == 'POST':
-#         form = AdForm(request.POST, request.FILES, instance=ad)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('about')
-#     else:
-#         form = AdForm(instance=ad)
+        # Calculate overall total sales per item and total revenue
+        sales_per_item = [{'product': product, 'total_sales': product.price * product.quantity_sold} for product in products]
+        total_revenue = sum(item['total_sales'] for item in sales_per_item)
 
-#     return render(request, 'edit_ad.html', {'form': form})
+        # Filter order items for today
+        order_items_today = OrderPlaced.objects.filter(ordered_date__date=today)
 
+        # Calculate sales per item and total revenue for today
+        sales_per_item_today = []
+        for product in products:
+            quantity_sold_today = sum(item.quantity for item in order_items_today if item.product == product)
+            total_sales_today = sum(item.quantity * item.product.price for item in order_items_today if item.product == product)
+            sales_per_item_today.append({
+                'product': product,
+                'quantity_sold_today': quantity_sold_today,
+                'total_sales_today': total_sales_today
+            })
+        
+        total_revenue_today = sum(item['total_sales_today'] for item in sales_per_item_today)
 
-    
+        context = {
+            'sales_per_item': sales_per_item,
+            'total_revenue': total_revenue,
+            'sales_per_item_today': sales_per_item_today,
+            'total_revenue_today': total_revenue_today
+        }
+
+        return render(request, 'restaurant/dashboard.html', context)

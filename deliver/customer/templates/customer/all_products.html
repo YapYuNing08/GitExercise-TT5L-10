@@ -84,6 +84,26 @@
 </style>
 
 <div class="container my-5">
+  <div class="row">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-sm-12 text-center">
+          <form method="GET" action="{% url 'menu-search' %}">
+              <div class="md-form mt-0 active-cyan-2">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <input class="form-control" name="q" type="text" placeholder="Search Our Menu" aria-label="Search" value="{{ request.GET.q }}" >
+              </div>
+
+              {% if request.GET.q %}
+              <div class="input-group-append">
+                  <a href="{% url 'all_products' %}" class="btn btn-warning">Clear</a>
+              </div>
+              {% endif %}
+          </form>
+      </div>
+  </div>
+</div>
+
+<div class="container my-5">
     <div class="row">
         <div class="col-sm-3">
             <a href="{% url 'all_products' %}" class="list-group-item list-group-item-action" aria-current="true">ALL</a>
@@ -91,21 +111,31 @@
             <a href="{% url 'category' 'D' %}" class="list-group-item list-group-item-action" aria-current="true">DESSERT</a>
             <a href="{% url 'category' 'P' %}" class="list-group-item list-group-item-action" aria-current="true">PASTRIES</a>
             <a href="{% url 'category' 'M' %}" class="list-group-item list-group-item-action" aria-current="true">MAIN</a>
-
+            
             <!-- Order Again Section -->
             <div class="order-again my-5">
                 <h6>Order Again</h6>
                 <ul class="list-group">
                     {% for order in latest_orders %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>{{ order.product.title }}</strong> (Quantity: {{ order.quantity }})
+                    <li class="list-group-item order-again-item">
+                        <div class="order-info">
+                            <div class="order-title"><strong>{{ order.product.title }}</strong></div>
+                            <div class="order-quantity">Quantity: {{ order.quantity }}</div>
                         </div>
-                        <a href="{% url 'order_again' order.id %}" class="btn btn-success btn-sm">Order Again</a>
+                        <br>
+                        <br>
+                        <a href="{% url 'order_again' order.id %}" class="btn btn-success btn-sm order-again-btn">Order Again</a>
                     </li>
                     {% endfor %}
                     <a href="{% url 'order_history' %}" class="view-order-history">View All</a>
                 </ul>
+            </div>
+
+            <br>
+            <!-- Checkout Section -->
+            <h6>Nothing to add?</h6>
+            <div>
+              <a href="{% url 'showcart' %}" class="btn btn-primary">Checkout Now!</a>
             </div>
         </div>
 
@@ -127,10 +157,6 @@
                 {% endfor %}
             </div>
         </div>
-    </div>
-
-    <div class="text-center">
-        <a href="{% url 'checkout' %}" class="btn btn-success shadow px-5 py-2 mb-5">Check Out</a>
     </div>
 </div>
 
@@ -167,13 +193,48 @@
 
   .order-again .list-group-item {
     padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
   }
 
-  .order-again .btn {
+  .order-again .order-again-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .order-again .order-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .order-again .order-title {
+    font-weight: bold;
+  }
+
+  .order-again .order-quantity {
+    font-size: 14px;
+    margin-top: 5px;
+  }
+
+  .order-again .order-again-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
     font-size: 12px;
     padding: 5px 10px;
   }
 
+  .order-again .view-order-history {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    font-weight: bold;
+    color: #6f4e37;
+    text-decoration: underline #6f4e37 1px;
+  }
 </style>
 
 {% endblock content %}

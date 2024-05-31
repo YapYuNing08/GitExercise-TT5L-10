@@ -1,18 +1,84 @@
 {% extends 'restaurant/base.html' %}
 
 {% block content %}
-
-<div class="container mb-5">
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-8 col-sm-12 offset-md-1 p-4 text-center">
-            <h1>Admin</h1>
+{% if user.is_authenticated and user.is_staff and user.is_superuser %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-12 mt-5">
+            <h1 class="text-center mb-4">Orders</h1>
+            <table class="table table-hover table-striped spaced-table">
+                <!-- Table header -->
+                <thead>
+                    <th>Order ID</th>
+                    <th>Name</th>
+                    <th>Item</th>
+                    <th>Quantity</th>
+                    <th>Status</th>
+                </thead>
+                <!-- Table body -->
+                {% for order in orders %}
+                <tbody>
+                    <!-- Order details -->
+                    <td>{{ order.pk }}</td>
+                    <td>{{ order.user.username }}</td>
+                    <td>{{ order.product.title }}</td>
+                    <td>{{ order.quantity }}</td>
+                    <td>
+                    {% if order.is_served %}
+                        <!-- Display served status -->
+                        <p><i style="color: green;" class="fas fa-check"></i><span class="pl-2">Order has been served</span></p>
+                    {% else %}
+                        <!-- Mark as served form -->
+                        <form method="POST" action="{% url 'mark_as_served' order_id=order.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-success">Mark as served</button>
+                        </form>
+                    {% endif %}
+                    </tbody>
+                </tr>
+                {% endfor %}
+            </table>
         </div>
     </div>
-    <!-- <div class="row justify-content-center mt-1">
-        <div class="card col-md-5 col-sm-12 offset-md-1 p-4 text-center">
-            <h2>Place an Order!</h2>
-            <a href="{% url 'order' %}" class="btn btn-outline-dark">Order Now!</a>
-        </div>
-    </div> -->
 </div>
+{% else %}
+<div class="container">
+    <h3>Staff page</h3>
+</div>
+{% endif %}
+
+<style>
+    h1 {
+        font-family: 'Arial', sans-serif;
+        font-weight: bold;
+        color: #343a40;
+    }
+    .spaced-table tbody tr {
+        margin-bottom: 10px; /* Add margin to the bottom of each row */
+    }
+
+    .spaced-table tbody tr td {
+        padding: 15px; /* Add padding to table cells for better spacing */
+    }
+
+    /* Optional: Add some styles to the table for better appearance */
+    .spaced-table {
+        border-collapse: separate; /* Prevent borders from collapsing */
+        border-spacing: 0 10px; /* Add space between rows */
+    }
+
+    .spaced-table thead th {
+        background-color: #343a40;
+        color: #fff;
+    }
+
+    .spaced-table tbody tr {
+        background-color: #f8f9fa;
+    }
+
+    .spaced-table tbody tr:hover {
+        background-color: #e9ecef;
+    }
+</style>
+
 {% endblock content %}

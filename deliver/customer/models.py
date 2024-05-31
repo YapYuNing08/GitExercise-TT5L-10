@@ -11,11 +11,11 @@ category_choices = (
 
 class Product(models.Model):
     title = models.CharField(max_length=100)
-    # price = models.FloatField()
     price = models.DecimalField(max_digits=5, decimal_places=2)
     description = models.TextField()
     category = models.CharField(choices=category_choices, max_length=2)
     image = models.ImageField(upload_to='product')
+    quantity_sold = models.IntegerField(default=0)  # New field to track quantity sold
 
     def __str__(self):
         return self.title
@@ -88,17 +88,34 @@ class OrderPlaced(models.Model):
     ordered_date = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, default='Pending')  # Example default value 'Pending'
     is_served = models.BooleanField(default=False)
+    points = models.IntegerField(default=0)
+    
     @property
     def total_cost(self):
         return self.quantity*self.product.price
     
 class Customer(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     mobile = models.IntegerField(default=0)
-    address = models.CharField(max_length=100)
+    points = models.IntegerField(default=0)
+
     def __str__(self):
         return self.name
+    
+class RedemptionOption(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    points_required = models.IntegerField()
+    image = models.ImageField(upload_to='redemption_images/')
+
+    def __str__(self):
+        return self.name
+    
+class RedeemedItem(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    option = models.ForeignKey(RedemptionOption, on_delete=models.CASCADE)
+    date_redeemed = models.DateTimeField(auto_now_add=True)
 
 class Ad(models.Model):
     title = models.CharField(max_length=100)

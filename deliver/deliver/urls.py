@@ -31,6 +31,9 @@ urlpatterns = [
     path('', Signin.as_view(), name="signin"),
     path('index/', Index.as_view(), name='index'),
     path('about/', About.as_view(), name="about"),
+    path('point/', views.point, name='point'),
+    path('redeem_item/', views.redeem_item, name='redeem_item'),
+    path('verify_item/', views.verify_item, name='verify_item'), 
 
     path('reservation/', Reservation.as_view(), name='reservation'),
     path('reservation_confirmation/', ReservationConfirmation.as_view(), name='reservation_confirmation'),
@@ -41,6 +44,7 @@ urlpatterns = [
     path('menu/', Menu.as_view(), name='menu'),
     path('menu/search', MenuSearch.as_view(), name='menu-search'),
     path('all-products/', views.all_products, name='all_products'),
+    path('order_again/<int:order_id>/', views.order_again, name='order_again'),
     
     path("category/<slug:val>", Category.as_view(), name="category"),
     path("category_title/<val>", CategoryTitle.as_view(), name="category_title"),
@@ -68,9 +72,6 @@ urlpatterns = [
     path('password_reset/', auth_view.PasswordResetView.as_view(template_name='customer/password_reset.html', form_class=MyPasswordResetForm), name='password_reset'),
     path('password_change/', auth_view.PasswordChangeView.as_view(template_name='customer/changepassword.html', form_class=MyPasswordChangeForm),name='password_change'),
     path('password_change_done/', auth_view.PasswordChangeDoneView.as_view(template_name='customer/passwordchangedone.html'), name='password_change_done'),
-
-    # path('order_again/<int:order_id>/', views.order_again, name='order_again'),
-    # path('order-again/', order_again, name='order_again'),
-    path('order_again/<int:order_id>/', views.order_again, name='order_again'),
+    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

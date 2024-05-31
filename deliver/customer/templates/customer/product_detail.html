@@ -6,11 +6,10 @@
 <div class="container">
     <div class="row flex justify-content-between">
         <div class="img2 col-lg-5 mt-5">
-            <img src="{{product.image.url}}" class="image col-xs-6 col-sm-12 col-lg-12 mt-3 mb-5 text-sm-center w-100 h-75" alt="">
-            <a href="{% url 'all_products' %}" class="btn btn-success shadow px-5 py-2 mt-3">Continue Shopping</a>
+            <img src="{{product.image.url}}" class="image col-xs-6 col-sm-12 col-lg-12 mt-3 text-sm-center w-100 h-75" alt="">
         </div>
         <div class="productdetail col-lg-5">
-            <br><br>
+            <br>
             <h1 style="font-family: Georgia; font-size: 50px;">{{product.title}}</h1>
             <h4>RM {{product.price}}</h4>
             <br>
@@ -91,4 +90,4 @@
     }
 }
 </style>
-{% endblock content %}
+{% endblock content%}

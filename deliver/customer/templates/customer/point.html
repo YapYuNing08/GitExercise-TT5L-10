@@ -1,0 +1,193 @@
+{% extends 'customer/base.html' %}
+{% block content %}
+
+<div class="container container-rewards my-5">
+    <div class="row">
+        <div class="col-md-3"> <!-- Changed from col-md-3 to col-md-4 -->
+            <!-- My Rewards Section -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="text-center"><strong>My Rewards</strong></h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for redemption in redeemed_items %}
+                    <li class="list-group-item">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <img src="{{ redemption.option.image.url }}" alt="{{ redemption.option.name }}" width="50" height="50" class="mr-3">
+                                <span class="name">{{ redemption.option.name }}</span>
+                            </div>
+                            <button type="button" class="btn btn-outline-success btn-sm claim-button" data-toggle="modal" data-target="#verifyModal{{ redemption.id }}">
+                                Claim
+                            </button>
+                        </div>
+                    </li>
+                    <!-- Verify Modal -->
+                    <div class="modal fade" id="verifyModal{{ redemption.id }}" tabindex="-1" role="dialog" aria-labelledby="verifyModal{{ redemption.id }}Label" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="verifyModal{{ redemption.id }}Label">Verify Redemption</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="verifyForm{{ redemption.id }}" action="{% url 'verify_item' %}" method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="redemption_id" value="{{ redemption.id }}">
+                                        <div class="form-group">
+                                            <label for="admin_password">Admin Password:</label>
+                                            <input type="password" name="admin_password" class="form-control" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Verify</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Verify Modal -->
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-9"> <!-- Changed from col-md-9 to col-md-8 -->
+            <div class="card-reward p-4 text-center">
+                <h1 class="display-4 mb-4">Rewards</h1>
+                <h3 class="text-info"><strong>Points: {{ initial_points }}</strong></h3>
+                <p class="text-info"><strong>Every RM 1 spent = 1 point</strong></p>
+                <hr class="my-4">
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="custom-alert {% if message.tags %}custom-alert-{{ message.tags }}{% else %}custom-alert-info{% endif %}">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+                <div class="row row-cols-1 row-cols-md-2">
+                    {% for option in redemption_options %}
+                    <div class="col mb-4">
+                        <div class="card h-100 border border-dark rounded shadow">
+                            <img src="{{ option.image.url }}" class="card-img-top" alt="{{ option.name }}" height="200">
+                            <div class="card-body">
+                                <h5 class="card-title card-title-reward">{{ option.name }}</h5>
+                                <p class="card-text"><strong>Points Required: <span class="points-required">{{ option.points_required }}</span></strong></p>
+                                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal{{ option.id }}">
+                                    View Details
+                                </button>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="modal{{ option.id }}" tabindex="-1" role="dialog" aria-labelledby="modal{{ option.id }}Label" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="modal{{ option.id }}Label">{{ option.name }}</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <img src="{{ option.image.url }}" alt="{{ option.name }}" width="300px" height="200px">
+                                        <p><strong>{{ option.description | linebreaksbr }}</strong></p>
+                                        <p>Points Required: {{ option.points_required }}</p>
+                                        <form id="redeemForm" action="{% url 'redeem_item' %}" method="POST">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="option_id" value="{{ option.id }}">
+                                            <button type="submit" class="btn btn-primary">Redeem</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .container-rewards {
+        color: #654321;
+    }
+
+    .card-reward {
+        background-color: #faf5e3;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s ease-in-out;
+    }
+
+    .card-reward:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-title-reward {
+        font-size: 1.5rem;
+        color: #72370d;
+        margin-bottom: 10px;
+    }
+
+    .points-required {
+        color: #ff4500;
+        font-weight: bold;
+    }
+
+    .custom-alert {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+
+    .custom-alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .custom-alert-error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    /* Style for My Rewards Section */
+    .list-group-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border: none;
+        padding: 10px;
+        background-color: #f9f9f9; /* Add background color for better separation */
+        margin-bottom: 10px; /* Add spacing between items */
+        border-radius: 8px; /* Add rounded corners */
+        transition: box-shadow 0.3s ease-in-out; /* Add transition for shadow */
+    }
+
+    .list-group-item:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
+    }
+
+    .list-group-item img {
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    /* Make the 'Claim' button smaller and add right margin */
+    .claim-button {
+        font-size: 0.8rem;
+        padding: 2px 6px; /* Adjust padding to make the text fit in a single line */
+        margin-left: 10px; /* Added margin-left for spacing */
+        white-space: nowrap; /* Ensure text stays on one line */
+    }
+
+    .name{
+        font-size: smaller;
+    }
+</style>
+
+{% endblock content %}

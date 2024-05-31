@@ -6,7 +6,9 @@
         <div class="col-md-5 col-sm-12 p-4 text-center">
             <h1>Order Submitted!</h1>
             <p>Thank you for your order! Your food is being made and will be served soon!</p>
-            <a href="{% url 'about' %}" class="btn btn-primary">Go to the homepage</a>
+            <br>
+            <!-- Display total points earned from the current order -->
+            <h4>Total Points Earned: {{ total_points }}</h4>
         </div>
     </div>
 
@@ -26,6 +28,8 @@
                 <p class="text-muted">No items in your order.</p>
                 {% endif %}
             </div>
+            <br>
+            <a href="{% url 'about' %}" class="btn btn-primary">Go to the homepage</a>
         </div>
     </div>
 </div> 

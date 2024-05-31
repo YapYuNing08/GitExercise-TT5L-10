@@ -9,11 +9,11 @@
     </div>
     <div class="stepper-item active">
       <div class="step-counter">2</div>
-      <div class="step-name">Place Order</div>
+      <div class="step-name">Checkout</div>
     </div>
     <div class="stepper-item">
       <div class="step-counter">3</div>
-      <div class="step-name">Submit Order</div>
+      <div class="step-name">Place Order</div>
     </div>
   </div>
 
@@ -88,7 +88,11 @@
 <div class="container my-5">
     <div class="row">
         {% if cart %}
-        <h1 class="text-center mb-5">Order Cart</h1>
+        <div class="col-sm-12 mb-4">
+            <h1 class="text-center mb-0">Order Cart</h1>
+            <a href="{% url 'all_products' %}" class="btn btn-warning shadow px-3 py-1 ms-2 mt-1">Back to Menu</a>
+        </div>
+
         <div class="col-sm-8">
             <div class="card">
                 <div class="card-body">
@@ -108,8 +112,12 @@
                                 </div>
 
                                 <div class="d-flex justify-content-between">
-                                    <a href="#" class="remove-cart btn btn-sm btn-secondary mr-3" pid={{item.product.id}}>Remove item</a>
-                                    <p class="mb-0"><span><strong>RM {{item.product.price}}</strong></span></p>
+                                    <a href="#" class="remove-cart btn btn-sm btn-secondary mr-3" pid="{{item.product.id}}">Remove item</a>
+                                    <p class="mb-0">
+                                        <span id="total-price-{{ item.product.id }}" data-price-per-unit="{{ item.product.price }}">
+                                            RM {% widthratio item.quantity 1 item.product.price %}
+                                        </span>
+                                    </p>
                                 </div>
                             </div>
                             
@@ -120,10 +128,6 @@
                     {% endfor %}
                     
                 </div>
-                
-            </div>
-            <div>
-                <a href="{% url 'all_products' %}" class="btn btn-warning shadow px-5 py-2 mt-3">Back</a>
             </div>
         </div>
 
@@ -143,20 +147,117 @@
                         </li>
                     </ul>
                
-                    <div class="d-grid"><a href="{% url 'checkout' %}" class="btn btn-primary">Place Order</a></div>
+                    <div class="d-grid"><a href="{% url 'checkout' %}" class="btn btn-primary">Checkout</a></div>
                 </div>
             </div>
         </div>
         {% else %}
-            <h1 class="text-center mb-5">Cart is Empty</h1>
-            <div>
-                <a href="{% url 'all_products' %}" class="btn btn-warning shadow px-5 py-2 mt-3">Back</a>
+            <h1 class="text-center">Looks like your</h1>
+            <h1 class="text-center">cart is empty!</h1>
+            <div class="button-container">
+                <a href="{% url 'all_products' %}" class="btn btn-primary">View Menu</a>
             </div>
         {% endif %}
     </div>
 </div>
-{% endblock content %}
 
-{% block extra_js %}
-<script src="{% static 'js/myscript.js' %}"></script>
-{% endblock extra_js %}
+<style>
+    .button-container {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .btn-primary {
+        display: inline-block;
+        padding: 10px 20px; /* Increase padding for larger button */
+        font-size: 15px; /* Increase font size */
+        color: #ffffff;
+        background-color: #f0ad4e;
+        border: none;
+        border-radius: 5px; /* Slightly increase border-radius for larger button */
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .btn-primary:hover {
+        background-color: #ec971f;
+    }
+
+    .btn-warning {
+    background-color: #d2b48c;
+    color: #4a2c2a;
+    border-color: #d2b48c;
+    }
+
+    .btn-warning:hover {
+        background-color: #b1904f;
+        border-color: #b1904f;
+    }
+
+    /* Center align the button with the title */
+    .d-flex {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .btn-back-to-menu {
+    font-size: 14px;
+    margin-top: -10px; /* Adjust this value as needed */
+}
+</style>
+
+<script>
+    $(document).ready(function(){
+        $('.plus-cart, .minus-cart').click(function(){
+            var id = $(this).closest('.cart-item').data('id');
+            var eml = $(this).siblings('#quantity');
+            
+            $.ajax({
+                type: "GET",
+                url: "/pluscart",
+                data: {
+                    prod_id: id
+                },
+                success: function(data){
+                    eml.text(data.quantity);
+                    updateTotalAmount(data.amount, data.totalamount);
+                    updateCartItemPrice(id, data.quantity);
+                },
+                error: function(xhr, status, error){
+                    console.error("Error in plus_cart:", status, error);
+                }
+            });
+        });
+    
+        $('.remove-cart').click(function(){
+            var id = $(this).closest('.cart-item').data('id');
+            
+            $.ajax({
+                type: "GET",
+                url: "/removecart",
+                data: {
+                    prod_id: id
+                },
+                success: function(data){
+                    updateTotalAmount(data.amount, data.totalamount);
+                    $('.cart-item[data-id="' + id + '"]').remove();
+                },
+                error: function(xhr, status, error){
+                    console.error("Error in remove_cart:", status, error);
+                }
+            });
+        });
+    
+        function updateTotalAmount(amount, totalamount) {
+            $('#amount').text('RM ' + amount.toFixed(2));
+            $('#totalamount').text('RM ' + totalamount.toFixed(2));
+        }
+    
+        function updateCartItemPrice(id, quantity) {
+            var pricePerUnit = parseFloat($('#total-price-' + id).data('price-per-unit'));
+            $('#total-price-' + id).text('RM ' + (quantity * pricePerUnit).toFixed(2));
+        }
+    });
+    </script>
+{% endblock content %}
