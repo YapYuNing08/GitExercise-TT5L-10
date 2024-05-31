@@ -31,5 +31,4 @@ class MyPasswordResetForm(PasswordChangeForm):
 class CustomerProfileForm(forms.ModelForm):
     class Meta:
         model = Customer
-        fields = '__all__'
-        exclude = ['user']
+        fields = ['full_name', 'phone', 'email', 'profile_pic']  # Exclude 'points'
