@@ -34,7 +34,6 @@ urlpatterns = [
     path('point/', views.point, name='point'),
     path('redeem_item/', views.redeem_item, name='redeem_item'),
     path('verify_item/', views.verify_item, name='verify_item'), 
-    # path('admin/verified-redeemed-items/', views.verified_redeemed_items, name='verified_redeemed_items'),
 
     path('reservation/', Reservation.as_view(), name='reservation'),
     path('reservation_confirmation/', ReservationConfirmation.as_view(), name='reservation_confirmation'),

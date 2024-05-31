@@ -82,17 +82,26 @@ class Cart(models.Model):
         return self.quantity * self.product.price
     
 class OrderPlaced(models.Model):
+    FOOD_STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Preparing', 'Preparing'),
+        ('Served', 'Served'),
+    ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
     ordered_date = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=20, default='Pending')  # Example default value 'Pending'
+    food_status = models.CharField(max_length=10, choices=FOOD_STATUS_CHOICES, default='Pending')
     is_served = models.BooleanField(default=False)
     points = models.IntegerField(default=0)
-    
+
     @property
     def total_cost(self):
-        return self.quantity*self.product.price
+        return self.quantity * self.product.price
+
+    def __str__(self):
+        return f"Order {self.id} - {self.food_status}"
     
 class Customer(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
@@ -101,7 +110,7 @@ class Customer(models.Model):
     email = models.CharField(max_length=200, null=True)
     profile_pic = models.ImageField(default="default_image.png",null=True, blank=True, upload_to='media/')
     points = models.IntegerField(default=0)
-    
+
     def __str__(self):
         return self.full_name if self.full_name else "Unnamed Customer"
     

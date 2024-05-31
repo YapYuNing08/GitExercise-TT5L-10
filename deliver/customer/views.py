@@ -513,5 +513,5 @@ def verify_item(request):
             messages.error(request, 'Admin user not found.')
             # Redirect or render your response
             return redirect('point')
-
+          
     return redirect('point')  # Redirect back to the rewards page if not a POST request
