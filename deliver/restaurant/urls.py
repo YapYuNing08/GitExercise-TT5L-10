@@ -8,4 +8,5 @@ urlpatterns = [
     path('restaurant/index/', Index.as_view(), name='restaurant_index'),
     path('restaurant/reservation_details/<int:pk>/', ReservationDetails.as_view(), name='reservation_details'),
     path('mark_as_served/<int:order_id>/', MarkAsServed.as_view(), name='mark_as_served'),
+    path('restaurant/update_food_status/<int:order_id>/',views.update_food_status, name='update_food_status'),
     ]
