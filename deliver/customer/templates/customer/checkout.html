@@ -125,11 +125,11 @@
         <div class="col-sm-4 offset-sm-1">
             <div>
                 <label for="method">How would you like to enjoy your meal? </label>
-                    <select id="method" name="method">
-                        <option value="">Choose your method</option>
-                        <option value="dine-in">Dine In</option>
-                        <option value="pick-up">Pick Up</option>
-                    </select>
+                <select id="method" name="method">
+                    <option value="">Choose your method</option>
+                    <option value="Dine In">Dine In</option>
+                    <option value="Pick Up">Pick Up</option>
+                </select>
             </div>
             <br>
 
@@ -146,6 +146,7 @@
             <div class="text-end">
                 <button type="button" id="submit-order" class="btn btn-warning px-5 fw-bold">Place Order</button>
             </div>
+        </form>
         </div>
     </div>
 </div>
@@ -153,7 +154,7 @@
 <script>
     document.getElementById('method').addEventListener('change', function() {
         var method = this.value;
-        if (method === 'dine-in') {
+        if (method === 'Dine In') {
             document.getElementById('table-number-div').style.display = 'block';
         } else {
             document.getElementById('table-number-div').style.display = 'none';
@@ -161,18 +162,9 @@
     });
 
     document.getElementById('submit-order').addEventListener('click', function() {
-        var method = document.getElementById('method').value;
         var orderForm = document.getElementById('order_form');
-        if (method === 'pick-up') {
-            var orderId = generateOrderId(); // You'll need to implement this function
-            alert('Your order ID: ' + orderId);
-        }
         orderForm.submit();
     });
-
-    function generateOrderId() {
-        return 'ORD' + Math.floor(Math.random() * 1000000);
-    }
 </script>
 
 <style>
