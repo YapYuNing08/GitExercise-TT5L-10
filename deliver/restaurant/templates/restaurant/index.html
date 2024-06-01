@@ -10,7 +10,8 @@
                 <!-- Table header -->
                 <thead>
                     <tr>
-                        <th>Order ID</th>
+                        <th>Method</th>
+                        <!-- <th>Table</th> -->
                         <th>Name</th>
                         <th>Item</th>
                         <th>Quantity</th>
@@ -22,7 +23,12 @@
                 <tbody>
                     {% for order in orders %}
                     <tr>
-                        <td>{{ order.pk }}</td>
+                        <td>{% if order.method == 'Pick Up' %}
+                                {{ order.method }} : {{order.order_id}}
+                            {% else %}
+                                {{ order.method }} : Table {{ order.table_number }}
+                            {% endif %}</td>
+                        <!-- <td>{{ order.table_number }}</td> -->
                         <td>{{ order.user.username }}</td>
                         <td>{{ order.product.title }}</td>
                         <td>{{ order.quantity }}</td>
