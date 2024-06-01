@@ -4,92 +4,100 @@
 
 <div class="stepper-wrapper">
     <div class="stepper-item completed">
-      <div class="step-counter">1</div>
-      <div class="step-name">Add to Cart</div>
+        <div class="step-counter">1</div>
+        <div class="step-name">Add to Cart</div>
     </div>
     <div class="stepper-item completed">
-      <div class="step-counter">2</div>
-      <div class="step-name">Checkout</div>
+        <div class="step-counter">2</div>
+        <div class="step-name">Checkout</div>
     </div>
     <div class="stepper-item active">
-      <div class="step-counter">3</div>
-      <div class="step-name">Place Order</div>
+        <div class="step-counter">3</div>
+        <div class="step-name">Place Order</div>
     </div>
-  </div>
+</div>
 
-  <style>
+<style>
     .stepper-wrapper {
-    margin-top: 10px;
-    display: flex;
-    justify-content: space-between;
+        margin-top: 10px;
+        display: flex;
+        justify-content: space-between;
     }
-    .stepper-item {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex: 1;
-    }
-    .stepper-item::before {
-    position: absolute;
-    content: "";
-    border-bottom: 2px solid #ccc;
-    width: 100%;
-    top: 20px;
-    left: -50%;
-    z-index: 2;
-    }
-    .stepper-item::after {
-    position: absolute;
-    content: "";
-    border-bottom: 2px solid #ccc;
-    width: 100%;
-    top: 20px;
-    left: 50%;
-    z-index: 2;
-    }
-    .stepper-item .step-counter {
-    position: relative;
-    z-index: 5;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #ccc;
-    margin-bottom: 6px;
-    }
-    .stepper-item.active .step-counter{
-    font-weight: bold;
-    background-color: khaki;
-    }
-    .stepper-item.completed .step-counter {
-    background-color: khaki;
-    }
-    .stepper-item.completed::after {
-    position: absolute;
-    content: "";
-    border-bottom: 2px solid khaki;
-    width: 100%;
-    top: 20px;
-    left: 50%;
-    z-index: 3;
-    }
-    .stepper-item:first-child::before {
-    content: none;
-    }
-    .stepper-item:last-child::after {
-    content: none;
-    }
-  </style>
 
+    .stepper-item {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 1;
+    }
+
+    .stepper-item::before {
+        position: absolute;
+        content: "";
+        border-bottom: 2px solid #ccc;
+        width: 100%;
+        top: 20px;
+        left: -50%;
+        z-index: 2;
+    }
+
+    .stepper-item::after {
+        position: absolute;
+        content: "";
+        border-bottom: 2px solid #ccc;
+        width: 100%;
+        top: 20px;
+        left: 50%;
+        z-index: 2;
+    }
+
+    .stepper-item .step-counter {
+        position: relative;
+        z-index: 5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #ccc;
+        margin-bottom: 6px;
+    }
+
+    .stepper-item.active .step-counter {
+        font-weight: bold;
+        background-color: khaki;
+    }
+
+    .stepper-item.completed .step-counter {
+        background-color: khaki;
+    }
+
+    .stepper-item.completed::after {
+        position: absolute;
+        content: "";
+        border-bottom: 2px solid khaki;
+        width: 100%;
+        top: 20px;
+        left: 50%;
+        z-index: 3;
+    }
+
+    .stepper-item:first-child::before {
+        content: none;
+    }
+
+    .stepper-item:last-child::after {
+        content: none;
+    }
+</style>
 
 <div class="container">
     {% if messages %}
         {% for msg in messages %}
         <div class="alert alert-danger" role="alert">
-            {{msg}}
+            {{ msg }}
         </div>
         {% endfor %}
     {% endif %}
@@ -112,33 +120,62 @@
                     <input type="hidden" name="quantity_{{ forloop.counter }}" value="{{ item.quantity }}">
                 </div>
                 {% endfor %}
-            </form>
         </div>
-        
+
         <div class="col-sm-4 offset-sm-1">
             <div>
-            <label for="method">Choose your method: </label>
-                <select>
-                    <option>Dine In</option>
-                    <option>Pick Up</option>
-                    <option>Cash On Delivery</option>
-                </select>
+                <label for="method">How would you like to enjoy your meal? </label>
+                    <select id="method" name="method">
+                        <option value="">Choose your method</option>
+                        <option value="dine-in">Dine In</option>
+                        <option value="pick-up">Pick Up</option>
+                    </select>
             </div>
             <br>
-            
-                <div class="form-check mb-3">
-                    <h5>Total Price: </h5>
-                    <h5>RM {{ totalamount|floatformat:2 }}</h5>
-                </div>
-                <div class="text-end">
-                    <button type="submit" form="order_form" class="btn btn-warning px-5 fw-bold">Place Order</button>
-                </div> 
-            </form>
+
+            <div id="table-number-div" style="display: none;">
+                <label for="table-number">Table Number: </label>
+                <input type="text" id="table-number" name="table_number">
+            </div>
+            <br><br>
+            <div class="form-check mb-3">
+                <h5>Total Price: </h5>
+                <h5>RM {{ totalamount|floatformat:2 }}</h5>
+            </div>
+
+            <div class="text-end">
+                <button type="button" id="submit-order" class="btn btn-warning px-5 fw-bold">Place Order</button>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('method').addEventListener('change', function() {
+        var method = this.value;
+        if (method === 'dine-in') {
+            document.getElementById('table-number-div').style.display = 'block';
+        } else {
+            document.getElementById('table-number-div').style.display = 'none';
+        }
+    });
+
+    document.getElementById('submit-order').addEventListener('click', function() {
+        var method = document.getElementById('method').value;
+        var orderForm = document.getElementById('order_form');
+        if (method === 'pick-up') {
+            var orderId = generateOrderId(); // You'll need to implement this function
+            alert('Your order ID: ' + orderId);
+        }
+        orderForm.submit();
+    });
+
+    function generateOrderId() {
+        return 'ORD' + Math.floor(Math.random() * 1000000);
+    }
+</script>
+
 <style>
-    
     .card-body {
         display: flex;
         justify-content: space-between;
@@ -146,15 +183,16 @@
     }
 
     .product-title {
-        flex-grow: 1
+        flex-grow: 1;
     }
 
     .product-price {
         text-align: right;
         min-width: 100px; /* Adjust as needed */
     }
-    .text-end{
+    .text-end {
         margin-right: 100px;
     }
 </style>
+
 {% endblock content %}
