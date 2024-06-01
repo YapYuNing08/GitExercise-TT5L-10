@@ -280,29 +280,39 @@ class Checkout(View):
 def order_placed(request):
     if request.method == 'POST':
         user = request.user
-        num_items = len(request.POST) // 2  # Divide by 2 because each item has 2 hidden inputs
+        method = request.POST.get('method')
+        order_id = request.POST.get('order_id')
+
+        num_items = (len(request.POST) - 2) // 2  # Adjusting for additional fields like method and order_id
         for i in range(1, num_items + 1):
-            product_id = request.POST.get('product_id_' + str(i))  # Get the product ID for the current item
-            quantity = request.POST.get('quantity_' + str(i))  # Get the quantity for the current item
-            
+            product_id = request.POST.get(f'product_id_{i}')
+            quantity = request.POST.get(f'quantity_{i}')
+
             cart_item = Cart.objects.filter(user=user, product_id=product_id).first()
             if cart_item:
-                OrderPlaced.objects.create(user=user, product=cart_item.product, quantity=quantity, status='Pending')
+                OrderPlaced.objects.create(user=user, product=cart_item.product, quantity=quantity, food_status='Pending', method=method, order_id=order_id)
                 cart_item.delete()  # Remove the cart item after ordering
-        
+
         return redirect('order_history')  # Redirect to the order confirmation page
 
-    return redirect('checkout')  # Redirect to the checkout page if the request method is not POST
+    return redirect('checkout')
+
+
+def generate_order_id():
+    # Implement your logic to generate a unique order ID here
+    return 'ORD' + str(random.randint(100, 999))
 
 def order_placed(request):
     if request.method == 'POST':
         user = request.user
         method = request.POST.get('method')
+
         if not method:
             # Handle the case where method is not selected
             return redirect('checkout')  # Or show an error message
-            
-        table_number = request.POST.get('table_number') if method == 'dine-in' else None
+
+        table_number = request.POST.get('table_number') if method == 'Dine In' else None
+        order_id = generate_order_id() 
 
         num_items = len(request.POST) // 2  # Divide by 2 because each item has 2 hidden inputs
         ordered_items = []
@@ -335,7 +345,16 @@ def order_placed(request):
                 cart_item.product.quantity_sold += quantity
                 cart_item.product.save()
 
-                OrderPlaced.objects.create(user=user, product=cart_item.product, quantity=quantity, food_status='Pending', points=item_points)
+                OrderPlaced.objects.create(
+                    user=user,
+                    product=cart_item.product,
+                    quantity=quantity,
+                    food_status='Pending',
+                    method=method,
+                    points=item_points * quantity,  # Multiply points by quantity
+                    table_number=table_number,
+                    order_id=order_id
+                )
                 cart_item.delete()  # Remove the cart item after ordering
 
         user_profile, created = Customer.objects.get_or_create(user=request.user)
@@ -345,11 +364,17 @@ def order_placed(request):
         user_profile.save()
 
         # Pass the ordered items and total points to the new HTML page
-        context = {'ordered_items': ordered_items, 'total_points': total_points, 'initial_points': initial_points, 'table_number': table_number}
+        context = {
+            'ordered_items': ordered_items,
+            'total_points': total_points,
+            'initial_points': initial_points,
+            'method': method,
+            'table_number': table_number,
+            'order_id': order_id
+        }
         return render(request, 'customer/order_summary.html', context)
     else:
         return HttpResponseBadRequest("Invalid request method")
-
 
 def order_history(request):
     order_placed = OrderPlaced.objects.filter(user=request.user).order_by('-ordered_date')
