@@ -1,3 +1,4 @@
+import random
 from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.views import View
 from django.db.models import Q
@@ -296,14 +297,24 @@ def order_placed(request):
 def order_placed(request):
     if request.method == 'POST':
         user = request.user
+        method = request.POST.get('method')
+        if not method:
+            # Handle the case where method is not selected
+            return redirect('checkout')  # Or show an error message
+            
+        table_number = request.POST.get('table_number') if method == 'dine-in' else None
+
         num_items = len(request.POST) // 2  # Divide by 2 because each item has 2 hidden inputs
         ordered_items = []
-
         total_points = 0  # Initialize total points for the order
 
         for i in range(1, num_items + 1):
             product_id = request.POST.get('product_id_' + str(i))  # Get the product ID for the current item
-            quantity = int(request.POST.get('quantity_' + str(i)))  # Get the quantity for the current item
+            quantity_str = request.POST.get('quantity_' + str(i))  # Get the quantity string for the current item
+            if quantity_str is not None:  # Check if quantity is not None
+                quantity = int(quantity_str)  # Convert quantity to integer
+            else:
+                quantity = 0  # Set a default value if quantity is None
 
             cart_item = Cart.objects.filter(user=user, product_id=product_id).first()
             if cart_item:
@@ -334,8 +345,10 @@ def order_placed(request):
         user_profile.save()
 
         # Pass the ordered items and total points to the new HTML page
-        context = {'ordered_items': ordered_items, 'total_points': total_points, 'initial_points': initial_points}
-    return render(request, 'customer/order_summary.html', context)
+        context = {'ordered_items': ordered_items, 'total_points': total_points, 'initial_points': initial_points, 'table_number': table_number}
+        return render(request, 'customer/order_summary.html', context)
+    else:
+        return HttpResponseBadRequest("Invalid request method")
 
 
 def order_history(request):
@@ -436,8 +449,6 @@ def address(request):
     add = Customer.objects.filter(user=request.user)
     return render(request, 'customer/address.html', locals())
 
-
-
 class updateAddress(View):
     def get(self, request, pk):
         add = Customer.objects.get(pk=pk)
@@ -513,5 +524,5 @@ def verify_item(request):
             messages.error(request, 'Admin user not found.')
             # Redirect or render your response
             return redirect('point')
-
+          
     return redirect('point')  # Redirect back to the rewards page if not a POST request

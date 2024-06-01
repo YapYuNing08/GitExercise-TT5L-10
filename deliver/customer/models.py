@@ -87,6 +87,10 @@ class OrderPlaced(models.Model):
         ('Preparing', 'Preparing'),
         ('Served', 'Served'),
     ]
+    # METHOD_CHOICES = [
+    #     ('Dine In', 'Dine In'),
+    #     ('Pick Up', 'Pick Up'),
+    # ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey('Product', on_delete=models.CASCADE)
@@ -94,6 +98,8 @@ class OrderPlaced(models.Model):
     ordered_date = models.DateTimeField(auto_now_add=True)
     food_status = models.CharField(max_length=10, choices=FOOD_STATUS_CHOICES, default='Pending')
     is_served = models.BooleanField(default=False)
+    method = models.CharField(max_length=10)
+    table_number = models.CharField(max_length=10, null=True, blank=True)
     points = models.IntegerField(default=0)
 
     @property
@@ -119,6 +125,7 @@ class RedemptionOption(models.Model):
     description = models.TextField()
     points_required = models.IntegerField()
     image = models.ImageField(upload_to='redemption_images/')
+    review_required = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
