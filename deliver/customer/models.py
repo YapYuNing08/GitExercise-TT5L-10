@@ -87,10 +87,10 @@ class OrderPlaced(models.Model):
         ('Preparing', 'Preparing'),
         ('Served', 'Served'),
     ]
-    # METHOD_CHOICES = [
-    #     ('Dine In', 'Dine In'),
-    #     ('Pick Up', 'Pick Up'),
-    # ]
+    METHOD_CHOICES = [
+        ('dine-in', 'dine-in'),
+        ('pick-up', 'pick-up'),
+    ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey('Product', on_delete=models.CASCADE)
@@ -98,8 +98,9 @@ class OrderPlaced(models.Model):
     ordered_date = models.DateTimeField(auto_now_add=True)
     food_status = models.CharField(max_length=10, choices=FOOD_STATUS_CHOICES, default='Pending')
     is_served = models.BooleanField(default=False)
-    method = models.CharField(max_length=10)
+    method = models.CharField(max_length=10, choices=METHOD_CHOICES, default='dine-in')
     table_number = models.CharField(max_length=10, null=True, blank=True)
+    order_id = models.CharField(blank=True, max_length=100)
     points = models.IntegerField(default=0)
 
     @property
@@ -108,6 +109,7 @@ class OrderPlaced(models.Model):
 
     def __str__(self):
         return f"Order {self.id} - {self.food_status}"
+
     
 class Customer(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
