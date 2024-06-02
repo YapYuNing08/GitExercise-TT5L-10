@@ -1,6 +1,8 @@
 from django.db import models
 from datetime import timezone, datetime
 from django.contrib.auth.models import User
+import random
+import string 
 
 category_choices = (
     ('B', 'Beverage'),
@@ -131,8 +133,14 @@ class RedemptionOption(models.Model):
 
     def __str__(self):
         return self.name
-    
+
 class RedeemedItem(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     option = models.ForeignKey(RedemptionOption, on_delete=models.CASCADE)
     date_redeemed = models.DateTimeField(auto_now_add=True)
+    claimed = models.BooleanField(default=False)
+    claim_code = models.CharField(max_length=10, unique=True, null=True, blank=True)
+
+    def generate_claim_code(self):
+        self.claim_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        self.save() 
