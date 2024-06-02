@@ -3,8 +3,7 @@
 
 <div class="container container-rewards my-5">
     <div class="row">
-        <div class="col-md-3"> <!-- Changed from col-md-3 to col-md-4 -->
-            <!-- My Rewards Section -->
+        <div class="col-md-3">
             <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="text-center"><strong>My Rewards</strong></h5>
@@ -17,36 +16,37 @@
                                 <img src="{{ redemption.option.image.url }}" alt="{{ redemption.option.name }}" width="50" height="50" class="mr-3">
                                 <span class="name">{{ redemption.option.name }}</span>
                             </div>
-                            <button type="button" class="btn btn-outline-success btn-sm claim-button" data-toggle="modal" data-target="#verifyModal{{ redemption.id }}">
-                                Claim
-                            </button>
+                            {% if redemption.claimed %}
+                                <span class="badge badge-success"><i class="fas fa-check"></i></span>
+                            {% else %}
+                                <button type="button" class="btn btn-outline-success btn-sm claim-button" data-toggle="modal" data-target="#claimModal{{ redemption.id }}">
+                                    Claim
+                                </button>
+                            {% endif %}
                         </div>
                     </li>
-                    <!-- Verify Modal -->
-                    <div class="modal fade" id="verifyModal{{ redemption.id }}" tabindex="-1" role="dialog" aria-labelledby="verifyModal{{ redemption.id }}Label" aria-hidden="true">
+
+                    <!-- Claim Modal -->
+                    <div class="modal fade" id="claimModal{{ redemption.id }}" tabindex="-1" role="dialog" aria-labelledby="claimModalLabel{{ redemption.id }}" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="verifyModal{{ redemption.id }}Label">Verify Redemption</h5>
+                                    <h5 class="modal-title" id="claimModalLabel{{ redemption.id }}">Claim Reward</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <form id="verifyForm{{ redemption.id }}" action="{% url 'verify_item' %}" method="POST">
+                                    <form id="claimForm{{ redemption.id }}" action="{% url 'claim_item' %}" method="POST">
                                         {% csrf_token %}
                                         <input type="hidden" name="redemption_id" value="{{ redemption.id }}">
-                                        <div class="form-group">
-                                            <label for="admin_password">Admin Password:</label>
-                                            <input type="password" name="admin_password" class="form-control" required>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">Verify</button>
+                                        <button type="submit" class="btn btn-primary">Claim</button>
                                     </form>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- End Verify Modal -->
+                    <!-- End Claim Modal -->
                     {% endfor %}
                 </ul>
             </div>
@@ -187,6 +187,18 @@
 
     .name{
         font-size: smaller;
+    }
+
+    .badge-success {
+        font-size: 1.2rem;
+        background-color: transparent;
+        color: green;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        margin: 10px;
     }
 </style>
 
