@@ -33,7 +33,7 @@ urlpatterns = [
     path('about/', About.as_view(), name="about"),
     path('point/', views.point, name='point'),
     path('redeem_item/', views.redeem_item, name='redeem_item'),
-    path('verify_item/', views.verify_item, name='verify_item'), 
+    path('claim_item/', views.claim_item, name='claim_item'), 
 
     path('reservation/', Reservation.as_view(), name='reservation'),
     path('reservation_confirmation/', ReservationConfirmation.as_view(), name='reservation_confirmation'),
