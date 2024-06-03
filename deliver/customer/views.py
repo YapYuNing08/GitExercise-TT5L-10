@@ -520,34 +520,21 @@ def redeem_item(request):
         
         return redirect('point')
 
-def verify_item(request):
+def claim_item(request):
     if request.method == 'POST':
         redemption_id = request.POST.get('redemption_id')
-        admin_password = request.POST.get('admin_password')
+        
         try:
-            # Retrieve the superuser with username 'admin'
-            superuser = User.objects.get(username='admin')
-
-            # Check if the provided password matches the superuser's password
-            if check_password(admin_password, superuser.password):
-                # Assuming Redemption model has a foreign key to the user who redeemed it
-                redemption = RedeemedItem.objects.get(id=redemption_id)
-                # Remove the item from redeemed items
-                redemption.delete()
-                # Your verification logic here
-                messages.success(request, 'Item has been claimed successfully.')
-                # Redirect or render your response
-                return redirect('point')
+            redemption = RedeemedItem.objects.get(id=redemption_id)
+            if not redemption.claimed:
+                redemption.generate_claim_code()  # Generate and save the claim code
+                redemption.save()
+                messages.success(request, f'Item has been claimed successfully. Your verification code is {redemption.claim_code}. Show this code to admin!')
             else:
-                # Incorrect password, display error message
-                messages.error(request, 'Incorrect admin password. Please try again.')
-                # Redirect or render your response
-                return redirect('point')
-            
-        except User.DoesNotExist:
-            # Handle if the superuser 'admin' does not exist
-            messages.error(request, 'Admin user not found.')
-            # Redirect or render your response
-            return redirect('point')
-          
-    return redirect('point')  # Redirect back to the rewards page if not a POST request
+                messages.error(request, 'Item has already been claimed.')
+        except RedeemedItem.DoesNotExist:
+            messages.error(request, 'Invalid redemption ID.')
+
+        return redirect('point')
+    else:
+        return redirect('point')
