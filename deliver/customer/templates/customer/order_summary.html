@@ -19,7 +19,15 @@
                         <div class="ordered-item">
                             <span class="quantity">{{ item.quantity }} x</span>
                             <span class="product-title">{{ item.product.title }}</span>
-                            <!-- <span class="product-price">RM {{ item.total_price|floatformat:2 }}</span> -->
+                            <div class="customizations">
+                           
+                                <ul>
+                                    {% for customization in item.customizations.all %}
+                                    <li>{{ customization.name }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                           
                         </div>
                     {% endfor %}
                 {% else %}
@@ -32,7 +40,7 @@
 
 <style>
 .ordered-item {
-    display: inline-block;
+    display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
@@ -50,15 +58,20 @@
 .product-title {
     flex-grow: 1;
     margin-left: 10px;
-    display: inline-block;
-    vertical-align: top;
+}
+
+.customizations {
+    margin-left: 10px;
+}
+
+.product-price {
+    text-align: right;
 }
 
 .ordered-items {
     margin-top: 20px;
 }
 
-/* Style for the 'No items in your order' message */
 .text-muted {
     font-style: italic;
 }

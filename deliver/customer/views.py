@@ -1,8 +1,9 @@
-from django.shortcuts import render, HttpResponse, redirect
+from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
+from django.views import View
 from django.views import View
 from django.db.models import Q
-from .models import MenuItem, Category, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel, OrderPlaced
-from .forms import CustomerRegistrationForm, CustomerProfileForm
+from .models import MenuItem, Category, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel, OrderPlaced, Product, CustomizationChoice
+from .forms import CustomerRegistrationForm, CustomerProfileForm, CustomizationForm
 from django.db.models import Count
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
@@ -214,8 +215,26 @@ class CategoryTitle(View):
 
 class ProductDetail(View):
     def get(self, request, pk):
-        product = Product.objects.get(pk=pk)
-        return render(request, 'customer/product_detail.html', locals())
+        product = get_object_or_404(Product, pk=pk)
+        form = CustomizationForm(product=product)
+        return render(request, 'customer/product_detail.html', {'product': product, 'form': form})
+
+    def post(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+        form = CustomizationForm(request.POST, product=product)
+        if form.is_valid():
+            selected_customizations = []
+            for option_name, choice_id in form.cleaned_data.items():
+                choice = CustomizationChoice.objects.get(id=choice_id)
+                selected_customizations.append(choice.id)
+
+            request.POST = request.POST.copy()
+            request.POST.setlist('customization_choices', selected_customizations)
+            request.POST['prod_id'] = product.id  # Ensure prod_id is included in POST data
+
+            return add_to_cart(request)
+        return render(request, 'customer/product_detail.html', {'product': product, 'form': form})
+
     
 class CustomerRegistrationView(View):
     def get(self, request):
@@ -231,97 +250,74 @@ class CustomerRegistrationView(View):
         return render(request, 'customer/customerregistration.html', locals())
 
 def add_to_cart(request):
-    user = request.user
-    product_id = request.GET.get('prod_id')
-    product = Product.objects.get(id=product_id)
-    Cart(user=user, product=product).save()
-    return redirect('/cart')
+    if request.method == "POST":
+        user = request.user
+        product_id = request.POST.get('prod_id')
+        product = get_object_or_404(Product, id=product_id)
 
+        customization_choice_ids = request.POST.getlist('customization_choices')
+        customization_choices = CustomizationChoice.objects.filter(id__in=customization_choice_ids)
+
+        cart_item = None
+        for item in Cart.objects.filter(user=user, product=product):
+            if set(item.customizations.values_list('id', flat=True)) == set(customization_choice_ids):
+                cart_item = item
+                break
+
+        if cart_item:
+            cart_item.quantity += 1
+        else:
+            cart_item = Cart.objects.create(user=user, product=product, quantity=1)
+            cart_item.customizations.set(customization_choices)
+
+        cart_item.save()
+
+        return redirect('showcart')
+    return HttpResponse("This endpoint only accepts POST requests.")
 
 def show_cart(request):
     user = request.user  
-    cart = Cart.objects.filter(user=user)
-    amount = 0
-    for p in cart:
-        value = p.quantity * p.product.price
-        amount = amount + value
-    totalamount = amount
-    return render(request, 'customer/addtocart.html', locals())
-
+    cart = Cart.objects.filter(user=user).select_related('product').prefetch_related('customizations')
+    total_amount = sum(item.total_cost for item in cart)
+    return render(request, 'customer/addtocart.html', {'cart': cart, 'total_amount': total_amount})
 
 class Checkout(View):
     def get(self, request):
         user = request.user
         add = Customer.objects.filter(user=user)
-        cart_items = Cart.objects.filter(user=user)
-        famount = 0
+        cart_items = Cart.objects.filter(user=user).select_related('product').prefetch_related('customizations')
+        total_amount = sum(item.total_cost for item in cart_items)
         
-        # Calculate total price for each item and overall total
-        cart_items_with_total = []
-        for p in cart_items:
-            total_price = p.quantity * p.product.price
-            famount += total_price
-            cart_items_with_total.append({
-                'product': p.product,
-                'quantity': p.quantity,
-                'total_price': total_price
-            })
-        
-        totalamount = famount
         context = {
             'add': add,
-            'cart_items_with_total': cart_items_with_total,
-            'totalamount': totalamount
+            'cart_items': cart_items,
+            'total_amount': total_amount
         }
         return render(request, 'customer/checkout.html', context)
 
 def order_placed(request):
-    if request.method == 'POST':
-        user = request.user
-        num_items = len(request.POST) // 2  # Divide by 2 because each item has 2 hidden inputs
-        for i in range(1, num_items + 1):
-            product_id = request.POST.get('product_id_' + str(i))  # Get the product ID for the current item
-            quantity = request.POST.get('quantity_' + str(i))  # Get the quantity for the current item
-            
-            cart_item = Cart.objects.filter(user=user, product_id=product_id).first()
-            if cart_item:
-                OrderPlaced.objects.create(user=user, product=cart_item.product, quantity=quantity, status='Pending')
-                cart_item.delete()  # Remove the cart item after ordering
+    user = request.user
+    cart_items = Cart.objects.filter(user=user).select_related('product').prefetch_related('customizations')
 
-        return redirect('order_history')  # Redirect to the order confirmation page
+    ordered_items = []
+    for item in cart_items:
+        order = OrderPlaced.objects.create(
+            user=user,
+            product=item.product,
+            quantity=item.quantity,
+            status='Pending'
+        )
+        order.customizations.set(item.customizations.all())
+        order.save()
+        ordered_items.append(order)
 
-    return redirect('checkout')  # Redirect to the checkout page if the request method is not POST
-
-def order_placed(request):
-    if request.method == 'POST':
-        user = request.user
-        num_items = len(request.POST) // 2  # Divide by 2 because each item has 2 hidden inputs
-        ordered_items = []
-
-        for i in range(1, num_items + 1):
-            product_id = request.POST.get('product_id_' + str(i))  # Get the product ID for the current item
-            quantity = request.POST.get('quantity_' + str(i))  # Get the quantity for the current item
-            
-            cart_item = Cart.objects.filter(user=user, product_id=product_id).first()
-            if cart_item:
-                ordered_items.append({
-                    'product': cart_item.product,
-                    'quantity': quantity,
-                    'total_price': cart_item.product.price * int(quantity)
-                })
-                OrderPlaced.objects.create(user=user, product=cart_item.product, quantity=quantity, status='Pending')
-                cart_item.delete()  # Remove the cart item after ordering
-
-        # Pass the ordered items to the new HTML page
-        context = {'ordered_items': ordered_items}
-        return render(request, 'customer/order_summary.html', context)  # Render the order summary page
-
-    return redirect('checkout')  # Redirect to the checkout page if the request method is not POST
+    cart_items.delete()
+    return render(request, 'customer/order_summary.html', {'ordered_items': ordered_items})
 
 
 def order_history(request):
-    order_placed=OrderPlaced.objects.filter(user=request.user)
-    return render(request, 'customer/order_history.html', locals())
+    order_placed = OrderPlaced.objects.filter(user=request.user).prefetch_related('customizations')
+    return render(request, 'customer/order_history.html', {'order_placed': order_placed})
 
 def plus_cart(request):
     if request.method == 'GET':

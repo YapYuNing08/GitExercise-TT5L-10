@@ -33,3 +33,11 @@ class CustomerProfileForm(forms.ModelForm):
         model = Customer
         fields = '__all__'
         exclude = ['user']
+
+class CustomizationForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        product = kwargs.pop('product')
+        super().__init__(*args, **kwargs)
+        for option in product.customization_options.all():
+            choices = [(choice.id, f"{choice.name} (+${choice.additional_price})") for choice in option.choices.all()]
+            self.fields[option.name] = forms.ChoiceField(choices=choices, label=option.name, initial=option.default_choice)

@@ -14,7 +14,18 @@
             {% for op in order_placed %}
             <tr>
                 <td>{{ op.ordered_date|date:"Y-m-d" }}</td>
-                <td>{{ op.product.title }}</td>
+                <td>
+                    <div class="product-title">{{ op.product.title }}</div>
+                    {% if op.customizations.exists %}
+                    <ul class="customizations-list">
+                        {% for customization in op.customizations.all %}
+                        <li class="customization-item">{{ customization.name }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div class="no-customizations">No customizations</div>
+                    {% endif %}
+                </td>
                 <td>{{ op.quantity }}</td>
             </tr>
             {% endfor %}
@@ -83,6 +94,30 @@
 
     .table-bordered {
         border: 1px solid #d3b8ae;
+    }
+
+    .product-title {
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    .customizations-list {
+        list-style-type: none;
+        padding-left: 0;
+        margin-top: 10px;
+        margin-bottom: 0;
+        text-align: center; /* Center the list */
+    }
+
+    .customization-item {
+        font-size: 14px;
+        color: #8b4513; /* Different color for customizations */
+    }
+
+    .no-customizations {
+        font-size: 14px;
+        color: #6c757d; /* Muted color for no customizations */
+        margin-top: 10px;
     }
 </style>
 
