@@ -5,7 +5,8 @@ from django.utils.timezone import datetime
 from customer.models import OrderModel, ReservationModel, OrderPlaced, Product, RedeemedItem
 from django.http import JsonResponse, HttpResponse
 import json
-# from django.contrib.auth.decorators import login_required
+from .forms import FoodStatusForm
+from django.contrib import messages
 
 class Index(View):
     def get(self, request, *args, **kwargs):
@@ -110,3 +111,35 @@ class Dashboard(View):
         }
 
         return render(request, 'restaurant/dashboard.html', context)
+
+def update_food_status(request, order_id):
+    order = get_object_or_404(OrderPlaced, id=order_id)
+    if request.method == 'POST':
+        new_status = request.POST.get('food_status')
+        order.food_status = new_status
+        order.save()
+        return redirect('restaurant_index')  # Redirect to the index page after updating
+    return render(request, 'restaurant/update_food_status.html', {'order': order})
+
+def verify_claim(request):
+    verification_result = None
+
+    if request.method == 'POST':
+        redemption_id = request.POST.get('redemption_id')
+        claim_code = request.POST.get('claim_code')
+
+        try:
+            redemption = RedeemedItem.objects.get(id=redemption_id)
+            if redemption.claim_code == claim_code:
+                if not redemption.claimed:
+                    redemption.claimed = True
+                    redemption.save()
+                    verification_result = 'success'
+            else:
+                verification_result = 'incorrect_code'
+        except RedeemedItem.DoesNotExist:
+            verification_result = 'invalid_id'
+
+    all_items = RedeemedItem.objects.all()
+    
+    return render(request, 'restaurant/verify_claim.html', {'all_items': all_items, 'verification_result': verification_result})

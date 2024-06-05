@@ -1,16 +1,14 @@
+import random
 from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.views import View
 from django.db.models import Q
 from .models import MenuItem, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel, OrderPlaced, RedemptionOption, RedeemedItem, Ad
-from .forms import CustomerRegistrationForm, CustomerProfileForm
-from django.db.models import Count
-from django.core.mail import send_mail
+from .forms import CustomerRegistrationForm, CustomerProfileForm, ReviewForm
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponseBadRequest
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.hashers import check_password
+from django.utils import timezone
     
 class Index(View):
     def get(self, request, *args, **kwargs):
@@ -297,38 +295,61 @@ class Checkout(View):
 def order_placed(request):
     if request.method == 'POST':
         user = request.user
-        num_items = len(request.POST) // 2  # Divide by 2 because each item has 2 hidden inputs
+        method = request.POST.get('method')
+        order_id = request.POST.get('order_id')
+
+        num_items = (len(request.POST) - 2) // 2  # Adjusting for additional fields like method and order_id
         for i in range(1, num_items + 1):
-            product_id = request.POST.get('product_id_' + str(i))  # Get the product ID for the current item
-            quantity = request.POST.get('quantity_' + str(i))  # Get the quantity for the current item
-            
+            product_id = request.POST.get(f'product_id_{i}')
+            quantity = request.POST.get(f'quantity_{i}')
+
             cart_item = Cart.objects.filter(user=user, product_id=product_id).first()
             if cart_item:
-                OrderPlaced.objects.create(user=user, product=cart_item.product, quantity=quantity, status='Pending')
+                OrderPlaced.objects.create(user=user, product=cart_item.product, quantity=quantity, food_status='Pending', method=method, order_id=order_id)
                 cart_item.delete()  # Remove the cart item after ordering
-        
+
         return redirect('order_history')  # Redirect to the order confirmation page
 
-    return redirect('checkout')  # Redirect to the checkout page if the request method is not POST
+    return redirect('checkout')
+
+
+def generate_order_id():
+    # Implement your logic to generate a unique order ID here
+    return 'ORD' + str(random.randint(100, 999))
 
 def order_placed(request):
     if request.method == 'POST':
         user = request.user
+        method = request.POST.get('method')
+
+        if not method:
+            # Handle the case where method is not selected
+            return redirect('checkout')  # Or show an error message
+
+        table_number = request.POST.get('table_number') if method == 'Dine In' else None
+        order_id = generate_order_id() 
+
         num_items = len(request.POST) // 2  # Divide by 2 because each item has 2 hidden inputs
         ordered_items = []
-
         total_points = 0  # Initialize total points for the order
 
         for i in range(1, num_items + 1):
             product_id = request.POST.get('product_id_' + str(i))  # Get the product ID for the current item
-            quantity = int(request.POST.get('quantity_' + str(i)))  # Get the quantity for the current item
+            quantity_str = request.POST.get('quantity_' + str(i))  # Get the quantity string for the current item
+            if quantity_str is not None:  # Check if quantity is not None
+                quantity = int(quantity_str)  # Convert quantity to integer
+            else:
+                quantity = 0  # Set a default value if quantity is None
 
             cart_item = Cart.objects.filter(user=user, product_id=product_id).first()
             if cart_item:
                 ordered_items.append({
-                    'product': cart_item.product,
+                    'product_id': cart_item.product.id,
+                    'title': cart_item.product.title,
+                    'price': cart_item.product.price,
                     'quantity': quantity,
-                    'total_price': cart_item.product.price * quantity
+                    'total_price': cart_item.product.price * quantity,
+                    'is_served': False  # Initial status is not served
                 })
 
                 # Calculate points based on the total price of the item
@@ -339,7 +360,16 @@ def order_placed(request):
                 cart_item.product.quantity_sold += quantity
                 cart_item.product.save()
 
-                OrderPlaced.objects.create(user=user, product=cart_item.product, quantity=quantity, status='Pending', points=item_points)
+                OrderPlaced.objects.create(
+                    user=user,
+                    product=cart_item.product,
+                    quantity=quantity,
+                    food_status='Pending',
+                    method=method,
+                    points=item_points * quantity,  # Multiply points by quantity
+                    table_number=table_number,
+                    order_id=order_id
+                )
                 cart_item.delete()  # Remove the cart item after ordering
 
         user_profile, created = Customer.objects.get_or_create(user=request.user)
@@ -349,14 +379,21 @@ def order_placed(request):
         user_profile.save()
 
         # Pass the ordered items and total points to the new HTML page
-        context = {'ordered_items': ordered_items, 'total_points': total_points, 'initial_points': initial_points}
-        return render(request, 'customer/order_summary.html', context)  # Render the order summary page
-
-    return redirect('checkout')  # Redirect to the checkout page if the request method is not POST
+        context = {
+            'ordered_items': ordered_items,
+            'total_points': total_points,
+            'initial_points': initial_points,
+            'method': method,
+            'table_number': table_number,
+            'order_id': order_id
+        }
+        return render(request, 'customer/order_summary.html', context)
+    else:
+        return HttpResponseBadRequest("Invalid request method")
 
 def order_history(request):
-    order_placed=OrderPlaced.objects.filter(user=request.user).order_by('-ordered_date')
-    return render(request, 'customer/order_history.html', locals())
+    order_placed = OrderPlaced.objects.filter(user=request.user).order_by('-ordered_date')
+    return render(request, 'customer/order_history.html', {'order_placed': order_placed})
 
 
 def plus_cart(request):
@@ -438,29 +475,25 @@ class Login(View):
 
 class ProfileView(View):
     def get(self, request):
-        form = CustomerProfileForm()
-        return render(request, 'customer/profile.html', locals())
+        customer = request.user.customer
+        form = CustomerProfileForm(instance=customer)
+        return render(request, 'customer/profile.html', {'form': form})
+    
     def post(self, request):
-        form = CustomerProfileForm(request.POST)
+        customer = request.user.customer
+        form = CustomerProfileForm(request.POST, request.FILES, instance=customer)
         if form.is_valid():
-            user = request.user
-            name = form.cleaned_data['name']
-            mobile = form.cleaned_data['mobile']
+            form.save()
+            return redirect('profile_info')
+        return render(request, 'customer/profile.html', {'form': form})
 
-            reg = Customer(user=user, name=name, mobile=mobile)
-            reg.save()
-            messages.success(request, "Congratulations! Profile Save Successfully.")
-        else:
-            messages.warning(request, "Invalid Input Data")
-        return render(request, 'customer/profile.html', locals())
-
-
+def profile_info_view(request):
+    customer = request.user.customer
+    return render(request, 'customer/profile_info.html', {'customer': customer})
 
 def address(request):
     add = Customer.objects.filter(user=request.user)
     return render(request, 'customer/address.html', locals())
-
-
 
 class updateAddress(View):
     def get(self, request, pk):
@@ -490,56 +523,71 @@ def point(request):
 def redeem_item(request):
     if request.method == 'POST':
         option_id = request.POST.get('option_id')
-        option = RedemptionOption.objects.get(pk=option_id)
-        
+        option = get_object_or_404(RedemptionOption, id=option_id)
+        product = get_object_or_404(Product, title=option.name)
         customer = request.user.customer
-        if customer.points >= option.points_required:
-            # Deduct points
-            customer.points -= option.points_required
-            customer.save()
-            
-            # Record the redemption
-            RedeemedItem.objects.create(customer=customer, option=option)
-            
-            # Add success message
-            messages.success(request, f"Successfully redeemed {option.name}!")
-        else:
-            messages.error(request, "You do not have enough points to redeem this item.")
-        
-        return redirect('point')
+        today = timezone.now().date()  # Use timezone.now() to get the current date and time
 
-def verify_item(request):
+        # Check if the user has already redeemed this product today and if it requires a review
+        already_redeemed = RedeemedItem.objects.filter(customer=customer, option=option, date_redeemed__date=today).exists()
+
+        if already_redeemed:
+            messages.error(request, 'You have already redeemed this item today.')
+        else:
+            if option.points_required == 0 and RedeemedItem.objects.filter(customer=customer, option=option, date_redeemed__date=today).exists():
+                messages.error(request, 'You can only redeem this item once per day.')
+            elif option.review_required:
+                form = ReviewForm(request.POST)
+                if form.is_valid():
+                    review = form.save(commit=False)
+                    review.customer = customer
+                    review.product = product
+                    review.save()
+                    messages.success(request, 'Thank you for your review! Item redeemed successfully!')
+                    RedeemedItem.objects.create(customer=customer, option=option, date_redeemed=timezone.now())
+                else:
+                    messages.error(request, 'There was an error with your review. Please try again.')
+            else:
+                if customer.points >= option.points_required:
+                    customer.points -= option.points_required
+                    customer.save()
+                    RedeemedItem.objects.create(customer=customer, option=option, date_redeemed=timezone.now())
+                    messages.success(request, 'Item redeemed successfully!')
+                else:
+                    messages.error(request, 'Not enough points to redeem this item.')
+
+    return redirect('point')
+
+def claim_item(request):
     if request.method == 'POST':
         redemption_id = request.POST.get('redemption_id')
-        admin_password = request.POST.get('admin_password')
+        
         try:
-            # Retrieve the superuser with username 'admin'
-            superuser = User.objects.get(username='admin')
-
-            # Check if the provided password matches the superuser's password
-            if check_password(admin_password, superuser.password):
-                # Assuming Redemption model has a foreign key to the user who redeemed it
-                redemption = RedeemedItem.objects.get(id=redemption_id)
-                # Remove the item from redeemed items
-                redemption.delete()
-                # Your verification logic here
-                messages.success(request, 'Item has been claimed successfully.')
-                # Redirect or render your response
-                return redirect('point')
+            redemption = RedeemedItem.objects.get(id=redemption_id)
+            if not redemption.claimed:
+                redemption.generate_claim_code()  # Generate and save the claim code
+                redemption.save()
+                messages.success(request, f'Item has been claimed successfully. Your verification code is {redemption.claim_code}. Show this code to admin!')
             else:
-                # Incorrect password, display error message
-                messages.error(request, 'Incorrect admin password. Please try again.')
-                # Redirect or render your response
-                return redirect('point')
-            
-        except User.DoesNotExist:
-            # Handle if the superuser 'admin' does not exist
-            messages.error(request, 'Admin user not found.')
-            # Redirect or render your response
-            return redirect('point')
+                messages.error(request, 'Item has already been claimed.')
+        except RedeemedItem.DoesNotExist:
+            messages.error(request, 'Invalid redemption ID.')
+        return redirect('point')  # Redirect back to the rewards page if not a POST request
+    else:
+        return redirect('point')  # Redirect back to the rewards page if not a POST request
 
-    return redirect('point')  # Redirect back to the rewards page if not a POST request
 
+# def order_again(request, order_id):
+#     previous_order = get_object_or_404(OrderPlaced, id=order_id, user=request.user)
+#     cart_item = Cart.objects.filter(user=request.user, product=previous_order.product).first()
+    
+#     if cart_item:
+#         cart_item.quantity += previous_order.quantity
+#         cart_item.save()
+#     else:
+#         Cart.objects.create(user=request.user, product=previous_order.product, quantity=previous_order.quantity)
+    
+#     return redirect('/cart')
 
 def order_again(request, order_id):
     previous_order = get_object_or_404(OrderPlaced, id=order_id, user=request.user)
@@ -552,3 +600,4 @@ def order_again(request, order_id):
         Cart.objects.create(user=request.user, product=previous_order.product, quantity=previous_order.quantity)
     
     return redirect('/cart')
+

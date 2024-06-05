@@ -33,7 +33,7 @@ urlpatterns = [
     path('about/', About.as_view(), name="about"),
     path('point/', views.point, name='point'),
     path('redeem_item/', views.redeem_item, name='redeem_item'),
-    path('verify_item/', views.verify_item, name='verify_item'), 
+    path('claim_item/', views.claim_item, name='claim_item'), 
 
     path('reservation/', Reservation.as_view(), name='reservation'),
     path('reservation_confirmation/', ReservationConfirmation.as_view(), name='reservation_confirmation'),
@@ -51,6 +51,7 @@ urlpatterns = [
 
     path("product_detail/<int:pk>", ProductDetail.as_view(), name="product_detail"),
     path('profile/', ProfileView.as_view(), name='profile'),
+    path('profile_info/', views.profile_info_view, name='profile_info'),
     
     path('address/', views.address, name='address'),
     path('updateAddress/<int:pk>', views.updateAddress.as_view(), name='updateAddress'),
@@ -64,6 +65,7 @@ urlpatterns = [
     path('removecart/', views.remove_cart),
     path('order_placed/', views.order_placed, name='order_placed'), 
     path('order_history/', views.order_history, name='order_history'),
+    path('order_again/<int:order_id>/', views.order_again, name='order_again'),
 
     # login authentication
     path('registration/', CustomerRegistrationView.as_view(), name='customerregistration'),
