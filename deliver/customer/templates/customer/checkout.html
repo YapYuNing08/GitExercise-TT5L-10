@@ -167,6 +167,13 @@
             alert('Please choose a method for enjoying your meal.');
             return;
         }
+        if (method === 'Dine In') {
+            var tableNumber = document.getElementById('table-number').value;
+            if (!tableNumber) {
+                alert('Please enter your table number.');
+                return;
+            }
+        }
         var orderForm = document.getElementById('order_form');
         orderForm.submit();
     });
