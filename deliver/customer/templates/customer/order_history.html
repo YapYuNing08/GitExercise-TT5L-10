@@ -22,7 +22,18 @@
                     {% endif %}
                 </td>
                 <td>{{ order.ordered_date }}</td>
-                <td>{{ order.product.title }}</td>
+                <td>
+                    <div class="product-title">{{ order.product.title }}</div>
+                    {% if order.customizations.exists %}
+                    <ul class="customizations-list">
+                        {% for customization in order.customizations.all %}
+                        <li class="customization-item">{{ customization.name }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div class="no-customizations">No customizations</div>
+                    {% endif %}
+                </td>
                 <td>{{ order.quantity }}</td>
                 <td>{% if order.get_food_status_display == 'Pending' %}
                     <div class="progress"><div class="progress-bar bg-danger" role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100" style="width:35%">
@@ -105,6 +116,30 @@
 
     .table-bordered {
         border: 1px solid #d3b8ae;
+    }
+
+    .customizations-list {
+        list-style-type: none;
+        padding-left: 0;
+        margin: 5px 0 0 0;
+    }
+
+    .customizations-list .customization-item {
+        font-size: 14px;
+        color: #5c4033;
+        margin: 2px 0;
+   
+    }
+
+    .no-customizations {
+        font-size: 14px;
+        color: #5c4033;
+    }
+
+    .product-title {
+        font-size: 14px;
+        color: #5c4033;
+        font-weight: bold;
     }
 </style>
 
