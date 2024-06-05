@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField, PasswordChangeForm
 from django.contrib.auth.models import User
-from . models import Customer, OrderPlaced
+from . models import Customer, OrderPlaced, Review
 
 class LoginForm(AuthenticationForm):
     username = UsernameField(widget=forms.TextInput(attrs={'autofocus':'True', 'class':'form-control'}))
@@ -37,3 +37,8 @@ class OrderPlacedForm(forms.ModelForm):
     class Meta:
         model = OrderPlaced
         fields = ['product', 'quantity', 'method', 'table_number']  # Include method and table_number
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['rating', 'comment']

@@ -3,15 +3,12 @@ from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.views import View
 from django.db.models import Q
 from .models import MenuItem, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel, OrderPlaced, RedemptionOption, RedeemedItem
-from .forms import CustomerRegistrationForm, CustomerProfileForm
-from django.db.models import Count
-from django.core.mail import send_mail
+from .forms import CustomerRegistrationForm, CustomerProfileForm, ReviewForm
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponseBadRequest
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.hashers import check_password
+from django.utils import timezone
     
 class Index(View):
     def get(self, request, *args, **kwargs):
@@ -502,23 +499,40 @@ def point(request):
 def redeem_item(request):
     if request.method == 'POST':
         option_id = request.POST.get('option_id')
-        option = RedemptionOption.objects.get(pk=option_id)
-        
+        option = get_object_or_404(RedemptionOption, id=option_id)
+        product = get_object_or_404(Product, title=option.name)
         customer = request.user.customer
-        if customer.points >= option.points_required:
-            # Deduct points
-            customer.points -= option.points_required
-            customer.save()
-            
-            # Record the redemption
-            RedeemedItem.objects.create(customer=customer, option=option)
-            
-            # Add success message
-            messages.success(request, f"Successfully redeemed {option.name}!")
+        today = timezone.now().date()  # Use timezone.now() to get the current date and time
+
+        # Check if the user has already redeemed this product today and if it requires a review
+        already_redeemed = RedeemedItem.objects.filter(customer=customer, option=option, date_redeemed__date=today).exists()
+
+        if already_redeemed:
+            messages.error(request, 'You have already redeemed this item today.')
         else:
-            messages.error(request, "You do not have enough points to redeem this item.")
-        
-        return redirect('point')
+            if option.points_required == 0 and RedeemedItem.objects.filter(customer=customer, option=option, date_redeemed__date=today).exists():
+                messages.error(request, 'You can only redeem this item once per day.')
+            elif option.review_required:
+                form = ReviewForm(request.POST)
+                if form.is_valid():
+                    review = form.save(commit=False)
+                    review.customer = customer
+                    review.product = product
+                    review.save()
+                    messages.success(request, 'Thank you for your review! Item redeemed successfully!')
+                    RedeemedItem.objects.create(customer=customer, option=option, date_redeemed=timezone.now())
+                else:
+                    messages.error(request, 'There was an error with your review. Please try again.')
+            else:
+                if customer.points >= option.points_required:
+                    customer.points -= option.points_required
+                    customer.save()
+                    RedeemedItem.objects.create(customer=customer, option=option, date_redeemed=timezone.now())
+                    messages.success(request, 'Item redeemed successfully!')
+                else:
+                    messages.error(request, 'Not enough points to redeem this item.')
+
+    return redirect('point')
 
 def claim_item(request):
     if request.method == 'POST':

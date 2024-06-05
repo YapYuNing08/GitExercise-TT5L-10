@@ -143,4 +143,14 @@ class RedeemedItem(models.Model):
 
     def generate_claim_code(self):
         self.claim_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
-        self.save() 
+        self.save()
+    
+class Review(models.Model):
+    customer = models.ForeignKey('Customer', on_delete=models.CASCADE)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    rating = models.PositiveIntegerField(default=0)
+    comment = models.TextField()
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Review by {self.customer} on {self.product}"
