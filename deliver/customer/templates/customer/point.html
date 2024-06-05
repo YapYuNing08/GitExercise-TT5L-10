@@ -52,12 +52,13 @@
             </div>
         </div>
 
-        <div class="col-md-9"> <!-- Changed from col-md-9 to col-md-8 -->
+        <div class="col-md-9">
             <div class="card-reward p-4 text-center">
                 <h1 class="display-4 mb-4">Rewards</h1>
                 <h3 class="text-info"><strong>Points: {{ initial_points }}</strong></h3>
                 <p class="text-info"><strong>Every RM 1 spent = 1 point</strong></p>
                 <hr class="my-4">
+                <!-- Display messages here -->
                 {% if messages %}
                     {% for message in messages %}
                     <div class="custom-alert {% if message.tags %}custom-alert-{{ message.tags }}{% else %}custom-alert-info{% endif %}">
@@ -65,6 +66,7 @@
                     </div>
                     {% endfor %}
                 {% endif %}
+                <!-- End of messages section -->
                 <div class="row row-cols-1 row-cols-md-2">
                     {% for option in redemption_options %}
                     <div class="col mb-4">
@@ -91,10 +93,34 @@
                                         <img src="{{ option.image.url }}" alt="{{ option.name }}" width="300px" height="200px">
                                         <p><strong>{{ option.description | linebreaksbr }}</strong></p>
                                         <p>Points Required: {{ option.points_required }}</p>
-                                        <form id="redeemForm" action="{% url 'redeem_item' %}" method="POST">
+
+                                        <form id="redeemForm{{ option.id }}" action="{% url 'redeem_item' %}" method="POST">
                                             {% csrf_token %}
                                             <input type="hidden" name="option_id" value="{{ option.id }}">
-                                            <button type="submit" class="btn btn-primary">Redeem</button>
+                                            {% if option.review_required %}
+                                                <div class="form-group">
+                                                    <label for="id_rating">Rating</label>
+                                                    <div class="star-rating">
+                                                        <input type="radio" id="star5" name="rating" value="5" required />
+                                                        <label for="star5" title="5 stars">&#9733;</label>
+                                                        <input type="radio" id="star4" name="rating" value="4" required/>
+                                                        <label for="star4" title="4 stars">&#9733;</label>
+                                                        <input type="radio" id="star3" name="rating" value="3" required/>
+                                                        <label for="star3" title="3 stars">&#9733;</label>
+                                                        <input type="radio" id="star2" name="rating" value="2" required/>
+                                                        <label for="star2" title="2 stars">&#9733;</label>
+                                                        <input type="radio" id="star1" name="rating" value="1" required/>
+                                                        <label for="star1" title="1 star">&#9733;</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="id_comment">Comment</label>
+                                                    <textarea name="comment" class="form-control" id="id_comment" required></textarea>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">Submit Review & Redeem</button>
+                                            {% else %}
+                                                <button type="submit" class="btn btn-primary">Redeem</button>
+                                            {% endif %}
                                         </form>
                                     </div>
                                 </div>
@@ -162,14 +188,14 @@
         justify-content: space-between;
         border: none;
         padding: 10px;
-        background-color: #f9f9f9; /* Add background color for better separation */
-        margin-bottom: 10px; /* Add spacing between items */
-        border-radius: 8px; /* Add rounded corners */
-        transition: box-shadow 0.3s ease-in-out; /* Add transition for shadow */
+        background-color: #f9f9f9;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        transition: box-shadow 0.3s ease-in-out;
     }
 
     .list-group-item:hover {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
     .list-group-item img {
@@ -177,12 +203,11 @@
         margin-right: 10px;
     }
 
-    /* Make the 'Claim' button smaller and add right margin */
     .claim-button {
         font-size: 0.8rem;
-        padding: 2px 6px; /* Adjust padding to make the text fit in a single line */
-        margin-left: 10px; /* Added margin-left for spacing */
-        white-space: nowrap; /* Ensure text stays on one line */
+        padding: 2px 6px;
+        margin-left: 10px;
+        white-space: nowrap;
     }
 
     .name{
@@ -200,6 +225,28 @@
         height: 24px;
         margin: 10px;
     }
+
+    /* Style for Star Rating */
+.star-rating {
+    unicode-bidi: bidi-override;
+    direction: rtl;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.star-rating input[type="radio"] {
+    display: none;
+}
+
+.star-rating label {
+    font-size: 25px;
+    color: #fef1c4; /* Color for empty stars */
+    cursor: pointer;
+}
+
+.star-rating input[type="radio"]:checked ~ label {
+    color: #fdd835; /* Color for filled stars */
+}
 </style>
 
 {% endblock content %}
