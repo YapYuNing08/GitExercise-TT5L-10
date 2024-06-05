@@ -21,6 +21,21 @@ class Product(models.Model):
 
     def __str__(self):
         return self.title
+class CustomizationOption(models.Model):
+    product = models.ForeignKey(Product, related_name='customization_options', on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    default_choice = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.product.title} - {self.name}"
+    
+class CustomizationChoice(models.Model):
+    option = models.ForeignKey(CustomizationOption, related_name='choices', on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    additional_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+    def __str__(self):
+        return f"{self.option.name} - {self.name} (+${self.additional_price})"
 
 class MenuItem(models.Model):
     name = models.CharField(max_length=100)
@@ -78,10 +93,13 @@ class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     product = models.ForeignKey(Product,on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
+    customizations = models.ManyToManyField(CustomizationChoice, blank=True)
 
     @property
     def total_cost(self):
-        return self.quantity * self.product.price
+        base_cost = self.quantity * self.product.price
+        customizations_cost = sum(c.additional_price for c in self.customizations.all())
+        return base_cost + customizations_cost * self.quantity
     
 class OrderPlaced(models.Model):
     FOOD_STATUS_CHOICES = [
@@ -100,6 +118,7 @@ class OrderPlaced(models.Model):
     ordered_date = models.DateTimeField(auto_now_add=True)
     food_status = models.CharField(max_length=10, choices=FOOD_STATUS_CHOICES, default='Pending')
     is_served = models.BooleanField(default=False)
+    customizations = models.ManyToManyField(CustomizationChoice, blank=True)
     method = models.CharField(max_length=10, choices=METHOD_CHOICES, default='dine-in')
     table_number = models.CharField(max_length=10, null=True, blank=True)
     order_id = models.CharField(blank=True, max_length=100)
@@ -107,11 +126,10 @@ class OrderPlaced(models.Model):
 
     @property
     def total_cost(self):
-        return self.quantity * self.product.price
-
+        return self.quantity * self.product.price + sum(customization.additional_price for customization in self.customizations.all())
+    
     def __str__(self):
         return f"Order {self.id} - {self.food_status}"
-
     
 class Customer(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
