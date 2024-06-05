@@ -241,8 +241,19 @@ class CustomerRegistrationView(View):
 def add_to_cart(request):
     user = request.user
     product_id = request.GET.get('prod_id')
-    product = Product.objects.get(id=product_id)
-    Cart(user=user, product=product).save()
+    product = get_object_or_404(Product, id=product_id)  # Get the product object
+    
+    # Check if the product already exists in the cart
+    cart_item = Cart.objects.filter(user=user, product=product).first()
+    if cart_item:
+        # If the item exists, increment its quantity
+        cart_item.quantity += 1
+        cart_item.save()
+    else:
+        # If the item does not exist, create a new cart item
+        Cart(user=user, product=product, quantity=1).save()
+    
+    # Redirect to the cart page
     return redirect('/cart')
 
 
@@ -371,19 +382,21 @@ def plus_cart(request):
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
+
 def minus_cart(request):
     if request.method == 'GET':
         prod_id = request.GET.get('prod_id') 
         cart_item = Cart.objects.filter(Q(product=prod_id) & Q(user=request.user)).first()
 
         if cart_item:
-            cart_item.quantity -= 1
-            cart_item.save()
+            if cart_item.quantity > 1:
+                cart_item.quantity -= 1
+                cart_item.save()
 
             cart = Cart.objects.filter(user=request.user)
             amount = sum(item.quantity * item.product.price for item in cart)
             data = {
-                'quantity': cart_item.quantity,
+                'quantity': cart_item.quantity,  # Simply return the current quantity
                 'amount': amount,
                 'totalamount': amount,
             }
@@ -392,6 +405,8 @@ def minus_cart(request):
             return JsonResponse({'error': 'Cart item not found for the user and product.'}, status=400)
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+
 
 def remove_cart(request):
     if request.method == 'GET':
@@ -414,6 +429,8 @@ def remove_cart(request):
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
+
+    
 class Login(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/login.html')
@@ -526,10 +543,12 @@ def verify_item(request):
 
 def order_again(request, order_id):
     previous_order = get_object_or_404(OrderPlaced, id=order_id, user=request.user)
+    cart_item = Cart.objects.filter(user=request.user, product=previous_order.product).first()
     
-    # Create a new cart item for each product in the previous order
-    Cart.objects.create(user=request.user, product=previous_order.product, quantity=previous_order.quantity)
+    if cart_item:
+        cart_item.quantity += previous_order.quantity
+        cart_item.save()
+    else:
+        Cart.objects.create(user=request.user, product=previous_order.product, quantity=previous_order.quantity)
     
-    # Redirect to the cart page
     return redirect('/cart')
-

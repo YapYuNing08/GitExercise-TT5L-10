@@ -90,7 +90,7 @@
         {% if cart %}
         <div class="col-sm-12 mb-4">
             <h1 class="text-center mb-0">Order Cart</h1>
-            <a href="{% url 'all_products' %}" class="btn btn-warning shadow px-3 py-1 ms-2 mt-1">Back to Menu</a>
+            <a href="{% url 'all_products' %}" class="btn btn-warning shadow px-3 py-1 ms-2 mt-1">← Back to Menu</a>
         </div>
 
         <div class="col-sm-8">
@@ -103,7 +103,6 @@
                         <div class="col-sm-9">
                             <div>
                                 <h5>{{item.product.title}}</h5>
-                                <!-- <p class="mb-2 text-muted small">{{item.product.description}}</p> -->
                                 <div class="my-3">
                                     <label for="quantity">Quantity: </label>
                                     <i class="minus-cart" pid={{item.product.id}}><i class="fas fa-minus-square fa-lg"></i></i>
@@ -112,13 +111,16 @@
                                 </div>
 
                                 <div class="d-flex justify-content-between">
-                                    <a href="#" class="remove-cart btn btn-sm btn-secondary mr-3" pid="{{item.product.id}}">Remove item</a>
+                                    <a href="#" class="remove-cart btn btn-sm btn-danger p-2 mr-3" pid="{{item.product.id}}">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
                                     <p class="mb-0">
                                         <span id="total-price-{{ item.product.id }}" data-price-per-unit="{{ item.product.price }}">
                                             RM {% widthratio item.quantity 1 item.product.price %}
                                         </span>
                                     </p>
                                 </div>
+                                
                             </div>
                             
                         </div>
@@ -203,61 +205,73 @@
 
     .btn-back-to-menu {
     font-size: 14px;
-    margin-top: -10px; /* Adjust this value as needed */
+    margin-top: -10px; 
+}
+
+.remove-cart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.remove-cart .fa-trash {
+    font-size: 15px; 
 }
 </style>
 
 <script>
-    $(document).ready(function(){
-        $('.plus-cart, .minus-cart').click(function(){
-            var id = $(this).closest('.cart-item').data('id');
-            var eml = $(this).siblings('#quantity');
+    // $(document).ready(function(){
+    //     $('.plus-cart, .minus-cart').click(function(){
+    //         var id = $(this).closest('.cart-item').data('id');
+    //         var eml = $(this).siblings('#quantity');
             
-            $.ajax({
-                type: "GET",
-                url: "/pluscart",
-                data: {
-                    prod_id: id
-                },
-                success: function(data){
-                    eml.text(data.quantity);
-                    updateTotalAmount(data.amount, data.totalamount);
-                    updateCartItemPrice(id, data.quantity);
-                },
-                error: function(xhr, status, error){
-                    console.error("Error in plus_cart:", status, error);
-                }
-            });
-        });
+    //         $.ajax({
+    //             type: "GET",
+    //             url: "/pluscart",
+    //             data: {
+    //                 prod_id: id
+    //             },
+    //             success: function(data){
+    //                 eml.text(data.quantity);
+    //                 updateTotalAmount(data.amount, data.totalamount);
+    //                 updateCartItemPrice(id, data.quantity);
+    //             },
+    //             error: function(xhr, status, error){
+    //                 console.error("Error in plus_cart:", status, error);
+    //             }
+    //         });
+    //     });
     
-        $('.remove-cart').click(function(){
-            var id = $(this).closest('.cart-item').data('id');
+    //     $('.remove-cart').click(function(){
+    //         var id = $(this).closest('.cart-item').data('id');
             
-            $.ajax({
-                type: "GET",
-                url: "/removecart",
-                data: {
-                    prod_id: id
-                },
-                success: function(data){
-                    updateTotalAmount(data.amount, data.totalamount);
-                    $('.cart-item[data-id="' + id + '"]').remove();
-                },
-                error: function(xhr, status, error){
-                    console.error("Error in remove_cart:", status, error);
-                }
-            });
-        });
+    //         $.ajax({
+    //             type: "GET",
+    //             url: "/removecart",
+    //             data: {
+    //                 prod_id: id
+    //             },
+    //             success: function(data){
+    //                 updateTotalAmount(data.amount, data.totalamount);
+    //                 $('.cart-item[data-id="' + id + '"]').remove();
+    //             },
+    //             error: function(xhr, status, error){
+    //                 console.error("Error in remove_cart:", status, error);
+    //             }
+    //         });
+    //     });
     
-        function updateTotalAmount(amount, totalamount) {
-            $('#amount').text('RM ' + amount.toFixed(2));
-            $('#totalamount').text('RM ' + totalamount.toFixed(2));
-        }
+    //     function updateTotalAmount(amount, totalamount) {
+    //         $('#amount').text('RM ' + amount.toFixed(2));
+    //         $('#totalamount').text('RM ' + totalamount.toFixed(2));
+    //     }
     
-        function updateCartItemPrice(id, quantity) {
-            var pricePerUnit = parseFloat($('#total-price-' + id).data('price-per-unit'));
-            $('#total-price-' + id).text('RM ' + (quantity * pricePerUnit).toFixed(2));
-        }
-    });
-    </script>
+    //     function updateCartItemPrice(id, quantity) {
+    //         var pricePerUnit = parseFloat($('#total-price-' + id).data('price-per-unit'));
+    //         $('#total-price-' + id).text('RM ' + (quantity * pricePerUnit).toFixed(2));
+    //     }
+    // });
+ 
+
+</script>
 {% endblock content %}
