@@ -6,7 +6,6 @@
         <div class="col-md-5 col-sm-12 p-4 text-center">
             <h1>Order Submitted!</h1>
             <p>Thank you for your order! Your food is being made and will be served soon!</p>
-            
             {% if method == 'Dine In' %}
                 <h4>Your Table Number: {{ table_number }}</h4>
             {% else %}
@@ -27,10 +26,17 @@
                         <div class="ordered-item">
                             <span class="quantity">{{ item.quantity }} x</span>
                             <span class="product-title">{{ item.title }}</span>
+                            <div class="customizations">
+                                <ul>
+                                    {% for customization in item.customizations %}
+                                    <li>{{ customization.name }} (+RM {{ customization.additional_price|floatformat:2 }})</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
                         </div>
                     {% endfor %}
                 {% else %}
-                    <p class="text-muted">No items in your order.</p>
+                <p class="text-muted">No items in your order.</p>
                 {% endif %}
             </div>
             <br>
@@ -41,9 +47,10 @@
     </div>
 </div> 
 
+
 <style>
 .ordered-item {
-    display: inline-block;
+    display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
@@ -61,15 +68,32 @@
 .product-title {
     flex-grow: 1;
     margin-left: 10px;
-    display: inline-block;
-    vertical-align: top;
+}
+
+.customizations {
+    margin-left: 10px;
+}
+
+.customizations ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 5px 0 0 0;
+}
+
+.customizations li {
+    font-size: 14px;
+    color: #5c2d0c;
+    margin: 2px 0;
+}
+
+.product-price {
+    text-align: right;
 }
 
 .ordered-items {
     margin-top: 20px;
 }
 
-/* Style for the 'No items in your order' message */
 .text-muted {
     font-style: italic;
 }

@@ -9,11 +9,11 @@
     </div>
     <div class="stepper-item active">
       <div class="step-counter">2</div>
-      <div class="step-name">Checkout</div>
+      <div class="step-name">Place Order</div>
     </div>
     <div class="stepper-item">
       <div class="step-counter">3</div>
-      <div class="step-name">Place Order</div>
+      <div class="step-name">Submit Order</div>
     </div>
   </div>
 
@@ -85,12 +85,13 @@
   </style>
 
 
+
 <div class="container my-5">
     <div class="row">
         {% if cart %}
         <div class="col-sm-12 mb-4">
             <h1 class="text-center mb-0">Order Cart</h1>
-            <a href="{% url 'all_products' %}" class="btn btn-warning shadow px-3 py-1 ms-2 mt-1"><i class="fa fa-arrow-left"></i>&nbsp;Back to Menu</a>
+            <a href="{% url 'all_products' %}" class="btn btn-warning shadow px-3 py-2 ms-2 mt-1"><i class="fa fa-arrow-left"></i>&nbsp;Back to Menu</a>
         </div>
 
         <div class="col-sm-8">
@@ -99,17 +100,22 @@
                     <h3>Cart</h3>
                     {% for item in cart %}
                     <div class="row">
-                        <div class="col-sm-3 text-center align-self-center"><img src="{{item.product.image.url}}" alt="" class="img-fluid img-thumbnail shadow-sm" height="150" width="150"></div>
+                        <div class="col-sm-3 text-center align-self-center"><img src="{{ item.product.image.url }}" alt="" class="img-fluid img-thumbnail shadow-sm" height="150" width="150"></div>
                         <div class="col-sm-9">
                             <div>
-                                <h5>{{item.product.title}}</h5>
+                                <h5>{{ item.product.title }}  RM{{ item.product.price }}</h5>
+                                <div>
+                                    {% for customization in item.customizations.all %}
+                                        <p> {{ customization.name }} (+RM{{ customization.additional_price }})</p>
+                                    {% endfor %}
+                                </div>
                                 <div class="my-3">
                                     <label for="quantity">Quantity: </label>
-                                    <i class="minus-cart" pid={{item.product.id}}><i class="fas fa-minus-square fa-lg"></i></i>
-                                    <span id="quantity">{{item.quantity}}</span>
-                                    <i class="plus-cart" pid={{item.product.id}}><i class="fas fa-plus-square fa-lg" ></i></i>
+                                    <i class="minus-cart" pid="{{ item.product.id }}"><i class="fas fa-minus-square fa-lg"></i></i>
+                                    <span id="quantity">{{ item.quantity }}</span>
+                                    <i class="plus-cart" pid="{{ item.product.id }}"><i class="fas fa-plus-square fa-lg"></i></i>
                                 </div>
-
+                                
                                 <div class="d-flex justify-content-between">
                                     <a href="#" class="remove-cart btn btn-sm btn-danger p-2 mr-3" pid="{{item.product.id}}">
                                         <i class="fas fa-trash"></i>
@@ -119,16 +125,15 @@
                                             RM {% widthratio item.quantity 1 item.product.price %}
                                         </span>
                                     </p>
+                                    <!-- <a href="#" class="remove-cart btn btn-sm btn-secondary mr-3" pid="{{ item.product.id }}">Remove item</a> -->
+                                    <!-- <p class="mb-0"><span><strong>RM {{ item.total_cost }}</strong></span></p> -->
                                 </div>
                                 
                             </div>
-                            
                         </div>
                     </div>
-                    
                     <hr class="text-muted">
                     {% endfor %}
-                    
                 </div>
             </div>
         </div>
@@ -138,31 +143,24 @@
                 <div class="card-body">
                     <h3>Total Amount</h3>
                     <ul class="list-group">
-                        <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">Amount <span id="amount">RM {{amount}}</span></li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">Amount <span id="amount">RM {{ total_amount }}</span></li>
                         <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
                             <div>
-                                <strong>Total</strong> 
+                                <strong>Total</strong>
                             </div>
-                                
-                            <span id="totalamount"><strong>RM {{totalamount}}</strong></span>
-                            
+                            <span id="totalamount"><strong>RM {{ total_amount }}</strong></span>
                         </li>
                     </ul>
-               
-                    <div class="d-grid"><a href="{% url 'checkout' %}" class="btn btn-primary">Checkout</a></div>
+
+                    <div class="d-grid"><a href="{% url 'checkout' %}" class="btn btn-primary">Place Order</a></div>
                 </div>
             </div>
         </div>
         {% else %}
-            <h1 class="text-center">Looks like your</h1>
-            <h1 class="text-center">cart is empty!</h1>
-            <div class="button-container">
-                <a href="{% url 'all_products' %}" class="btn btn-primary">View Menu</a>
-            </div>
+            <h1 class="text-center mb-5">Cart is Empty</h1>
         {% endif %}
     </div>
 </div>
-
 <style>
     .button-container {
         text-align: center;
@@ -219,59 +217,5 @@
 }
 </style>
 
-<script>
-    // $(document).ready(function(){
-    //     $('.plus-cart, .minus-cart').click(function(){
-    //         var id = $(this).closest('.cart-item').data('id');
-    //         var eml = $(this).siblings('#quantity');
-            
-    //         $.ajax({
-    //             type: "GET",
-    //             url: "/pluscart",
-    //             data: {
-    //                 prod_id: id
-    //             },
-    //             success: function(data){
-    //                 eml.text(data.quantity);
-    //                 updateTotalAmount(data.amount, data.totalamount);
-    //                 updateCartItemPrice(id, data.quantity);
-    //             },
-    //             error: function(xhr, status, error){
-    //                 console.error("Error in plus_cart:", status, error);
-    //             }
-    //         });
-    //     });
-    
-    //     $('.remove-cart').click(function(){
-    //         var id = $(this).closest('.cart-item').data('id');
-            
-    //         $.ajax({
-    //             type: "GET",
-    //             url: "/removecart",
-    //             data: {
-    //                 prod_id: id
-    //             },
-    //             success: function(data){
-    //                 updateTotalAmount(data.amount, data.totalamount);
-    //                 $('.cart-item[data-id="' + id + '"]').remove();
-    //             },
-    //             error: function(xhr, status, error){
-    //                 console.error("Error in remove_cart:", status, error);
-    //             }
-    //         });
-    //     });
-    
-    //     function updateTotalAmount(amount, totalamount) {
-    //         $('#amount').text('RM ' + amount.toFixed(2));
-    //         $('#totalamount').text('RM ' + totalamount.toFixed(2));
-    //     }
-    
-    //     function updateCartItemPrice(id, quantity) {
-    //         var pricePerUnit = parseFloat($('#total-price-' + id).data('price-per-unit'));
-    //         $('#total-price-' + id).text('RM ' + (quantity * pricePerUnit).toFixed(2));
-    //     }
-    // });
- 
+{% endblock %}
 
-</script>
-{% endblock content %}

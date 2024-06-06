@@ -1,15 +1,19 @@
 import random
 from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
+import random
 from django.views import View
 from django.db.models import Q
-from .models import MenuItem, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel, OrderPlaced, RedemptionOption, RedeemedItem, Ad
-from .forms import CustomerRegistrationForm, CustomerProfileForm, ReviewForm
+from .models import MenuItem, Category, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel, OrderPlaced, Product, CustomizationChoice, RedemptionOption, RedeemedItem, Ad
+from .forms import CustomerRegistrationForm, CustomerProfileForm, CustomizationForm, ReviewForm
+from django.db.models import Count
+from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.utils import timezone
-    
+
+
 class Index(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/index.html')
@@ -93,6 +97,7 @@ class Signin(View):
         user = authenticate(request, username=username, password=pass1)
         
         if user is not None:
+            Customer.objects.get_or_create
             if 'admin' in username:
                 login(request,user)
                 return redirect('restaurant_index')
@@ -220,8 +225,26 @@ class CategoryTitle(View):
 
 class ProductDetail(View):
     def get(self, request, pk):
-        product = Product.objects.get(pk=pk)
-        return render(request, 'customer/product_detail.html', locals())
+        product = get_object_or_404(Product, pk=pk)
+        form = CustomizationForm(product=product)
+        return render(request, 'customer/product_detail.html', {'product': product, 'form': form})
+
+    def post(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+        form = CustomizationForm(request.POST, product=product)
+        if form.is_valid():
+            selected_customizations = []
+            for option_name, choice_id in form.cleaned_data.items():
+                choice = CustomizationChoice.objects.get(id=choice_id)
+                selected_customizations.append(choice.id)
+
+            request.POST = request.POST.copy()
+            request.POST.setlist('customization_choices', selected_customizations)
+            request.POST['prod_id'] = product.id  # Ensure prod_id is included in POST data
+
+            return add_to_cart(request)
+        return render(request, 'customer/product_detail.html', {'product': product, 'form': form})
+
     
 class CustomerRegistrationView(View):
     def get(self, request):
@@ -237,51 +260,72 @@ class CustomerRegistrationView(View):
         return render(request, 'customer/customerregistration.html', locals())
 
 def add_to_cart(request):
-    user = request.user
-    product_id = request.GET.get('prod_id')
-    product = get_object_or_404(Product, id=product_id)  # Get the product object
+    # user = request.user
+    # product_id = request.GET.get('prod_id')
+    # product = get_object_or_404(Product, id=product_id)  # Get the product object
     
-    # Check if the product already exists in the cart
-    cart_item = Cart.objects.filter(user=user, product=product).first()
-    if cart_item:
-        # If the item exists, increment its quantity
-        cart_item.quantity += 1
-        cart_item.save()
-    else:
-        # If the item does not exist, create a new cart item
-        Cart(user=user, product=product, quantity=1).save()
+    # # Check if the product already exists in the cart
+    # cart_item = Cart.objects.filter(user=user, product=product).first()
+    # if cart_item:
+    #     # If the item exists, increment its quantity
+    #     cart_item.quantity += 1
+    #     cart_item.save()
+    # else:
+    #     # If the item does not exist, create a new cart item
+    #     Cart(user=user, product=product, quantity=1).save()
     
-    # Redirect to the cart page
-    return redirect('/cart')
+    # # Redirect to the cart page
+    # return redirect('/cart')
 
+    if request.method == "POST":
+        user = request.user
+        product_id = request.POST.get('prod_id')
+        product = get_object_or_404(Product, id=product_id)
+
+        customization_choice_ids = request.POST.getlist('customization_choices')
+        customization_choices = CustomizationChoice.objects.filter(id__in=customization_choice_ids)
+
+        cart_item = None
+        for item in Cart.objects.filter(user=user, product=product):
+            if set(item.customizations.values_list('id', flat=True)) == set(customization_choice_ids):
+                cart_item = item
+                break
+
+        if cart_item:
+            cart_item.quantity += 1
+        else:
+            cart_item = Cart.objects.create(user=user, product=product, quantity=1)
+            cart_item.customizations.set(customization_choices)
+
+        cart_item.save()
+
+        return redirect('showcart')
+    return HttpResponse("This endpoint only accepts POST requests.")
 
 def show_cart(request):
     user = request.user  
-    cart = Cart.objects.filter(user=user)
-    amount = 0
-    for p in cart:
-        value = p.quantity * p.product.price
-        amount = amount + value
-    totalamount = amount
-    return render(request, 'customer/addtocart.html', locals())
-
+    cart = Cart.objects.filter(user=user).select_related('product').prefetch_related('customizations')
+    total_amount = sum(item.total_cost for item in cart)
+    return render(request, 'customer/addtocart.html', {'cart': cart, 'total_amount': total_amount})
 
 class Checkout(View):
     def get(self, request):
         user = request.user
         add = Customer.objects.filter(user=user)
-        cart_items = Cart.objects.filter(user=user)
-        famount = 0
+        cart_items = Cart.objects.filter(user=user).select_related('product').prefetch_related('customizations')
         
-        # Calculate total price for each item and overall total
+        famount = 0
         cart_items_with_total = []
         for p in cart_items:
             total_price = p.quantity * p.product.price
+            customizations_total = sum(c.additional_price for c in p.customizations.all())
+            total_price += customizations_total
             famount += total_price
             cart_items_with_total.append({
                 'product': p.product,
                 'quantity': p.quantity,
-                'total_price': total_price
+                'total_price': total_price,
+                'customizations': p.customizations.all()
             })
         
         totalamount = famount
@@ -292,93 +336,72 @@ class Checkout(View):
         }
         return render(request, 'customer/checkout.html', context)
 
-def order_placed(request):
-    if request.method == 'POST':
-        user = request.user
-        method = request.POST.get('method')
-        order_id = request.POST.get('order_id')
-
-        num_items = (len(request.POST) - 2) // 2  # Adjusting for additional fields like method and order_id
-        for i in range(1, num_items + 1):
-            product_id = request.POST.get(f'product_id_{i}')
-            quantity = request.POST.get(f'quantity_{i}')
-
-            cart_item = Cart.objects.filter(user=user, product_id=product_id).first()
-            if cart_item:
-                OrderPlaced.objects.create(user=user, product=cart_item.product, quantity=quantity, food_status='Pending', method=method, order_id=order_id)
-                cart_item.delete()  # Remove the cart item after ordering
-
-        return redirect('order_history')  # Redirect to the order confirmation page
-
-    return redirect('checkout')
-
-
-def generate_order_id():
-    # Implement your logic to generate a unique order ID here
-    return 'ORD' + str(random.randint(100, 999))
 
 def order_placed(request):
     if request.method == 'POST':
         user = request.user
         method = request.POST.get('method')
+        order_id = generate_order_id()
 
         if not method:
-            # Handle the case where method is not selected
-            return redirect('checkout')  # Or show an error message
+            return redirect('checkout')
 
         table_number = request.POST.get('table_number') if method == 'Dine In' else None
-        order_id = generate_order_id() 
 
-        num_items = len(request.POST) // 2  # Divide by 2 because each item has 2 hidden inputs
+        num_items = (len(request.POST) - 2) // 2  # Adjusting for additional fields like method and order_id
         ordered_items = []
-        total_points = 0  # Initialize total points for the order
+        total_points = 0
 
         for i in range(1, num_items + 1):
-            product_id = request.POST.get('product_id_' + str(i))  # Get the product ID for the current item
-            quantity_str = request.POST.get('quantity_' + str(i))  # Get the quantity string for the current item
-            if quantity_str is not None:  # Check if quantity is not None
-                quantity = int(quantity_str)  # Convert quantity to integer
+            product_id = request.POST.get(f'product_id_{i}')
+            quantity_str = request.POST.get(f'quantity_{i}')
+            if quantity_str is not None:
+                quantity = int(quantity_str)
             else:
-                quantity = 0  # Set a default value if quantity is None
+                quantity = 0
 
             cart_item = Cart.objects.filter(user=user, product_id=product_id).first()
             if cart_item:
+                order = OrderPlaced.objects.create(
+                    user=user,
+                    product=cart_item.product,
+                    quantity=quantity,
+                    food_status='Pending',
+                    method=method,
+                    points=0,
+                    table_number=table_number,
+                    order_id=order_id
+                )
+                order.customizations.set(cart_item.customizations.all())
+                order.save()
+
                 ordered_items.append({
                     'product_id': cart_item.product.id,
                     'title': cart_item.product.title,
                     'price': cart_item.product.price,
                     'quantity': quantity,
                     'total_price': cart_item.product.price * quantity,
-                    'is_served': False  # Initial status is not served
+                    'is_served': False,
+                    'customizations': list(cart_item.customizations.all())
                 })
 
-                # Calculate points based on the total price of the item
-                item_points = int(cart_item.product.price)  # Example: 1 point per dollar spent
+                item_points = int(cart_item.product.price)
                 total_points += item_points * quantity
 
-                # Increment the quantity_sold field in the Product model
                 cart_item.product.quantity_sold += quantity
                 cart_item.product.save()
 
-                OrderPlaced.objects.create(
-                    user=user,
-                    product=cart_item.product,
-                    quantity=quantity,
-                    food_status='Pending',
-                    method=method,
-                    points=item_points * quantity,  # Multiply points by quantity
-                    table_number=table_number,
-                    order_id=order_id
-                )
-                cart_item.delete()  # Remove the cart item after ordering
+                order.points = item_points * quantity
+                order.save()
+
+                cart_item.delete()
 
         user_profile, created = Customer.objects.get_or_create(user=request.user)
         initial_points = user_profile.points
 
-        user_profile.points += total_points  # Add the earned points
+        user_profile.points += total_points
         user_profile.save()
 
-        # Pass the ordered items and total points to the new HTML page
         context = {
             'ordered_items': ordered_items,
             'total_points': total_points,
@@ -389,37 +412,43 @@ def order_placed(request):
         }
         return render(request, 'customer/order_summary.html', context)
     else:
-        return HttpResponseBadRequest("Invalid request method")
+        return redirect('checkout')
+
+
+
+def generate_order_id():
+    # Implement your logic to generate a unique order ID here
+    return 'ORD' + str(random.randint(100, 999))
 
 def order_history(request):
-    order_placed = OrderPlaced.objects.filter(user=request.user).order_by('-ordered_date')
+    order_placed = OrderPlaced.objects.filter(user=request.user).prefetch_related('customizations').order_by('-ordered_date')
     return render(request, 'customer/order_history.html', {'order_placed': order_placed})
-
 
 def plus_cart(request):
     if request.method == 'GET':
         prod_id = request.GET.get('prod_id') 
         cart_item = Cart.objects.filter(Q(product=prod_id) & Q(user=request.user)).first()
-
+   
         if cart_item:
             cart_item.quantity += 1
             cart_item.save()
-        else:
-            cart_item = Cart.objects.create(user=request.user, product_id=prod_id, quantity=1)
 
+        else:
+            Cart.objects.create(user=request.user, product_id=prod_id, quantity=1)
+            
         cart = Cart.objects.filter(user=request.user)
         amount = sum(item.quantity * item.product.price for item in cart)
         data = {
-            'quantity': cart_item.quantity,
-            'amount': amount,
-            'totalamount': amount,
-        }
+                'quantity': cart_item.quantity,
+                'amount': amount,
+                'totalamount': amount,  # Assuming totalamount is the same as amount in this context
+            }
 
-        return JsonResponse(data)
+        return JsonResponse(data) 
+                
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
-
-
+    
 def minus_cart(request):
     if request.method == 'GET':
         prod_id = request.GET.get('prod_id') 
@@ -435,28 +464,27 @@ def minus_cart(request):
             data = {
                 'quantity': cart_item.quantity,  # Simply return the current quantity
                 'amount': amount,
-                'totalamount': amount,
+                'totalamount': amount,  # Assuming totalamount is the same as amount in this context
             }
             return JsonResponse(data)
         else:
             return JsonResponse({'error': 'Cart item not found for the user and product.'}, status=400)
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
-
-
-
+    
 def remove_cart(request):
     if request.method == 'GET':
-        prod_id = request.GET.get('prod_id')
+        prod_id = request.GET.get('prod_id') 
         cart_item = Cart.objects.filter(Q(product=prod_id) & Q(user=request.user)).first()
         if cart_item:
-            cart_item_quantity = cart_item.quantity
-            cart_item.delete()
+            cart_item_quantity = cart_item.quantity  # Store the quantity before deletion
+            cart_item.delete()  # Delete the cart item
 
             cart = Cart.objects.filter(user=request.user)
             amount = sum(item.quantity * item.product.price for item in cart)
+            # totalamount = amount  # Assuming totalamount is the same as amount in this context
             data = {
-                'quantity': cart_item_quantity,
+                'quantity': cart_item_quantity,  # Use the stored quantity before deletion
                 'amount': amount,
                 'totalamount': amount,
             }
@@ -467,10 +495,13 @@ def remove_cart(request):
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
 
-    
 class Login(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/login.html')
+    
+# class PasswordResetView(View):
+#     def get(self, request, *args, **kwargs):
+#         return render(request, 'customer/login.html')
     
 
 class ProfileView(View):
@@ -478,7 +509,7 @@ class ProfileView(View):
         customer = request.user.customer
         form = CustomerProfileForm(instance=customer)
         return render(request, 'customer/profile.html', {'form': form})
-    
+
     def post(self, request):
         customer = request.user.customer
         form = CustomerProfileForm(request.POST, request.FILES, instance=customer)
@@ -486,7 +517,7 @@ class ProfileView(View):
             form.save()
             return redirect('profile_info')
         return render(request, 'customer/profile.html', {'form': form})
-
+    
 def profile_info_view(request):
     customer = request.user.customer
     return render(request, 'customer/profile_info.html', {'customer': customer})
@@ -506,6 +537,7 @@ class updateAddress(View):
             add = Customer.objects.get(pk=pk)
             add.name = form.cleaned_data['name']
             add.mobile = form.cleaned_data['mobile']
+            
             add.save()
             messages.success(request, "Congratulations! Profile Update Successfully.")
         else:
@@ -572,32 +604,20 @@ def claim_item(request):
                 messages.error(request, 'Item has already been claimed.')
         except RedeemedItem.DoesNotExist:
             messages.error(request, 'Invalid redemption ID.')
-        return redirect('point')  # Redirect back to the rewards page if not a POST request
+
+        return redirect('point')
     else:
-        return redirect('point')  # Redirect back to the rewards page if not a POST request
-
-
-# def order_again(request, order_id):
-#     previous_order = get_object_or_404(OrderPlaced, id=order_id, user=request.user)
-#     cart_item = Cart.objects.filter(user=request.user, product=previous_order.product).first()
+        return redirect('point')
     
-#     if cart_item:
-#         cart_item.quantity += previous_order.quantity
-#         cart_item.save()
-#     else:
-#         Cart.objects.create(user=request.user, product=previous_order.product, quantity=previous_order.quantity)
-    
-#     return redirect('/cart')
-
 def order_again(request, order_id):
     previous_order = get_object_or_404(OrderPlaced, id=order_id, user=request.user)
     cart_item = Cart.objects.filter(user=request.user, product=previous_order.product).first()
-    
+
     if cart_item:
         cart_item.quantity += previous_order.quantity
         cart_item.save()
     else:
         Cart.objects.create(user=request.user, product=previous_order.product, quantity=previous_order.quantity)
-    
-    return redirect('/cart')
 
+    return redirect('/cart')
+    

@@ -110,12 +110,18 @@
                 {% csrf_token %}
                 {% for item in cart_items_with_total %}
                 <div class="card mb-2">
-                    <div class="card-body d-flex justify-content-between">
-                        <span>{{ item.quantity }} x</span> &nbsp; &nbsp; &nbsp;
-                        <span class="product-title">{{ item.product.title }}</span>
-                        <span class="product-price">RM {{ item.total_price|floatformat:2 }}</span>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <span>{{ item.quantity }} x</span> &nbsp; &nbsp; &nbsp;
+                            <span class="product-title">{{ item.product.title }}</span>
+                            <span class="product-price">RM {{ item.total_price|floatformat:2 }}</span>
+                        </div>
+                        <div class="customizations">
+                            {% for customization in item.customizations %}
+                                <p>{{ customization.name }} (+RM {{ customization.additional_price|floatformat:2 }})</p>
+                            {% endfor %}
+                        </div>
                     </div>
-                    <!-- Add hidden input fields for each item and its quantity -->
                     <input type="hidden" name="product_id_{{ forloop.counter }}" value="{{ item.product.id }}">
                     <input type="hidden" name="quantity_{{ forloop.counter }}" value="{{ item.quantity }}">
                 </div>
@@ -126,71 +132,40 @@
             <div>
                 <label for="method">How would you like to enjoy your meal? </label>
                 <select id="method" name="method">
-                    <option value="">Choose your method</option>
-                    <option value="Dine In">Dine In</option>
+                    <option value="">Choose Your Method</option>
                     <option value="Pick Up">Pick Up</option>
+                    <option value="Dine In">Dine In</option>
                 </select>
             </div>
-            <br>
 
-            <div id="table-number-div" style="display: none;">
-                <label for="table-number">Table Number: </label>
-                <input type="text" id="table-number" name="table_number">
-            </div>
-            <br><br>
-            <div class="form-check mb-3">
-                <h5>Total Price: </h5>
-                <h5>RM {{ totalamount|floatformat:2 }}</h5>
+            <div id="table_number_div" style="display: none;">
+                <label for="table_number">Table Number:</label>
+                <input type="text" id="table_number" name="table_number" class="form-control">
             </div>
 
-            <div class="text-end">
-                <button type="button" id="submit-order" class="btn btn-warning px-5 fw-bold">Place Order</button>
+            <div class="row mt-3">
+                <div class="col-sm-6">
+                    <h5>Total</h5>
+                </div>
+                <div class="col-sm-6 text-right">
+                    <h5>RM {{ totalamount|floatformat:2 }}</h5>
+                </div>
             </div>
-        </form>
+            <button class="btn btn-success btn-block mt-3" type="submit">Place Order</button>
         </div>
     </div>
 </div>
 
 <script>
-    document.getElementById('method').addEventListener('change', function() {
+    document.getElementById("method").addEventListener("change", function () {
         var method = this.value;
-        if (method === 'Dine In') {
-            document.getElementById('table-number-div').style.display = 'block';
+        var tableNumberDiv = document.getElementById("table_number_div");
+        if (method === "Dine In") {
+            tableNumberDiv.style.display = "block";
         } else {
-            document.getElementById('table-number-div').style.display = 'none';
+            tableNumberDiv.style.display = "none";
         }
-    });
-
-    document.getElementById('submit-order').addEventListener('click', function() {
-        var method = document.getElementById('method').value;
-        if (!method) {
-            alert('Please choose a method for enjoying your meal.');
-            return;
-        }
-        var orderForm = document.getElementById('order_form');
-        orderForm.submit();
     });
 </script>
 
-<style>
-    .card-body {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .product-title {
-        flex-grow: 1;
-    }
-
-    .product-price {
-        text-align: right;
-        min-width: 100px; /* Adjust as needed */
-    }
-
-    .text-end {
-        margin-right: 100px;
-    }
-</style>
-
-{% endblock content %}
+{% endblock %}

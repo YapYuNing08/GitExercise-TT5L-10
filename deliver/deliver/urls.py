@@ -49,7 +49,7 @@ urlpatterns = [
     path("category/<slug:val>", Category.as_view(), name="category"),
     path("category_title/<val>", CategoryTitle.as_view(), name="category_title"),
 
-    path("product_detail/<int:pk>", ProductDetail.as_view(), name="product_detail"),
+    path('product_detail/<int:pk>/', ProductDetail.as_view(), name='product_detail'),
     path('profile/', ProfileView.as_view(), name='profile'),
     path('profile_info/', views.profile_info_view, name='profile_info'),
     
