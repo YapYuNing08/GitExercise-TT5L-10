@@ -2,7 +2,7 @@ import random
 from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.views import View
 from django.db.models import Q
-from .models import MenuItem, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel, OrderPlaced, RedemptionOption, RedeemedItem
+from .models import Product, Customer, Cart, ReservationModel, OrderPlaced, RedemptionOption, RedeemedItem
 from .forms import CustomerRegistrationForm, CustomerProfileForm, ReviewForm
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
@@ -105,67 +105,6 @@ class Logout(View):
     def get(self, request, *args, **kwargs):
         logout(request)  # Logs out the user
         return redirect('signin') 
-        
-
-class Order(View):
-    def get(self, request, *args, **kwargs):
-        # get every item from each category
-        beverage = MenuItem.objects.filter(category__name__contains='Beverage')
-        desserts = MenuItem.objects.filter(category__name__contains='Desserts')
-        pastries = MenuItem.objects.filter(category__name__contains='Pastries')
-        main = MenuItem.objects.filter(category__name__contains='Main')
-        
-
-        # pass into context
-        context = {
-            'beverage': beverage,
-            'desserts': desserts,
-            'pastries': pastries,
-            'main': main
-            
-        }
-
-        # render the template
-        return render(request, 'customer/order.html', context)
-
-    def post(self, request, *args, **kwargs):
-        items_ids = request.POST.getlist('items[]')
-        quantities = request.POST.getlist('quantities[]')
-        name = request.POST.get('name')
-        phone = request.POST.get('phone')
-
-        total_price = 0
-        items_with_quantity = []  
-        for item_id, quantity in zip(items_ids, quantities):
-            item = MenuItem.objects.get(id=item_id)
-            item_total_price = item.price * int(quantity)
-            if item_total_price > 0:
-                items_with_quantity.append({'item': item, 'quantity': int(quantity), 'total_price': item_total_price})  
-                total_price += item_total_price
-
-        order = OrderModel.objects.create(
-            price=total_price,
-            name=name,
-            phone=phone,
-        )
-
-        # Create OrderItem instances for each selected item
-        for item_info in items_with_quantity:
-            order_item = OrderItem.objects.create(
-                order=order,
-                item=item_info['item'],
-                quantity=item_info['quantity'],
-                total_price=item_info['total_price']
-            )
-
-        context = {
-            'items_with_quantity': items_with_quantity,
-            'total_price': total_price
-        }
-
-        return render(request, 'customer/order_history.html', context)
-
-
 
 class MenuSearch(View):
     def get(self, request, *args, **kwargs):
@@ -184,19 +123,17 @@ class MenuSearch(View):
         }
 
         return render(request, 'customer/all_products.html', context)
-    
-class Menu(View):
-    def get(self, request, *args, **kwargs):
-        # Retrieve menu items from the database
-        menu_items = MenuItem.objects.all()
-        context = {'menu_items': menu_items}
-
-        return render(request, 'customer/menu.html', context)
 
 def all_products(request):
-    # categories = Category.objects.all()
     products = Product.objects.all()
-    return render(request, 'customer/all_products.html', {'products': products})
+    context = {'products': products}
+
+    if request.user.is_authenticated:
+        cart_items = Cart.objects.filter(user=request.user)
+        cart_count = cart_items.count()
+        context['cart_count'] = cart_count
+
+    return render(request, 'customer/all_products.html', context)
 
 
 class Category(View):

@@ -19,9 +19,9 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from customer.views import Index, About, Order, Signin, Signup, Menu, MenuSearch, Category, CategoryTitle, ProductDetail, CustomerRegistrationView, Login, ProfileView, Reservation, ReservationConfirmation, Logout, Checkout
+from customer.views import Index, About, Signin, Signup, MenuSearch, Category, CategoryTitle, ProductDetail, CustomerRegistrationView, Login, ProfileView, Reservation, ReservationConfirmation, Logout, Checkout
 from django.contrib.auth import views as auth_view
-from customer.forms import LoginForm, MyPasswordResetForm, MyPasswordChangeForm
+from customer.forms import MyPasswordResetForm, MyPasswordChangeForm
 from customer import views
 
 urlpatterns = [
@@ -40,8 +40,6 @@ urlpatterns = [
     
     path('signup/', Signup.as_view(), name="signup"),
 
-    path('order/', Order.as_view(), name="order"),
-    path('menu/', Menu.as_view(), name='menu'),
     path('menu/search', MenuSearch.as_view(), name='menu-search'),
     path('all-products/', views.all_products, name='all_products'),
     

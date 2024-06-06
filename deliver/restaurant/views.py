@@ -2,11 +2,7 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.views import View
 from django.utils.timezone import datetime
-from customer.models import OrderModel, ReservationModel, OrderPlaced, Product, RedeemedItem
-from django.http import JsonResponse, HttpResponse
-import json
-from .forms import FoodStatusForm
-from django.contrib import messages
+from customer.models import ReservationModel, OrderPlaced, Product, RedeemedItem
 
 class Index(View):
     def get(self, request, *args, **kwargs):

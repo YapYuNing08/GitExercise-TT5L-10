@@ -18,7 +18,7 @@
                 <td>{% if order.method == 'Pick Up' %}
                         {{ order.method }} : {{order.order_id}}
                     {% else %}
-                        {{ order.method }}
+                        {{ order.method }} : Table {{ order.table_number }}
                     {% endif %}
                 </td>
                 <td>{{ order.ordered_date }}</td>

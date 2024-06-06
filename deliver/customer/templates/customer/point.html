@@ -4,10 +4,13 @@
 <div class="container container-rewards my-5">
     <div class="row">
         <div class="col-md-3">
+            <!-- My Rewards Section -->
             <div class="card mb-4">
+                <!-- Card Header -->
                 <div class="card-header">
                     <h5 class="text-center"><strong>My Rewards</strong></h5>
                 </div>
+                <!-- List Group -->
                 <ul class="list-group list-group-flush">
                     {% for redemption in redeemed_items %}
                     <li class="list-group-item">
@@ -16,13 +19,15 @@
                                 <img src="{{ redemption.option.image.url }}" alt="{{ redemption.option.name }}" width="50" height="50" class="mr-3">
                                 <span class="name">{{ redemption.option.name }}</span>
                             </div>
-                            {% if redemption.claimed %}
-                                <span class="badge badge-success"><i class="fas fa-check"></i></span>
-                            {% else %}
-                                <button type="button" class="btn btn-outline-success btn-sm claim-button" data-toggle="modal" data-target="#claimModal{{ redemption.id }}">
-                                    Claim
-                                </button>
-                            {% endif %}
+                            <div class="ml-auto button-container">
+                                {% if redemption.claimed %}
+                                    <span class="badge badge-success"><i class="fas fa-check"></i></span>
+                                {% else %}
+                                    <button type="button" class="btn btn-outline-success btn-sm claim-button" data-toggle="modal" data-target="#claimModal{{ redemption.id }}">
+                                        Claim
+                                    </button>
+                                {% endif %}
+                            </div>
                         </div>
                     </li>
 
@@ -31,7 +36,7 @@
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="claimModalLabel{{ redemption.id }}">Claim Reward</h5>
+                                    <h5 class="modal-title" id="claimModalLabel{{ redemption.id }}">Confirm to Claim?</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
@@ -53,8 +58,11 @@
         </div>
 
         <div class="col-md-9">
+            <!-- Rewards Section -->
             <div class="card-reward p-4 text-center">
+                <!-- Rewards Title -->
                 <h1 class="display-4 mb-4">Rewards</h1>
+                <!-- Points Info -->
                 <h3 class="text-info"><strong>Points: {{ initial_points }}</strong></h3>
                 <p class="text-info"><strong>Every RM 1 spent = 1 point</strong></p>
                 <hr class="my-4">
@@ -67,14 +75,71 @@
                     {% endfor %}
                 {% endif %}
                 <!-- End of messages section -->
+
+                <!-- Normal Rewards Section -->
                 <div class="row row-cols-1 row-cols-md-2">
                     {% for option in redemption_options %}
+                    {% if option.points_required > 0 %}
                     <div class="col mb-4">
                         <div class="card h-100 border border-dark rounded shadow">
                             <img src="{{ option.image.url }}" class="card-img-top" alt="{{ option.name }}" height="200">
                             <div class="card-body">
                                 <h5 class="card-title card-title-reward">{{ option.name }}</h5>
                                 <p class="card-text"><strong>Points Required: <span class="points-required">{{ option.points_required }}</span></strong></p>
+                                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal{{ option.id }}">
+                                    View Details
+                                </button>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="modal{{ option.id }}" tabindex="-1" role="dialog" aria-labelledby="modal{{ option.id }}Label" aria-hidden="true">
+                            <!-- Modal Content -->
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <!-- Modal Header -->
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="modal{{ option.id }}Label">{{ option.name }}</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <!-- Modal Body -->
+                                    <div class="modal-body">
+                                        <img src="{{ option.image.url }}" alt="{{ option.name }}" width="300px" height="200px">
+                                        <p><strong>{{ option.description | linebreaksbr }}</strong></p>
+                                        <p>Points Required: {{ option.points_required }}</p>
+                                        <!-- Redeem Form -->
+                                        <form id="redeemForm{{ option.id }}" action="{% url 'redeem_item' %}" method="POST">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="option_id" value="{{ option.id }}">
+                                                <!-- Redeem Button -->
+                                                <button type="submit" class="btn btn-primary">Redeem</button>
+                                        </form>
+                                        <!-- End Redeem Form -->
+                                    </div>
+                                    <!-- End Modal Body -->
+                                </div>
+                            </div>
+                            <!-- End Modal Content -->
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                <!-- End Normal Rewards Section -->
+            </div>
+            <!-- End Rewards Section -->
+
+            <!-- Free Items Section -->
+            <hr class="my-4">
+            <h3 class="text-info"><strong>No point required!!!</strong></h3>
+            <div class="row row-cols-1 row-cols-md-2">
+                {% for option in redemption_options %}
+                    {% if option.points_required == 0 %}
+                    <div class="col mb-4">
+                        <div class="card h-100 border border-dark rounded shadow">
+                            <img src="{{ option.image.url }}" class="card-img-top" alt="{{ option.name }}" height="200">
+                            <div class="card-body">
+                                <h5 class="card-title card-title-reward">{{ option.name }}</h5>
                                 <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal{{ option.id }}">
                                     View Details
                                 </button>
@@ -92,44 +157,49 @@
                                     <div class="modal-body">
                                         <img src="{{ option.image.url }}" alt="{{ option.name }}" width="300px" height="200px">
                                         <p><strong>{{ option.description | linebreaksbr }}</strong></p>
-                                        <p>Points Required: {{ option.points_required }}</p>
-
+                                        
+                                        <!-- Redeem Form -->
                                         <form id="redeemForm{{ option.id }}" action="{% url 'redeem_item' %}" method="POST">
                                             {% csrf_token %}
                                             <input type="hidden" name="option_id" value="{{ option.id }}">
                                             {% if option.review_required %}
+                                                <!-- Rating and Comment -->
                                                 <div class="form-group">
                                                     <label for="id_rating">Rating</label>
-                                                    <div class="star-rating">
-                                                        <input type="radio" id="star5" name="rating" value="5" required />
-                                                        <label for="star5" title="5 stars">&#9733;</label>
-                                                        <input type="radio" id="star4" name="rating" value="4" required/>
-                                                        <label for="star4" title="4 stars">&#9733;</label>
-                                                        <input type="radio" id="star3" name="rating" value="3" required/>
-                                                        <label for="star3" title="3 stars">&#9733;</label>
-                                                        <input type="radio" id="star2" name="rating" value="2" required/>
-                                                        <label for="star2" title="2 stars">&#9733;</label>
-                                                        <input type="radio" id="star1" name="rating" value="1" required/>
-                                                        <label for="star1" title="1 star">&#9733;</label>
+                                                        <div class="star-rating">
+                                                            <input type="radio" id="star5" name="rating" value="5" required />
+                                                            <label for="star5" title="5 stars">&#9733;</label>
+                                                            <input type="radio" id="star4" name="rating" value="4" required/>
+                                                            <label for="star4" title="4 stars">&#9733;</label>
+                                                            <input type="radio" id="star3" name="rating" value="3" required/>
+                                                            <label for="star3" title="3 stars">&#9733;</label>
+                                                            <input type="radio" id="star2" name="rating" value="2" required/>
+                                                            <label for="star2" title="2 stars">&#9733;</label>
+                                                            <input type="radio" id="star1" name="rating" value="1" required/>
+                                                            <label for="star1" title="1 star">&#9733;</label>
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="id_comment">Comment</label>
                                                     <textarea name="comment" class="form-control" id="id_comment" required></textarea>
                                                 </div>
+                                                <!-- Redeem Button -->
                                                 <button type="submit" class="btn btn-primary">Submit Review & Redeem</button>
                                             {% else %}
+                                                <!-- Redeem Button -->
                                                 <button type="submit" class="btn btn-primary">Redeem</button>
                                             {% endif %}
                                         </form>
+                                        <!-- End Redeem Form -->
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    {% endfor %}
-                </div>
+                    {% endif %}
+                {% endfor %}
             </div>
+            <!-- End Free Items Section -->
         </div>
     </div>
 </div>
@@ -157,6 +227,34 @@
         margin-bottom: 10px;
     }
 
+    .button-container {
+    margin-left: auto;
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    text-align: right;
+}
+
+.claim-button {
+    display: inline-block;
+    margin-left: auto;
+    text-align: right;
+}
+
+.d-flex.align-items-center.justify-content-between {
+    width: 100%;
+}
+
+.list-group-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.list-group-item .d-flex {
+    width: 100%;
+}
     .points-required {
         color: #ff4500;
         font-weight: bold;
@@ -247,6 +345,29 @@
 .star-rating input[type="radio"]:checked ~ label {
     color: #fdd835; /* Color for filled stars */
 }
+
+.star-rating {
+    direction: rtl;
+    display: inline-flex;
+    font-size: 1.5rem;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    cursor: pointer;
+    color: #ddd;
+}
+
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #ffc700;
+}
+
+
 </style>
 
 {% endblock content %}
