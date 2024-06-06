@@ -10,18 +10,21 @@
                 <th>Product</th>
                 <th>Quantity</th>
                 <th>Food Status</th>
+                <th>Order Again</th>
             </tr>
         </thead>
         <tbody>
             {% for order in order_placed %}
             <tr>
+                
+                
                 <td>{% if order.method == 'Pick Up' %}
                         {{ order.method }} : {{order.order_id}}
                     {% else %}
                         {{ order.method }}
                     {% endif %}
                 </td>
-                <td>{{ order.ordered_date }}</td>
+                <td>{{ order.ordered_date|date:"Y-m-d H:i:s" }}</td>
                 <td>
                     <div class="product-title">{{ order.product.title }}</div>
                     {% if order.customizations.exists %}
@@ -49,6 +52,9 @@
                     </div>
                 </td>
                 {% endif %}
+                <td>
+                    <a href="{% url 'order_again' order.id %}" class="btn btn-primary">Order Again</a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
