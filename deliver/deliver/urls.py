@@ -44,11 +44,12 @@ urlpatterns = [
     path('menu/', Menu.as_view(), name='menu'),
     path('menu/search', MenuSearch.as_view(), name='menu-search'),
     path('all-products/', views.all_products, name='all_products'),
+    path('order_again/<int:order_id>/', views.order_again, name='order_again'),
     
     path("category/<slug:val>", Category.as_view(), name="category"),
     path("category_title/<val>", CategoryTitle.as_view(), name="category_title"),
 
-    path("product_detail/<int:pk>", ProductDetail.as_view(), name="product_detail"),
+    path('product_detail/<int:pk>/', ProductDetail.as_view(), name='product_detail'),
     path('profile/', ProfileView.as_view(), name='profile'),
     path('profile_info/', views.profile_info_view, name='profile_info'),
     
@@ -64,6 +65,7 @@ urlpatterns = [
     path('removecart/', views.remove_cart),
     path('order_placed/', views.order_placed, name='order_placed'), 
     path('order_history/', views.order_history, name='order_history'),
+    path('order_again/<int:order_id>/', views.order_again, name='order_again'),
 
     # login authentication
     path('registration/', CustomerRegistrationView.as_view(), name='customerregistration'),
