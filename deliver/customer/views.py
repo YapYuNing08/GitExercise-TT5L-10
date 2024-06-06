@@ -200,7 +200,13 @@ class Menu(View):
 def all_products(request):
     # categories = Category.objects.all()
     products = Product.objects.all()
-    return render(request, 'customer/all_products.html', {'products': products})
+    query = request.GET.get('q')
+    if query:
+        products = products.filter(title__icontains=query)
+
+    latest_orders = OrderPlaced.objects.filter(user=request.user).order_by('-id')[:2]
+
+    return render(request, 'customer/all_products.html', {'products': products, 'latest_orders': latest_orders})
 
 
 class Category(View):
@@ -411,6 +417,7 @@ def plus_cart(request):
 
         else:
             Cart.objects.create(user=request.user, product_id=prod_id, quantity=1)
+            
         cart = Cart.objects.filter(user=request.user)
         amount = sum(item.quantity * item.product.price for item in cart)
         data = {
@@ -430,8 +437,9 @@ def minus_cart(request):
         cart_item = Cart.objects.filter(Q(product=prod_id) & Q(user=request.user)).first()
 
         if cart_item:
-            cart_item.quantity -= 1
-            cart_item.save()
+            if cart_item.quantity > 1:
+                cart_item.quantity -= 1
+                cart_item.save()
 
             cart = Cart.objects.filter(user=request.user)
             amount = sum(item.quantity * item.product.price for item in cart)
@@ -584,4 +592,16 @@ def claim_item(request):
         return redirect('point')
     else:
         return redirect('point')
+    
+def order_again(request, order_id):
+    previous_order = get_object_or_404(OrderPlaced, id=order_id, user=request.user)
+    cart_item = Cart.objects.filter(user=request.user, product=previous_order.product).first()
+
+    if cart_item:
+        cart_item.quantity += previous_order.quantity
+        cart_item.save()
+    else:
+        Cart.objects.create(user=request.user, product=previous_order.product, quantity=previous_order.quantity)
+
+    return redirect('/cart')
     
