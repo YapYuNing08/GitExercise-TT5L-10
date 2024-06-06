@@ -1,8 +1,7 @@
-
 """
 URL configuration for deliver project.
 
-The `urlpatterns` list routes URLs to views. For more information please see:
+The urlpatterns list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.0/topics/http/urls/
 Examples:
 Function views
@@ -75,4 +74,3 @@ urlpatterns = [
     path('password_change/', auth_view.PasswordChangeView.as_view(template_name='customer/changepassword.html', form_class=MyPasswordChangeForm),name='password_change'),
     path('password_change_done/', auth_view.PasswordChangeDoneView.as_view(template_name='customer/passwordchangedone.html'), name='password_change_done'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-

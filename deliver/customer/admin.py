@@ -37,7 +37,7 @@ class RedemptionOptionModelAdmin(admin.ModelAdmin):
 @admin.register(Ad)
 class AdAdmin(admin.ModelAdmin):
     list_display = ('title', 'is_active')
-
+    
 @admin.register(RedeemedItem)
 class RedemptionOptionModelAdmin(admin.ModelAdmin):
     list_display = ['customer', 'option', 'date_redeemed']

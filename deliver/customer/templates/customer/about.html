@@ -5,71 +5,71 @@
 {% load static %}
 {% block content %}
 
-<body>
-    <div class="cover-image-container">
-        <img src="/media/menu_images/about3.jpg" class="cover-image" alt="Cover Image">
-        <div class="cover-text">
-            <h1 class="poetsen-one-regular">CuppaClick</h1>
-            <p>Your ultimate culinary destination</p>
-            <a href="{% url 'all_products' %}" class="btn btn-light" style="padding: 10px 20px; font-size: 14px; color: #4E342E;">
-                Order Now!
-            </a>
-        </div>
+<div class="cover-image-container">
+    <img src="/media/menu_images/about3.jpg" class="cover-image" alt="Cover Image">
+    <div class="cover-text">
+        <h1 class="poetsen-one-regular">CuppaClick</h1>
+        <p>Your ultimate culinary destination</p>
+        <a href="{% url 'all_products' %}" class="btn btn-light" style="padding: 10px 20px; font-size: 14px; color: #4E342E;">
+            Order Now!
+        </a>
     </div>
+</div>
 
-    <div class="container my-5">
-        <h2 class="text-center mb-4">TOP 3 MUST-TRY</h2>
-        <div class="row">
-            <!-- Recommended Food 1 -->
-            <div class="col-md-4 text-center mb-4">
-                <div class="card">
-                    <img src="/media/menu_images/MatchaLatte2_wbuzODc.jpg" class="card-img-top" alt="Food 1">
-                    <div class="card-body">
-                        <h5 class="card-title">Matcha Latte</h5>
-                        <p class="card-text">A delightful blend of premium matcha powder and steamed milk, rich in antioxidants and earthy flavor. 🍵🌿</p>
-                        <a href="{% url 'product_detail' 6 %}" class="btn btn-primary">View Details</a>
-                    </div>
+<div class="container my-5">
+    <h2 class="text-center mb-4">TOP 3 MUST-TRY</h2>
+    <div class="row">
+        <!-- Recommended Food 1 -->
+        <div class="col-md-4 text-center mb-4">
+            <div class="card">
+                <img src="/media/menu_images/MatchaLatte2_wbuzODc.jpg" class="card-img-top" alt="Food 1">
+                <div class="card-body">
+                    <h5 class="card-title">Matcha Latte</h5>
+                    <p class="card-text">A delightful blend of premium matcha powder and steamed milk, rich in antioxidants and earthy flavor. 🍵🌿</p>
+                    <a href="{% url 'product_detail' 6 %}" class="btn btn-primary">View Details</a>
                 </div>
             </div>
-            <!-- Recommended Food 2 -->
-            <div class="col-md-4 text-center mb-4">
-                <div class="card">
-                    <img src="/media/menu_images/RedVelvet.jpg" class="card-img-top" alt="Food 2">
-                    <div class="card-body">
-                        <h5 class="card-title">Red Velvet</h5>
-                        <p class="card-text">Soft, buttery sponge with subtle chocolate and vanilla flavors, topped with fluffy cream cheese frosting. 🍰❤️</p>
-                        <a href="{% url 'product_detail' 16 %}" class="btn btn-primary">View Details</a>
-                    </div>
+        </div>
+        <!-- Recommended Food 2 -->
+        <div class="col-md-4 text-center mb-4">
+            <div class="card">
+                <img src="/media/menu_images/RedVelvet.jpg" class="card-img-top" alt="Food 2">
+                <div class="card-body">
+                    <h5 class="card-title">Red Velvet</h5>
+                    <p class="card-text">Soft, buttery sponge with subtle chocolate and vanilla flavors, topped with fluffy cream cheese frosting. 🍰❤️</p>
+                    <a href="{% url 'product_detail' 16 %}" class="btn btn-primary">View Details</a>
                 </div>
             </div>
-            <!-- Recommended Food 3 -->
-            <div class="col-md-4 text-center mb-4">
-                <div class="card">
-                    <img src="/media/menu_images/Bolognese_fdPGtfH_EwoixvR.jpg" class="card-img-top" alt="Food 3">
-                    <div class="card-body">
-                        <h5 class="card-title">Spaghetti Bolognese</h5>
-                        <p class="card-text">Long, tender strands of pasta coated in a rich Italian ragù made with minced beef, bacon, and tomatoes, served with Parmesan cheese. 🍝🧀</p>
-                        <a href="{% url 'product_detail' 25 %}" class="btn btn-primary">View Details</a>
-                    </div>
+        </div>
+        <!-- Recommended Food 3 -->
+        <div class="col-md-4 text-center mb-4">
+            <div class="card">
+                <img src="/media/menu_images/Bolognese_fdPGtfH_EwoixvR.jpg" class="card-img-top" alt="Food 3">
+                <div class="card-body">
+                    <h5 class="card-title">Spaghetti Bolognese</h5>
+                    <p class="card-text">Long, tender strands of pasta coated in a rich Italian ragù made with minced beef, bacon, and tomatoes, served with Parmesan cheese. 🍝🧀</p>
+                    <a href="{% url 'product_detail' 25 %}" class="btn btn-primary">View Details</a>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="container mb-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8 col-sm-12 p-4 text-center">
-                <h1>About Us!</h1>
-            </div>
-        </div>
-        <div class="row justify-content-center mt-1">
-            <div class="col-md-10 col-sm-12 p-4 text-center">
-                <p>Welcome to Cuppa Click, where passion meets palate.</p>
-                <p>From refreshing beverages to decadent desserts, artisanal pastries to hearty spaghetti, every dish is crafted with care and quality ingredients.</p>
-                <p>Join us for a culinary journey that promises to delight your senses and keep you coming back for more. Your table awaits at Cuppa Click.</p>
-            </div>
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-sm-12 p-4 text-center">
+            <h1>About Us!</h1>
         </div>
     </div>
+    <div class="row justify-content-center mt-1">
+        <div class="col-md-10 col-sm-12 p-4 text-center">
+            <p>Welcome to Cuppa Click, where passion meets palate.</p>
+            <p>From refreshing beverages to decadent desserts, artisanal pastries to hearty spaghetti, every dish is crafted with care and quality ingredients.</p>
+            <p>Join us for a culinary journey that promises to delight your senses and keep you coming back for more. Your table awaits at Cuppa Click.</p>
+        </div>
+    </div>
+</div>
+
 {% if ad %}
 <div id="popup" class="popup" style="display: none;">
     <div class="popup-content">
@@ -272,5 +272,6 @@
         color: #333;
     }
 </style>
+
 
 {% endblock content %}

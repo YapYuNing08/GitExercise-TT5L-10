@@ -1,8 +1,9 @@
+import random
 from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 import random
 from django.views import View
 from django.db.models import Q
-from .models import MenuItem, Category, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel, OrderPlaced, Product, CustomizationChoice, RedemptionOption, RedeemedItem
+from .models import MenuItem, Category, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel, OrderPlaced, Product, CustomizationChoice, RedemptionOption, RedeemedItem, Ad
 from .forms import CustomerRegistrationForm, CustomerProfileForm, CustomizationForm, ReviewForm
 from django.db.models import Count
 from django.core.mail import send_mail
@@ -58,7 +59,8 @@ class ReservationConfirmation(View):
 
 class About(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'customer/about.html')
+        ad = Ad.objects.filter(is_active=True).first()
+        return render(request, 'customer/about.html', {'ad': ad})
 
 class Signup(View):
     def get(self, request, *args, **kwargs):
@@ -258,6 +260,23 @@ class CustomerRegistrationView(View):
         return render(request, 'customer/customerregistration.html', locals())
 
 def add_to_cart(request):
+    # user = request.user
+    # product_id = request.GET.get('prod_id')
+    # product = get_object_or_404(Product, id=product_id)  # Get the product object
+    
+    # # Check if the product already exists in the cart
+    # cart_item = Cart.objects.filter(user=user, product=product).first()
+    # if cart_item:
+    #     # If the item exists, increment its quantity
+    #     cart_item.quantity += 1
+    #     cart_item.save()
+    # else:
+    #     # If the item does not exist, create a new cart item
+    #     Cart(user=user, product=product, quantity=1).save()
+    
+    # # Redirect to the cart page
+    # return redirect('/cart')
+
     if request.method == "POST":
         user = request.user
         product_id = request.POST.get('prod_id')
@@ -316,7 +335,6 @@ class Checkout(View):
             'totalamount': totalamount
         }
         return render(request, 'customer/checkout.html', context)
-
 
 
 def order_placed(request):
@@ -444,7 +462,7 @@ def minus_cart(request):
             cart = Cart.objects.filter(user=request.user)
             amount = sum(item.quantity * item.product.price for item in cart)
             data = {
-                'quantity': cart_item.quantity,
+                'quantity': cart_item.quantity,  # Simply return the current quantity
                 'amount': amount,
                 'totalamount': amount,  # Assuming totalamount is the same as amount in this context
             }
@@ -507,8 +525,6 @@ def profile_info_view(request):
 def address(request):
     add = Customer.objects.filter(user=request.user)
     return render(request, 'customer/address.html', locals())
-
-
 
 class updateAddress(View):
     def get(self, request, pk):

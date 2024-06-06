@@ -130,6 +130,7 @@ class OrderPlaced(models.Model):
     
     def __str__(self):
         return f"Order {self.id} - {self.food_status}"
+
     
 class Customer(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
