@@ -89,7 +89,11 @@
 <div class="container my-5">
     <div class="row">
         {% if cart %}
-        <h1 class="text-center mb-5">Order Cart</h1>
+        <div class="col-sm-12 mb-4">
+            <h1 class="text-center mb-0">Order Cart</h1>
+            <a href="{% url 'all_products' %}" class="btn btn-warning shadow px-3 py-2 ms-2 mt-1"><i class="fa fa-arrow-left"></i>&nbsp;Back to Menu</a>
+        </div>
+
         <div class="col-sm-8">
             <div class="card">
                 <div class="card-body">
@@ -123,9 +127,6 @@
                     {% endfor %}
                 </div>
             </div>
-            <div>
-                <a href="{% url 'all_products' %}" class="btn btn-warning shadow px-5 py-2 ms-2">Back to Menu</a>
-            </div>
         </div>
 
         <div class="col-sm-4">
@@ -151,6 +152,66 @@
         {% endif %}
     </div>
 </div>
+<style>
+    .button-container {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .btn-primary {
+        display: inline-block;
+        padding: 10px 20px; /* Increase padding for larger button */
+        font-size: 15px; /* Increase font size */
+        color: #ffffff;
+        background-color: #f0ad4e;
+        border: none;
+        border-radius: 5px; /* Slightly increase border-radius for larger button */
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .btn-primary:hover {
+        background-color: #ec971f;
+    }
+
+    .btn-warning {
+    background-color: #d2b48c;
+    color: #4a2c2a;
+    border-color: #d2b48c;
+    }
+
+    .btn-warning:hover {
+        background-color: #b1904f;
+        border-color: #b1904f;
+    }
+
+    /* Center align the button with the title */
+    .d-flex {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .btn-back-to-menu {
+    font-size: 14px;
+    margin-top: -10px; 
+}
+
+.remove-cart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.remove-cart .fa-trash {
+    font-size: 15px; 
+}
+</style>
+
+
+ 
+
+</script>
 {% endblock %}
 
 {% block extra_js %}
