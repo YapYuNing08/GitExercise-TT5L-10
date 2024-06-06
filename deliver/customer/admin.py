@@ -1,5 +1,5 @@
 from django.contrib import admin
-from . models import MenuItem, Category, OrderModel, Product, Cart, Customer, ReservationModel, OrderPlaced, CustomizationOption, CustomizationChoice, RedemptionOption, RedeemedItem, Review
+from . models import MenuItem, Category, OrderModel, Product, Cart, Customer, ReservationModel, OrderPlaced, CustomizationOption, CustomizationChoice, RedemptionOption, RedeemedItem, Review, Ad
 
 admin.site.register(MenuItem)
 admin.site.register(Category)
@@ -33,6 +33,10 @@ class CustomizationOptionAdmin(admin.ModelAdmin):
 @admin.register(RedemptionOption)
 class RedemptionOptionModelAdmin(admin.ModelAdmin):
     list_display = ['name', 'description', 'points_required', 'image']
+
+@admin.register(Ad)
+class AdAdmin(admin.ModelAdmin):
+    list_display = ('title', 'is_active')
 
 @admin.register(RedeemedItem)
 class RedemptionOptionModelAdmin(admin.ModelAdmin):
