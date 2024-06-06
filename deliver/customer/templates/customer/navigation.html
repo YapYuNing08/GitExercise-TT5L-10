@@ -46,57 +46,84 @@
               <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
             </ul>
         </li>
-
-
-        <li class="nav-item" >
-          <a class="nav-link" href="{% url 'order' %}">Place an Order!</a>
-        </li>
         
         <li class="nav-item">
           <a class="nav-link" href="{% url 'reservation' %}"><i class="far fa-calendar-alt fa-lg"></i></a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="{% url 'showcart' %}"><i class="fas fa-shopping-cart fa-lg"></i></a>
+          <a class="nav-link cart-link" href="{% url 'showcart' %}">
+            <i class="fas fa-shopping-cart fa-lg"></i>
+            <span class="badge badge-pill badge-danger">{{ cart_count }}</span>
+          </a>
         </li>
+      </ul>
   {% else %}
         <li class="nav-item mx-2">
           <a href="{% url 'signin' %}" class="nav-link text-white">Login</a>
         </li>
-
         <li class="nav-item mx-2">
           <a href="{% url 'customerregistration' %}" class="nav-link text-white">Registration</a>
         </li>
   {% endif %}
-      </ul>
     </div>
+
   </nav>
 
 
 <style>
-    nav {
+    .nav-link {
+      color: white;
+  }
+
+  .nav-link.cart-link {
+      position: relative;
+      color: white; /* Set the color to white by default */
+      transition: color 0.3s ease;
+  }
+
+  .nav-link.cart-link:hover {
+      color: #f0f0f0; /* Set the hover color */
+  }
+
+  .nav-link.cart-link .badge {
+      position: absolute;
+      top: -0.1px; 
+      right: -0.1px; 
+      background-color: red;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 6px; /* Adjust the padding to ensure the badge is fully visible */
+      font-size: 12px;
+      line-height: 1; /* Ensure the text is centered */
+  }
+
+  .navbar {
       background-color: darkgrey;
       box-shadow: 3px 5px rgba(0, 0, 0, 0.1);
-    }
-    .sidebar li{
+  }
+
+  .sidebar li {
       width: 100%;
       list-style: none;
       display: flex;
       justify-content: flex-end;
       height: 50px;
       padding-top: 20px;
-    }
-    .sidebar a{
+  }
+
+  .sidebar a {
       height: 100%;
       width: 100%;
       padding: 0 30px;
       text-decoration: none;
       display: flex;
-      color:black;
-    }
-    .sidebar a:hover{
+      color: black;
+  }
+
+  .sidebar a:hover {
       background-color: #f0f0f0;
-    }
+  }
     .sidebar{
       position: fixed;
       top: 0;
@@ -119,7 +146,6 @@
       }
     }
 </style>
-
 <script>
   function showSidebar(){
     const sidebar = document.querySelector('.sidebar')
