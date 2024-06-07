@@ -91,6 +91,22 @@
     .stepper-item:last-child::after {
         content: none;
     }
+
+    .product-title {
+        flex: 1; /* Make the title take available space */
+        text-align: center; /* Center align the text */
+    }
+
+    .btn-warning {
+    background-color: #d2b48c;
+    color: #4a2c2a;
+    border-color: #d2b48c;
+    }
+
+    .btn-warning:hover {
+        background-color: #b1904f;
+        border-color: #b1904f;
+    }
 </style>
 
 <div class="container">
@@ -104,18 +120,23 @@
 
     <div class="row mt-5">
         <div class="col-sm-6">
+            <a href="{% url 'add-to-cart' %}" class="btn btn-warning shadow px-3 py-2 ms-2 mt-1"><i class="fa fa-arrow-left"></i>&nbsp;Back to Cart</a>
+            <br>
+            <br>
             <h4>Order Summary</h4>
             <hr>
-            <form method="post" action="{% url 'order_placed' %}" id="order_form">
+            <form method="post" action="{% url 'order_placed' %}" id="order_form" onsubmit="return validateForm()">
                 {% csrf_token %}
                 {% for item in cart_items_with_total %}
                 <div class="card mb-2">
                     <div class="card-body">
-                        <div class="d-flex justify-content-between">
+                        <div class="d-flex justify-content-between align-items-center">
                             <span>{{ item.quantity }} x</span> &nbsp; &nbsp; &nbsp;
-                            <span class="product-title">{{ item.product.title }}</span>
+                            <span class="product-title text-center">{{ item.product.title }}</span>
                             <span class="product-price">RM {{ item.total_price|floatformat:2 }}</span>
                         </div>
+                        
+                        <br>
                         <div class="customizations">
                             {% for customization in item.customizations %}
                                 <p>{{ customization.name }} (+RM {{ customization.additional_price|floatformat:2 }})</p>
@@ -127,13 +148,13 @@
                 </div>
                 {% endfor %}
         </div>
-
+        
         <div class="col-sm-4 offset-sm-1">
             <div>
                 <label for="method">How would you like to enjoy your meal? </label>
                 <select id="method" name="method">
-                    <option value="">Choose Your Method</option>
-                    <option value="Pick Up">Pick Up</option>
+                    <option value="Takeaway">Choose your method</option>
+                    <option value="Takeaway">Pick Up</option>
                     <option value="Dine In">Dine In</option>
                 </select>
             </div>
@@ -166,6 +187,15 @@
             tableNumberDiv.style.display = "none";
         }
     });
+
+    function validateForm() {
+        var method = document.getElementById("method").value;
+        if (method !== "Pick Up" && method !== "Dine In") {
+            alert("Please choose either 'Pick Up' or 'Dine In' method.");
+            return false;
+        }
+        return true;
+    }
 </script>
 
 {% endblock %}
