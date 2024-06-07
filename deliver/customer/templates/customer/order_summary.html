@@ -47,7 +47,6 @@
     </div>
 </div> 
 
-
 <style>
 .ordered-item {
     display: flex;
@@ -56,28 +55,35 @@
     width: 100%;
     margin-bottom: 15px;
     border-bottom: 1px solid #ddd;
-    padding-bottom: 5px;
+    padding-bottom: 10px;
+    padding-top: 10px;
 }
 
 .quantity {
     font-weight: bold;
-    width: 100px;
-    text-align: left;
+    width: 70px;
+    text-align: center;
 }
 
 .product-title {
     flex-grow: 1;
+    text-align: left;
     margin-left: 10px;
+    font-weight: 600;
+    color: #333;
+    max-width: 50%;
 }
 
 .customizations {
-    margin-left: 10px;
+    flex-grow: 1;
+    text-align: left;
+    margin-left: 20px;
 }
 
 .customizations ul {
     list-style-type: none;
     padding-left: 0;
-    margin: 5px 0 0 0;
+    margin: 0;
 }
 
 .customizations li {
@@ -86,12 +92,15 @@
     margin: 2px 0;
 }
 
-.product-price {
-    text-align: right;
-}
-
 .ordered-items {
     margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    text-align: left;
+    display: inline-block;
+    width: 70%;
 }
 
 .text-muted {
