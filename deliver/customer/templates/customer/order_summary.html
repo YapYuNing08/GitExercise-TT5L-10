@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container mb-5">
     <div class="row justify-content-center mt-1">
-        <div class="col-md-5 col-sm-12 p-4 text-center">
+        <div class="col-md-5 col-sm-12 p-4 text-center ins-style">
             <h1>Order Submitted!</h1>
             <p>Thank you for your order! Your food is being made and will be served soon!</p>
             {% if method == 'Dine In' %}
@@ -13,7 +13,7 @@
             {% endif %}
             <!-- Display total points earned from the current order -->
             <br>
-            <h4>Total Points Earned: {{ total_points }}</h4>
+            <h4>Points Earned: {{ total_points }}</h4>
         </div>
     </div>
 
@@ -47,7 +47,6 @@
     </div>
 </div> 
 
-
 <style>
 .ordered-item {
     display: flex;
@@ -56,28 +55,35 @@
     width: 100%;
     margin-bottom: 15px;
     border-bottom: 1px solid #ddd;
-    padding-bottom: 5px;
+    padding-bottom: 10px;
+    padding-top: 10px;
 }
 
 .quantity {
     font-weight: bold;
-    width: 100px;
-    text-align: left;
+    width: 70px;
+    text-align: center;
 }
 
 .product-title {
     flex-grow: 1;
+    text-align: left;
     margin-left: 10px;
+    font-weight: 600;
+    color: #333;
+    max-width: 50%;
 }
 
 .customizations {
-    margin-left: 10px;
+    flex-grow: 1;
+    text-align: left;
+    margin-left: 20px;
 }
 
 .customizations ul {
     list-style-type: none;
     padding-left: 0;
-    margin: 5px 0 0 0;
+    margin: 0;
 }
 
 .customizations li {
@@ -86,16 +92,34 @@
     margin: 2px 0;
 }
 
-.product-price {
-    text-align: right;
-}
-
 .ordered-items {
     margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    text-align: left;
+    display: inline-block;
+    width: 70%;
 }
 
 .text-muted {
     font-style: italic;
+}
+
+.ins-style h1 {
+    color: #4a4a4a;
+    font-weight: bold;
+}
+
+.ins-style p {
+    color: #6c757d;
+    font-size: 1.1rem;
+}
+
+.ins-style h4 {
+    color: #5c2d0c;
+    font-size: 1.25rem;
 }
 </style>
 {% endblock content %}

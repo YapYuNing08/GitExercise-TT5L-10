@@ -3,7 +3,7 @@ from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 import random
 from django.views import View
 from django.db.models import Q
-from .models import Product, Customer, Cart, ReservationModel, OrderPlaced, Product, CustomizationChoice, RedemptionOption, RedeemedItem, Ad
+from .models import Category, Product, Customer, Cart, ReservationModel, OrderPlaced, Product, CustomizationChoice, RedemptionOption, RedeemedItem, Ad
 from .forms import CustomerRegistrationForm, CustomerProfileForm, CustomizationForm, ReviewForm
 from django.db.models import Count
 from django.core.mail import send_mail
@@ -111,6 +111,58 @@ class Logout(View):
     def get(self, request, *args, **kwargs):
         logout(request)  # Logs out the user
         return redirect('signin') 
+        
+# class Order(View):
+#     def get(self, request, *args, **kwargs):
+#         beverage = MenuItem.objects.filter(category_name_contains='Beverage')
+#         desserts = MenuItem.objects.filter(category_name_contains='Desserts')
+#         pastries = MenuItem.objects.filter(category_name_contains='Pastries')
+#         main = MenuItem.objects.filter(category_name_contains='Main')
+
+#         context = {
+#             'beverage': beverage,
+#             'desserts': desserts,
+#             'pastries': pastries,
+#             'main': main
+#         }
+
+#         return render(request, 'customer/order.html', context)
+
+#     def post(self, request, *args, **kwargs):
+#         items_ids = request.POST.getlist('items[]')
+#         quantities = request.POST.getlist('quantities[]')
+#         name = request.POST.get('name')
+#         phone = request.POST.get('phone')
+
+#         total_price = 0
+#         items_with_quantity = []  
+#         for item_id, quantity in zip(items_ids, quantities):
+#             item = MenuItem.objects.get(id=item_id)
+#             item_total_price = item.price * int(quantity)
+#             if item_total_price > 0:
+#                 items_with_quantity.append({'item': item, 'quantity': int(quantity), 'total_price': item_total_price})  
+#                 total_price += item_total_price
+
+#         order = OrderModel.objects.create(
+#             price=total_price,
+#             name=name,
+#             phone=phone,
+#         )
+
+#         for item_info in items_with_quantity:
+#             order_item = OrderItem.objects.create(
+#                 order=order,
+#                 item=item_info['item'],
+#                 quantity=item_info['quantity'],
+#                 total_price=item_info['total_price']
+#             )
+
+#         context = {
+#             'items_with_quantity': items_with_quantity,
+#             'total_price': total_price
+#         }
+
+#         return render(request, 'customer/order_history.html', context)
 
 class MenuSearch(View):
     def get(self, request, *args, **kwargs):
@@ -129,8 +181,17 @@ class MenuSearch(View):
         }
 
         return render(request, 'customer/all_products.html', context)
+    
+# class Menu(View):
+#     def get(self, request, *args, **kwargs):
+#         # Retrieve menu items from the database
+#         menu_items = MenuItem.objects.all()
+#         context = {'menu_items': menu_items}
+
+#         return render(request, 'customer/menu.html', context)
 
 def all_products(request):
+    # categories = Category.objects.all()
     products = Product.objects.all()
     query = request.GET.get('q')
     if query:
@@ -550,4 +611,3 @@ def order_again(request, order_id):
         Cart.objects.create(user=request.user, product=previous_order.product, quantity=previous_order.quantity)
 
     return redirect('/cart')
-    

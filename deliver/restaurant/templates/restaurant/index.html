@@ -162,4 +162,40 @@
     }
 </style>
 
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const preparingButton = document.getElementById('preparingButton');
+        const servedButton = document.getElementById('servedButton');
+
+        if (preparingButton) {
+            preparingButton.addEventListener('click', function(event) {
+                if (preparingButton.classList.contains('btn-secondary')) {
+                    event.preventDefault();
+                } else {
+                    this.classList.remove('btn-warning');
+                    this.classList.add('btn-secondary');
+                    servedButton.classList.remove('btn-secondary');
+                    servedButton.classList.add('btn-success');
+                    // setTimeout(() => this.remove(), 0);  
+                }
+            });
+        }
+
+        servedButton.addEventListener('click', function(event) {
+            if (servedButton.classList.contains('btn-secondary')) {
+                event.preventDefault();
+            } else {
+                this.classList.remove('btn-success');
+                this.classList.add('btn-secondary');
+                if (preparingButton) {
+                    preparingButton.classList.remove('btn-warning');
+                    preparingButton.classList.add('btn-secondary');
+                    preparingButton.disabled = true;
+                    
+                }
+            }
+        });
+    });
+</script>
+
 {% endblock content %}
