@@ -11,4 +11,3 @@ urlpatterns = [
     path('restaurant/update_food_status/<int:order_id>/',views.update_food_status, name='update_food_status'),
     path('verify_claim/', views.verify_claim, name='verify_claim'),
     ]
-

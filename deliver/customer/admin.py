@@ -1,10 +1,11 @@
 from django.contrib import admin
-from . models import Category, Product, Cart, Customer, ReservationModel, OrderPlaced, RedemptionOption, RedeemedItem, Review
-
+from . models import Category, Product, Cart, Customer, ReservationModel, OrderPlaced, CustomizationOption, CustomizationChoice, RedemptionOption, RedeemedItem, Review, Ad
 
 admin.site.register(Category)
 
 admin.site.register(ReservationModel)
+admin.site.register(CustomizationOption)
+admin.site.register(CustomizationChoice)
 
 @admin.register(Product)
 class ProductModelAdmin(admin.ModelAdmin):
@@ -22,10 +23,20 @@ class CustomerModelAdmin(admin.ModelAdmin):
 class OrderPlacedModelAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'product', 'quantity','ordered_date']
 
+class CustomizationChoiceInline(admin.TabularInline):
+    model = CustomizationChoice
+
+class CustomizationOptionAdmin(admin.ModelAdmin):
+    inlines = [CustomizationChoiceInline]
+
 @admin.register(RedemptionOption)
 class RedemptionOptionModelAdmin(admin.ModelAdmin):
     list_display = ['name', 'description', 'points_required', 'image']
 
+@admin.register(Ad)
+class AdAdmin(admin.ModelAdmin):
+    list_display = ('title', 'is_active')
+    
 @admin.register(RedeemedItem)
 class RedemptionOptionModelAdmin(admin.ModelAdmin):
     list_display = ['customer', 'option', 'date_redeemed']

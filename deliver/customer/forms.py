@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField, PasswordChangeForm
 from django.contrib.auth.models import User
-from . models import Customer, OrderPlaced, Review
+from . models import Customer, Product, CustomizationOption, CustomizationChoice, OrderPlaced, Review, Ad
 
 class LoginForm(AuthenticationForm):
     username = UsernameField(widget=forms.TextInput(attrs={'autofocus':'True', 'class':'form-control'}))
@@ -31,7 +31,22 @@ class MyPasswordResetForm(PasswordChangeForm):
 class CustomerProfileForm(forms.ModelForm):
     class Meta:
         model = Customer
-        fields = ['full_name', 'phone', 'email', 'profile_pic']  # Exclude 'points'
+        fields = '__all__'
+        exclude = ['user']
+
+class AdForm(forms.ModelForm):
+    class Meta:
+        model = Ad
+        fields = ['title', 'description', 'image']
+
+class CustomizationForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        product = kwargs.pop('product')
+        super().__init__(*args, **kwargs)
+
+        for option in product.customization_options.all():
+            choices = [(choice.id, f"{choice.name} (+${choice.additional_price})") for choice in option.choices.all()]
+            self.fields[option.name] = forms.ChoiceField(choices=choices, label=option.name, initial=option.default_choice)
 
 class OrderPlacedForm(forms.ModelForm):
     class Meta:
