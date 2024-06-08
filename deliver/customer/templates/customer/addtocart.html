@@ -156,20 +156,11 @@
             </div>
         </div>
         {% else %}
-        <h1 class="text-center">Looks like your</h1>
-        <h1 class="text-center">cart is empty!</h1>
-        <div class="button-container">
-            <a href="{% url 'all_products' %}" class="btn btn-primary">View Menu</a>
-        </div>
+            <h1 class="text-center mb-5">Cart is Empty</h1>
         {% endif %}
     </div>
 </div>
 <style>
-    .button-container {
-        text-align: center;
-        margin-top: 20px;
-    }
-
     .button-container {
         text-align: center;
         margin-top: 20px;

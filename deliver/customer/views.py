@@ -1,9 +1,8 @@
-import random
 from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 import random
 from django.views import View
 from django.db.models import Q
-from .models import Category, Product, Customer, Cart, ReservationModel, OrderPlaced, Product, CustomizationChoice, RedemptionOption, RedeemedItem, Ad
+from .models import Category, Product, Customer, Cart, ReservationModel, OrderPlaced, Product, CustomizationChoice, RedemptionOption, RedeemedItem
 from .forms import CustomerRegistrationForm, CustomerProfileForm, CustomizationForm, ReviewForm
 from django.db.models import Count
 from django.core.mail import send_mail
@@ -59,8 +58,7 @@ class ReservationConfirmation(View):
 
 class About(View):
     def get(self, request, *args, **kwargs):
-        ad = Ad.objects.filter(is_active=True).first()
-        return render(request, 'customer/about.html', {'ad': ad})
+        return render(request, 'customer/about.html')
 
 class Signup(View):
     def get(self, request, *args, **kwargs):
@@ -112,20 +110,26 @@ class Logout(View):
         logout(request)  # Logs out the user
         return redirect('signin') 
         
+
 # class Order(View):
 #     def get(self, request, *args, **kwargs):
+#         # get every item from each category
 #         beverage = MenuItem.objects.filter(category_name_contains='Beverage')
 #         desserts = MenuItem.objects.filter(category_name_contains='Desserts')
 #         pastries = MenuItem.objects.filter(category_name_contains='Pastries')
 #         main = MenuItem.objects.filter(category_name_contains='Main')
+        
 
+#         # pass into context
 #         context = {
 #             'beverage': beverage,
 #             'desserts': desserts,
 #             'pastries': pastries,
 #             'main': main
+            
 #         }
 
+#         # render the template
 #         return render(request, 'customer/order.html', context)
 
 #     def post(self, request, *args, **kwargs):
@@ -149,6 +153,7 @@ class Logout(View):
 #             phone=phone,
 #         )
 
+#         # Create OrderItem instances for each selected item
 #         for item_info in items_with_quantity:
 #             order_item = OrderItem.objects.create(
 #                 order=order,
@@ -251,23 +256,6 @@ class CustomerRegistrationView(View):
         return render(request, 'customer/customerregistration.html', locals())
 
 def add_to_cart(request):
-    # user = request.user
-    # product_id = request.GET.get('prod_id')
-    # product = get_object_or_404(Product, id=product_id)  # Get the product object
-    
-    # # Check if the product already exists in the cart
-    # cart_item = Cart.objects.filter(user=user, product=product).first()
-    # if cart_item:
-    #     # If the item exists, increment its quantity
-    #     cart_item.quantity += 1
-    #     cart_item.save()
-    # else:
-    #     # If the item does not exist, create a new cart item
-    #     Cart(user=user, product=product, quantity=1).save()
-    
-    # # Redirect to the cart page
-    # return redirect('/cart')
-
     if request.method == "POST":
         user = request.user
         product_id = request.POST.get('prod_id')
@@ -304,13 +292,13 @@ class Checkout(View):
         user = request.user
         add = Customer.objects.filter(user=user)
         cart_items = Cart.objects.filter(user=user).select_related('product').prefetch_related('customizations')
-        
+
         famount = 0
         cart_items_with_total = []
         for p in cart_items:
             total_price = p.quantity * p.product.price
             customizations_total = sum(c.additional_price for c in p.customizations.all())
-            total_price += customizations_total
+            total_price += customizations_total * p.quantity  # Include customization price for each item quantity
             famount += total_price
             cart_items_with_total.append({
                 'product': p.product,
@@ -318,7 +306,7 @@ class Checkout(View):
                 'total_price': total_price,
                 'customizations': p.customizations.all()
             })
-        
+
         totalamount = famount
         context = {
             'add': add,
@@ -326,7 +314,6 @@ class Checkout(View):
             'totalamount': totalamount
         }
         return render(request, 'customer/checkout.html', context)
-
 
 def order_placed(request):
     if request.method == 'POST':
@@ -353,6 +340,9 @@ def order_placed(request):
 
             cart_item = Cart.objects.filter(user=user, product_id=product_id).first()
             if cart_item:
+                total_item_price = cart_item.product.price + sum(c.additional_price for c in cart_item.customizations.all())
+                total_price = total_item_price * quantity
+
                 order = OrderPlaced.objects.create(
                     user=user,
                     product=cart_item.product,
@@ -369,20 +359,20 @@ def order_placed(request):
                 ordered_items.append({
                     'product_id': cart_item.product.id,
                     'title': cart_item.product.title,
-                    'price': cart_item.product.price,
+                    'price': total_item_price,
                     'quantity': quantity,
-                    'total_price': cart_item.product.price * quantity,
+                    'total_price': total_price,
                     'is_served': False,
                     'customizations': list(cart_item.customizations.all())
                 })
 
-                item_points = int(cart_item.product.price)
-                total_points += item_points * quantity
+                item_points = int(total_item_price) * quantity
+                total_points += item_points
 
                 cart_item.product.quantity_sold += quantity
                 cart_item.product.save()
 
-                order.points = item_points * quantity
+                order.points = item_points
                 order.save()
 
                 cart_item.delete()
@@ -453,7 +443,7 @@ def minus_cart(request):
             cart = Cart.objects.filter(user=request.user)
             amount = sum(item.quantity * item.product.price for item in cart)
             data = {
-                'quantity': cart_item.quantity,  # Simply return the current quantity
+                'quantity': cart_item.quantity,
                 'amount': amount,
                 'totalamount': amount,  # Assuming totalamount is the same as amount in this context
             }
@@ -517,6 +507,8 @@ def address(request):
     add = Customer.objects.filter(user=request.user)
     return render(request, 'customer/address.html', locals())
 
+
+
 class updateAddress(View):
     def get(self, request, pk):
         add = Customer.objects.get(pk=pk)
@@ -542,6 +534,7 @@ def point(request):
     redeemed_items = RedeemedItem.objects.filter(customer=user_profile)
     context = {'initial_points': initial_points, 'redemption_options': redemption_options, 'redeemed_items': redeemed_items}
     return render(request, 'customer/point.html', context)
+
 
 def redeem_item(request):
     if request.method == 'POST':

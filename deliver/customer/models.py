@@ -21,6 +21,7 @@ class Product(models.Model):
 
     def __str__(self):
         return self.title
+    
 class CustomizationOption(models.Model):
     product = models.ForeignKey(Product, related_name='customization_options', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
