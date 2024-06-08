@@ -2,7 +2,7 @@ from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 import random
 from django.views import View
 from django.db.models import Q
-from .models import Category, Product, Customer, Cart, ReservationModel, OrderPlaced, Product, CustomizationChoice, RedemptionOption, RedeemedItem
+from .models import Category, Product, Customer, Cart, ReservationModel, OrderPlaced, Product, CustomizationChoice, RedemptionOption, RedeemedItem, Ad
 from .forms import CustomerRegistrationForm, CustomerProfileForm, CustomizationForm, ReviewForm
 from django.db.models import Count
 from django.core.mail import send_mail
@@ -12,7 +12,11 @@ from django.contrib import messages
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.utils import timezone
 
-
+class About(View):
+    def get(self, request, *args, **kwargs):
+        ad = Ad.objects.filter(is_active=True).first()
+        return render(request, 'customer/about.html', {'ad': ad})
+    
 class Index(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/index.html')

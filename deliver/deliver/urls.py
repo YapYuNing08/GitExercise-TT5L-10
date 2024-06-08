@@ -53,7 +53,7 @@ urlpatterns = [
     path('address/', views.address, name='address'),
     path('updateAddress/<int:pk>', views.updateAddress.as_view(), name='updateAddress'),
     
-    path('add-to-cart/', views.add_to_cart, name='add-to-cart'),
+    path('add_to_cart/', views.add_to_cart, name='add_to_cart'),
     path('cart/', views.show_cart, name='showcart'),
     path('checkout/', Checkout.as_view(), name='checkout'),
 
