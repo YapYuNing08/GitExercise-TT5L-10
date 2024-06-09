@@ -89,9 +89,23 @@ class OrderItem(models.Model):
     def __str__(self):
         return f"{self.quantity} of {self.item.name} in order #{self.order.id}"
     
+# original version
+# class Cart(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+#     product = models.ForeignKey(Product,on_delete=models.CASCADE)
+#     quantity = models.PositiveIntegerField(default=1)
+#     customizations = models.ManyToManyField(CustomizationChoice, blank=True)
+
+#     @property
+#     def total_cost(self):
+#         base_cost = self.quantity * self.product.price
+#         customizations_cost = sum(c.additional_price for c in self.customizations.all())
+#         return base_cost + customizations_cost * self.quantity
+    
+# testing
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    product = models.ForeignKey(Product,on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
     customizations = models.ManyToManyField(CustomizationChoice, blank=True)
 
@@ -101,6 +115,10 @@ class Cart(models.Model):
         customizations_cost = sum(c.additional_price for c in self.customizations.all())
         return base_cost + customizations_cost * self.quantity
     
+    def customization_key(self):
+        return ','.join(sorted(str(c.id) for c in self.customizations.all()))
+
+
 class OrderPlaced(models.Model):
     FOOD_STATUS_CHOICES = [
         ('Pending', 'Pending'),
@@ -182,3 +200,10 @@ class Review(models.Model):
 
     def __str__(self):
         return f"Review by {self.customer} on {self.product}"
+    
+class AdditionalImage(models.Model):
+    product = models.ForeignKey(Product, related_name='additional_images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='additional_images')
+
+    def _str_(self):
+        return f"Additional Image for {self.product.title}"
