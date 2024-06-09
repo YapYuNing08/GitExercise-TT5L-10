@@ -83,7 +83,28 @@
   }
 </style>
 
+
 <div class="container my-5">
+
+  <div class="row">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-sm-12 text-center">
+            <form method="GET" action="{% url 'menu-search' %}">
+                <div class="md-form mt-0 active-cyan-2">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input class="form-control" name="q" type="text" placeholder="Search Our Menu" aria-label="Search" value="{{ request.GET.q }}">
+                </div>
+
+                {% if request.GET.q %}
+                <div class="input-group-append">
+                    <a href="{% url 'all_products' %}" class="btn btn-warning">Clear</a>
+                    <!-- <a href="{% url 'all_products' %}" class="btn btn-primary"><i class="fa-solid fa-xmark"></i></a> -->
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
   <div class="row">
       <div class="col-sm-3">
           <a href="{% url 'all_products' %}" class="list-group-item list-group-item-action" aria-current="true">ALL</a>
@@ -94,22 +115,28 @@
           
           <!-- Order Again Section -->
           <div class="order-again my-5">
-              <h6>Order Again</h6>
-              <ul class="list-group">
-                  {% for order in latest_orders %}
-                  <li class="list-group-item order-again-item">
-                      <div class="order-info">
-                          <div class="order-title"><strong>{{ order.product.title }}</strong></div>
-                          <div class="order-quantity">Quantity: {{ order.quantity }}</div>
-                      </div>
-                      <br>
-                      <br>
-                      <a href="{% url 'order_again' order.id %}" class="btn btn-success btn-sm order-again-btn">Order Again</a>
-                  </li>
-                  {% endfor %}
-                  <a href="{% url 'order_history' %}" class="view-order-history">View All</a>
-              </ul>
+            <h6>Order Again</h6>
+            <ul class="list-group">
+                {% for order in latest_orders %}
+                <li class="list-group-item order-again-item">
+                    <div class="order-info">
+                        <div class="order-title"><strong>{{ order.product.title }}</strong></div>
+                        <div class="order-quantity">Quantity: {{ order.quantity }}</div>
+                        <div class="order-customizations">
+                            {% for customization in order.customizations.all %}
+                            <span class="badge" style="background-color: #5c2d0cd0; color: white;">{{ customization.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <a href="{% url 'order_again' order.id %}" class="btn btn-success btn-sm order-again-btn">Order Again</a>
+                </li>
+                {% endfor %}
+                <a href="{% url 'order_history' %}" class="view-order-history">View All</a>
+            </ul>
           </div>
+
 
           <br>
           <!-- Checkout Section -->

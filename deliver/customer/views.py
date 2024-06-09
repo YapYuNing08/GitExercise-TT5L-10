@@ -1,4 +1,3 @@
-import random
 from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 import random
 from django.views import View
@@ -116,10 +115,10 @@ class Logout(View):
 class Order(View):
     def get(self, request, *args, **kwargs):
         # get every item from each category
-        beverage = MenuItem.objects.filter(category__name__contains='Beverage')
-        desserts = MenuItem.objects.filter(category__name__contains='Desserts')
-        pastries = MenuItem.objects.filter(category__name__contains='Pastries')
-        main = MenuItem.objects.filter(category__name__contains='Main')
+        beverage = MenuItem.objects.filter(category_name_contains='Beverage')
+        desserts = MenuItem.objects.filter(category_name_contains='Desserts')
+        pastries = MenuItem.objects.filter(category_name_contains='Pastries')
+        main = MenuItem.objects.filter(category_name_contains='Main')
         
 
         # pass into context
@@ -259,48 +258,74 @@ class CustomerRegistrationView(View):
             messages.warning(request, "Invalid Input Data")
         return render(request, 'customer/customerregistration.html', locals())
 
-def add_to_cart(request):
-    # user = request.user
-    # product_id = request.GET.get('prod_id')
-    # product = get_object_or_404(Product, id=product_id)  # Get the product object
-    
-    # # Check if the product already exists in the cart
-    # cart_item = Cart.objects.filter(user=user, product=product).first()
-    # if cart_item:
-    #     # If the item exists, increment its quantity
-    #     cart_item.quantity += 1
-    #     cart_item.save()
-    # else:
-    #     # If the item does not exist, create a new cart item
-    #     Cart(user=user, product=product, quantity=1).save()
-    
-    # # Redirect to the cart page
-    # return redirect('/cart')
+# original version
+# def add_to_cart(request):
+#     if request.method == "POST":
+#         user = request.user
+#         product_id = request.POST.get('prod_id')
+#         product = get_object_or_404(Product, id=product_id)
 
+#         customization_choice_ids = request.POST.getlist('customization_choices')
+#         customization_choices = CustomizationChoice.objects.filter(id__in=customization_choice_ids)
+
+#         cart_item = None
+#         for item in Cart.objects.filter(user=user, product=product):
+#             if set(item.customizations.values_list('id', flat=True)) == set(customization_choice_ids):
+#                 cart_item = item
+#                 break
+
+#         if cart_item:
+#             cart_item.quantity += 1
+#         else:
+#             cart_item = Cart.objects.create(user=user, product=product, quantity=1)
+#             cart_item.customizations.set(customization_choices)
+
+#         cart_item.save()
+
+#         return redirect('showcart')
+#     return HttpResponse("This endpoint only accepts POST requests.")
+
+
+
+# testing 1.0
+from django.shortcuts import get_object_or_404, redirect, HttpResponse
+from .models import Product, CustomizationChoice, Cart
+
+def add_to_cart(request):
     if request.method == "POST":
         user = request.user
         product_id = request.POST.get('prod_id')
         product = get_object_or_404(Product, id=product_id)
 
         customization_choice_ids = request.POST.getlist('customization_choices')
+
+        # Ensure all IDs are strings
+        customization_choice_ids = list(map(str, customization_choice_ids))
+
+        # Convert IDs to strings and sort
+        customization_key = ','.join(sorted(customization_choice_ids))
+
+        # Fetch the customization choices
         customization_choices = CustomizationChoice.objects.filter(id__in=customization_choice_ids)
 
-        cart_item = None
-        for item in Cart.objects.filter(user=user, product=product):
-            if set(item.customizations.values_list('id', flat=True)) == set(customization_choice_ids):
-                cart_item = item
+        # Check for an existing cart item with the same product and customizations
+        existing_cart_item = None
+        for cart_item in Cart.objects.filter(user=user, product=product):
+            if cart_item.customization_key() == customization_key:
+                existing_cart_item = cart_item
                 break
 
-        if cart_item:
-            cart_item.quantity += 1
+        if existing_cart_item:
+            existing_cart_item.quantity += 1
+            existing_cart_item.save()
         else:
-            cart_item = Cart.objects.create(user=user, product=product, quantity=1)
-            cart_item.customizations.set(customization_choices)
-
-        cart_item.save()
+            new_cart_item = Cart.objects.create(user=user, product=product, quantity=1)
+            new_cart_item.customizations.set(customization_choices)
+            new_cart_item.save()
 
         return redirect('showcart')
     return HttpResponse("This endpoint only accepts POST requests.")
+
 
 def show_cart(request):
     user = request.user  
@@ -313,13 +338,13 @@ class Checkout(View):
         user = request.user
         add = Customer.objects.filter(user=user)
         cart_items = Cart.objects.filter(user=user).select_related('product').prefetch_related('customizations')
-        
+
         famount = 0
         cart_items_with_total = []
         for p in cart_items:
             total_price = p.quantity * p.product.price
             customizations_total = sum(c.additional_price for c in p.customizations.all())
-            total_price += customizations_total
+            total_price += customizations_total * p.quantity  # Include customization price for each item quantity
             famount += total_price
             cart_items_with_total.append({
                 'product': p.product,
@@ -327,7 +352,7 @@ class Checkout(View):
                 'total_price': total_price,
                 'customizations': p.customizations.all()
             })
-        
+
         totalamount = famount
         context = {
             'add': add,
@@ -335,7 +360,6 @@ class Checkout(View):
             'totalamount': totalamount
         }
         return render(request, 'customer/checkout.html', context)
-
 
 def order_placed(request):
     if request.method == 'POST':
@@ -362,6 +386,9 @@ def order_placed(request):
 
             cart_item = Cart.objects.filter(user=user, product_id=product_id).first()
             if cart_item:
+                total_item_price = cart_item.product.price + sum(c.additional_price for c in cart_item.customizations.all())
+                total_price = total_item_price * quantity
+
                 order = OrderPlaced.objects.create(
                     user=user,
                     product=cart_item.product,
@@ -378,20 +405,20 @@ def order_placed(request):
                 ordered_items.append({
                     'product_id': cart_item.product.id,
                     'title': cart_item.product.title,
-                    'price': cart_item.product.price,
+                    'price': total_item_price,
                     'quantity': quantity,
-                    'total_price': cart_item.product.price * quantity,
+                    'total_price': total_price,
                     'is_served': False,
                     'customizations': list(cart_item.customizations.all())
                 })
 
-                item_points = int(cart_item.product.price)
-                total_points += item_points * quantity
+                item_points = int(total_item_price) * quantity
+                total_points += item_points
 
                 cart_item.product.quantity_sold += quantity
                 cart_item.product.save()
 
-                order.points = item_points * quantity
+                order.points = item_points
                 order.save()
 
                 cart_item.delete()
@@ -424,6 +451,7 @@ def order_history(request):
     order_placed = OrderPlaced.objects.filter(user=request.user).prefetch_related('customizations').order_by('-ordered_date')
     return render(request, 'customer/order_history.html', {'order_placed': order_placed})
 
+# original version
 def plus_cart(request):
     if request.method == 'GET':
         prod_id = request.GET.get('prod_id') 
@@ -462,7 +490,7 @@ def minus_cart(request):
             cart = Cart.objects.filter(user=request.user)
             amount = sum(item.quantity * item.product.price for item in cart)
             data = {
-                'quantity': cart_item.quantity,  # Simply return the current quantity
+                'quantity': cart_item.quantity,
                 'amount': amount,
                 'totalamount': amount,  # Assuming totalamount is the same as amount in this context
             }
@@ -499,10 +527,6 @@ class Login(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/login.html')
     
-# class PasswordResetView(View):
-#     def get(self, request, *args, **kwargs):
-#         return render(request, 'customer/login.html')
-    
 
 class ProfileView(View):
     def get(self, request):
@@ -525,6 +549,8 @@ def profile_info_view(request):
 def address(request):
     add = Customer.objects.filter(user=request.user)
     return render(request, 'customer/address.html', locals())
+
+
 
 class updateAddress(View):
     def get(self, request, pk):
@@ -551,6 +577,7 @@ def point(request):
     redeemed_items = RedeemedItem.objects.filter(customer=user_profile)
     context = {'initial_points': initial_points, 'redemption_options': redemption_options, 'redeemed_items': redeemed_items}
     return render(request, 'customer/point.html', context)
+
 
 def redeem_item(request):
     if request.method == 'POST':
@@ -608,16 +635,19 @@ def claim_item(request):
         return redirect('point')
     else:
         return redirect('point')
-    
+  
 def order_again(request, order_id):
     previous_order = get_object_or_404(OrderPlaced, id=order_id, user=request.user)
+    customizations = previous_order.customizations.all()  # Get previous customizations
+
     cart_item = Cart.objects.filter(user=request.user, product=previous_order.product).first()
 
     if cart_item:
         cart_item.quantity += previous_order.quantity
-        cart_item.save()
     else:
-        Cart.objects.create(user=request.user, product=previous_order.product, quantity=previous_order.quantity)
+        cart_item = Cart.objects.create(user=request.user, product=previous_order.product, quantity=previous_order.quantity)
+        cart_item.customizations.set(customizations)  # Set customizations
+
+    cart_item.save()
 
     return redirect('/cart')
-    

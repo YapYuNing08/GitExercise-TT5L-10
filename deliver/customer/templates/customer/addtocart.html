@@ -120,12 +120,12 @@
                                     <a href="#" class="remove-cart btn btn-sm btn-danger p-2 mr-3" pid="{{item.product.id}}">
                                         <i class="fas fa-trash"></i>
                                     </a>
-                                    <!-- <a href="#" class="remove-cart btn btn-sm btn-warning p-2 mr-3" pid="{{item.product.id}}">
+
+                                    <!-- testing -->
+                                    <!-- <a href="{% url 'product_detail' pk=item.product.pk %}" class="edit-cart btn btn-sm btn-warning p-2 mr-3">
                                         <i class="fa-solid fa-pen-to-square"></i>
-                                    </a> -->
+                                    </a>-->
                                     <p class="mb-0"><span><strong>RM {{ item.total_cost }}</strong></span></p>
-                                    <!-- <a href="#" class="remove-cart btn btn-sm btn-secondary mr-3" pid="{{ item.product.id }}">Remove item</a> -->
-                                    <!-- <p class="mb-0"><span><strong>RM {{ item.total_cost }}</strong></span></p> -->
                                 </div>
                                 
                             </div>
@@ -156,7 +156,11 @@
             </div>
         </div>
         {% else %}
-            <h1 class="text-center mb-5">Cart is Empty</h1>
+            <h1 class="text-center">Looks like your</h1>
+            <h1 class="text-center">cart is empty!</h1>
+            <div class="button-container">
+                <a href="{% url 'all_products' %}" class="btn btn-primary">View Menu</a>
+            </div>
         {% endif %}
     </div>
 </div>
@@ -203,17 +207,27 @@
     .btn-back-to-menu {
     font-size: 14px;
     margin-top: -10px; 
-}
+    }
 
-.remove-cart {
+    .remove-cart {
     display: flex;
     justify-content: center;
     align-items: center;
-}
+    }
 
-.remove-cart .fa-trash {
+    .remove-cart .fa-trash {
     font-size: 15px; 
-}
+    }
+
+    /* .edit-cart{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    }
+
+    .edit-cart .fa-pen {
+    font-size: 15px; 
+    } */
 </style>
 
 {% endblock %}

@@ -2,10 +2,7 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.views import View
 from django.utils.timezone import datetime
-from customer.models import OrderModel, ReservationModel, OrderPlaced, Product, RedeemedItem
-from django.http import JsonResponse, HttpResponse
-import json
-from .forms import FoodStatusForm
+from customer.models import ReservationModel, OrderPlaced, Product, RedeemedItem
 from django.contrib import messages
 
 class Index(View):
@@ -122,24 +119,27 @@ def update_food_status(request, order_id):
     return render(request, 'restaurant/update_food_status.html', {'order': order})
 
 def verify_claim(request):
-    verification_result = None
+    verification_result = ''
+    verified_redemption_id = None
 
     if request.method == 'POST':
         redemption_id = request.POST.get('redemption_id')
         claim_code = request.POST.get('claim_code')
-
         try:
-            redemption = RedeemedItem.objects.get(id=redemption_id)
-            if redemption.claim_code == claim_code:
-                if not redemption.claimed:
-                    redemption.claimed = True
-                    redemption.save()
-                    verification_result = 'success'
+            item = RedeemedItem.objects.get(id=redemption_id)
+            if item.claim_code == claim_code:
+                item.claimed = True
+                item.save()
+                verification_result = 'success'
+                verified_redemption_id = redemption_id
             else:
                 verification_result = 'incorrect_code'
         except RedeemedItem.DoesNotExist:
             verification_result = 'invalid_id'
 
-    all_items = RedeemedItem.objects.all()
-    
-    return render(request, 'restaurant/verify_claim.html', {'all_items': all_items, 'verification_result': verification_result})
+    all_items = RedeemedItem.objects.all().order_by('-id')
+    return render(request, 'restaurant/verify_claim.html', {
+        'all_items': all_items,
+        'verification_result': verification_result,
+        'verified_redemption_id': verified_redemption_id
+    })
