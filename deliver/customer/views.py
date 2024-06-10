@@ -258,39 +258,6 @@ class CustomerRegistrationView(View):
             messages.warning(request, "Invalid Input Data")
         return render(request, 'customer/customerregistration.html', locals())
 
-# original version
-# def add_to_cart(request):
-#     if request.method == "POST":
-#         user = request.user
-#         product_id = request.POST.get('prod_id')
-#         product = get_object_or_404(Product, id=product_id)
-
-#         customization_choice_ids = request.POST.getlist('customization_choices')
-#         customization_choices = CustomizationChoice.objects.filter(id__in=customization_choice_ids)
-
-#         cart_item = None
-#         for item in Cart.objects.filter(user=user, product=product):
-#             if set(item.customizations.values_list('id', flat=True)) == set(customization_choice_ids):
-#                 cart_item = item
-#                 break
-
-#         if cart_item:
-#             cart_item.quantity += 1
-#         else:
-#             cart_item = Cart.objects.create(user=user, product=product, quantity=1)
-#             cart_item.customizations.set(customization_choices)
-
-#         cart_item.save()
-
-#         return redirect('showcart')
-#     return HttpResponse("This endpoint only accepts POST requests.")
-
-
-
-# testing 1.0
-from django.shortcuts import get_object_or_404, redirect, HttpResponse
-from .models import Product, CustomizationChoice, Cart
-
 def add_to_cart(request):
     if request.method == "POST":
         user = request.user
@@ -298,34 +265,24 @@ def add_to_cart(request):
         product = get_object_or_404(Product, id=product_id)
 
         customization_choice_ids = request.POST.getlist('customization_choices')
-
-        # Ensure all IDs are strings
-        customization_choice_ids = list(map(str, customization_choice_ids))
-
-        # Convert IDs to strings and sort
-        customization_key = ','.join(sorted(customization_choice_ids))
-
-        # Fetch the customization choices
         customization_choices = CustomizationChoice.objects.filter(id__in=customization_choice_ids)
 
-        # Check for an existing cart item with the same product and customizations
-        existing_cart_item = None
-        for cart_item in Cart.objects.filter(user=user, product=product):
-            if cart_item.customization_key() == customization_key:
-                existing_cart_item = cart_item
+        cart_item = None
+        for item in Cart.objects.filter(user=user, product=product):
+            if set(item.customizations.values_list('id', flat=True)) == set(customization_choice_ids):
+                cart_item = item
                 break
 
-        if existing_cart_item:
-            existing_cart_item.quantity += 1
-            existing_cart_item.save()
+        if cart_item:
+            cart_item.quantity += 1
         else:
-            new_cart_item = Cart.objects.create(user=user, product=product, quantity=1)
-            new_cart_item.customizations.set(customization_choices)
-            new_cart_item.save()
+            cart_item = Cart.objects.create(user=user, product=product, quantity=1)
+            cart_item.customizations.set(customization_choices)
+
+        cart_item.save()
 
         return redirect('showcart')
     return HttpResponse("This endpoint only accepts POST requests.")
-
 
 def show_cart(request):
     user = request.user  
@@ -500,6 +457,60 @@ def minus_cart(request):
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
     
+
+# testing 1.0
+# def plus_cart(request):
+#     if request.method == 'GET':
+#         prod_id = request.GET.get('prod_id')
+#         customizations = request.GET.get('customizations')  # Assume customizations is a comma-separated string of customization ids
+#         customization_ids = [int(x) for x in customizations.split(',')] if customizations else []
+        
+#         cart_item = Cart.objects.filter(product_id=prod_id, user=request.user, customizations__id__in=customization_ids).first()
+
+#         if cart_item:
+#             cart_item.quantity += 1
+#             cart_item.save()
+#         else:
+#             cart_item = Cart.objects.create(user=request.user, product_id=prod_id, quantity=1)
+#             cart_item.customizations.set(customization_ids)
+
+#         cart = Cart.objects.filter(user=request.user)
+#         amount = sum(item.quantity * item.product.price for item in cart)
+#         data = {
+#             'quantity': cart_item.quantity,
+#             'amount': amount,
+#             'totalamount': amount,
+#         }
+
+#         return JsonResponse(data)
+#     return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+# def minus_cart(request):
+#     if request.method == 'GET':
+#         prod_id = request.GET.get('prod_id')
+#         customizations = request.GET.get('customizations')
+#         customization_ids = [int(x) for x in customizations.split(',')] if customizations else []
+
+#         cart_item = Cart.objects.filter(product_id=prod_id, user=request.user, customizations__id__in=customization_ids).first()
+
+#         if cart_item:
+#             if cart_item.quantity > 1:
+#                 cart_item.quantity -= 1
+#                 cart_item.save()
+#             else:
+#                 cart_item.delete()
+
+#             cart = Cart.objects.filter(user=request.user)
+#             amount = sum(item.quantity * item.product.price for item in cart)
+#             data = {
+#                 'quantity': cart_item.quantity if cart_item else 0,
+#                 'amount': amount,
+#                 'totalamount': amount,
+#             }
+#             return JsonResponse(data)
+#         return JsonResponse({'error': 'Cart item not found for the user and product.'}, status=400)
+#     return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
 def remove_cart(request):
     if request.method == 'GET':
         prod_id = request.GET.get('prod_id') 
@@ -635,19 +646,34 @@ def claim_item(request):
         return redirect('point')
     else:
         return redirect('point')
-  
+    
+
 def order_again(request, order_id):
     previous_order = get_object_or_404(OrderPlaced, id=order_id, user=request.user)
-    customizations = previous_order.customizations.all()  # Get previous customizations
+    customizations = previous_order.customizations.all()
 
-    cart_item = Cart.objects.filter(user=request.user, product=previous_order.product).first()
+    # Check if a similar cart item exists
+    cart_item = Cart.objects.filter(
+        user=request.user,
+        product=previous_order.product,
+        customizations__in=customizations
+    ).first()
 
     if cart_item:
+        # If a similar cart item exists, update its quantity
         cart_item.quantity += previous_order.quantity
+        cart_item.save()
     else:
-        cart_item = Cart.objects.create(user=request.user, product=previous_order.product, quantity=previous_order.quantity)
-        cart_item.customizations.set(customizations)  # Set customizations
+        # If no similar cart item exists, create a new one
+        cart_item = Cart.objects.create(
+            user=request.user,
+            product=previous_order.product,
+            quantity=previous_order.quantity,
+        )
 
-    cart_item.save()
+        # Set customizations for the new cart item
+        cart_item.customizations.set(customizations)
 
     return redirect('/cart')
+
+

@@ -108,6 +108,7 @@ $(document).ready(function(){
 
 
 
+
 // update info/ad section
 document.addEventListener("DOMContentLoaded", function() {
     // Show the pop-up after 1 second
