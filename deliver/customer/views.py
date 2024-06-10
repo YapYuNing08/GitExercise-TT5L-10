@@ -113,65 +113,6 @@ class Logout(View):
     def get(self, request, *args, **kwargs):
         logout(request)  # Logs out the user
         return redirect('signin') 
-        
-
-# class Order(View):
-#     def get(self, request, *args, **kwargs):
-#         # get every item from each category
-#         beverage = MenuItem.objects.filter(category_name_contains='Beverage')
-#         desserts = MenuItem.objects.filter(category_name_contains='Desserts')
-#         pastries = MenuItem.objects.filter(category_name_contains='Pastries')
-#         main = MenuItem.objects.filter(category_name_contains='Main')
-        
-
-#         # pass into context
-#         context = {
-#             'beverage': beverage,
-#             'desserts': desserts,
-#             'pastries': pastries,
-#             'main': main
-            
-#         }
-
-#         # render the template
-#         return render(request, 'customer/order.html', context)
-
-#     def post(self, request, *args, **kwargs):
-#         items_ids = request.POST.getlist('items[]')
-#         quantities = request.POST.getlist('quantities[]')
-#         name = request.POST.get('name')
-#         phone = request.POST.get('phone')
-
-#         total_price = 0
-#         items_with_quantity = []  
-#         for item_id, quantity in zip(items_ids, quantities):
-#             item = MenuItem.objects.get(id=item_id)
-#             item_total_price = item.price * int(quantity)
-#             if item_total_price > 0:
-#                 items_with_quantity.append({'item': item, 'quantity': int(quantity), 'total_price': item_total_price})  
-#                 total_price += item_total_price
-
-#         order = OrderModel.objects.create(
-#             price=total_price,
-#             name=name,
-#             phone=phone,
-#         )
-
-#         # Create OrderItem instances for each selected item
-#         for item_info in items_with_quantity:
-#             order_item = OrderItem.objects.create(
-#                 order=order,
-#                 item=item_info['item'],
-#                 quantity=item_info['quantity'],
-#                 total_price=item_info['total_price']
-#             )
-
-#         context = {
-#             'items_with_quantity': items_with_quantity,
-#             'total_price': total_price
-#         }
-
-#         return render(request, 'customer/order_history.html', context)
 
 class MenuSearch(View):
     def get(self, request, *args, **kwargs):
