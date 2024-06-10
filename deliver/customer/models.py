@@ -21,6 +21,13 @@ class Product(models.Model):
 
     def __str__(self):
         return self.title
+
+class AdditionalImage(models.Model):
+    product = models.ForeignKey(Product, related_name='additional_images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='additional_images')
+
+    def __str__(self):
+        return f"Additional Image for {self.product.title}"
     
 class CustomizationOption(models.Model):
     product = models.ForeignKey(Product, related_name='customization_options', on_delete=models.CASCADE)

@@ -91,9 +91,24 @@
     .stepper-item:last-child::after {
         content: none;
     }
+
+    /* Adjusted layout for order summary and form */
+    .order-summary {
+        margin-top: 20px;
+        margin-bottom: 50px; /* Increased margin to prevent blocking by footer */
+    }
+
+    .form-container {
+        margin-top: 20px;
+    }
+
+    .product-title{
+        text-align: center;
+    }
+
 </style>
 
-<div class="container">
+<div class="container my-5 order-summary">
     {% if messages %}
         {% for msg in messages %}
         <div class="alert alert-danger" role="alert">
@@ -112,7 +127,7 @@
                 <div class="card mb-2">
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
-                            <span>{{ item.quantity }} x</span> &nbsp; &nbsp; &nbsp;
+                            <span>{{ item.quantity }} x</span>
                             <span class="product-title">{{ item.product.title }}</span>
                             <span class="product-price">RM {{ item.total_price|floatformat:2 }}</span>
                         </div>
@@ -128,7 +143,7 @@
                 {% endfor %}
         </div>
 
-        <div class="col-sm-4 offset-sm-1">
+        <div class="col-sm-4 offset-sm-1 form-container">
             <div>
                 <label for="method">How would you like to enjoy your meal? </label>
                 <select id="method" name="method">

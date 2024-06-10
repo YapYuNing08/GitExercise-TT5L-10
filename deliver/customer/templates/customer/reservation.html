@@ -1,94 +1,94 @@
 {% extends 'customer/base.html' %}
+{% load static %}
 
 {% block content %}
 <div class="row justify-content-center mt-1">
   <div class="col-md-12 col-sm-12 p-4">
-    <form method="POST" class="form-move-left">
-      {% csrf_token %}
-      <div class="container">
-        <div class="heading_container">
-          <h2>Book Your Table Now!</h2>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            <div class="form_container">
-              <form method="POST">
-                {% csrf_token %}
-                <div class="form-group">
-                  <label for="name">Name</label>
-                  <input type="text" class="form-control" placeholder="Your Name" name="name" id="name" required>
-                </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form_container">
+            <form method="POST">
+              {% csrf_token %}
+              <div class="heading_container">
+                <h2>Book Your Table Now!</h2>
+              </div>
 
-                <div class="form-group">
-                  <label for="phone">Phone Number</label>
-                  <input type="text" class="form-control" placeholder="01xxxxxxx" name="phone" id="phone" required>
-                </div>
+              <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" placeholder="Your Name" name="name" id="name" required>
+              </div>
 
-                <div class="form-group">
-                  <label for="person">Number of Pax</label>
-                  <select class="form-control nice-select wide" name="person" id="person" required>
-                    <option value="" disabled selected>
-                      How many persons?
-                    </option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="11">11</option>
-                    <option value="12">12</option>
-                  </select>
-                </div>
+              <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="text" class="form-control" placeholder="01xxxxxxx" name="phone" id="phone" required>
+              </div>
 
-                <div class="form-group">
-                  <label for="date">Date</label>
-                  <input type="date" class="form-control" name="date" id="date" required>
-                </div>
+              <div class="form-group">
+                <label for="person">Number of Pax</label>
+                <select class="form-control nice-select wide" name="person" id="person" required>
+                  <option value="" disabled selected>How many persons?</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                </select>
+              </div>
 
-                <div class="form-group">
-                  <label for="time">Time</label>
-                  <input type="time" class="form-control" min="11:00" max="23:00" name="time" id="time" required>
-                </div>
+              <div class="form-group">
+                <label for="date">Date</label>
+                <input type="date" class="form-control" name="date" id="date" required>
+              </div>
 
-                <script>
-                  // Get current date and time
-                  var currentDate = new Date();
-                  var currentTime = currentDate.getHours() + ":" + currentDate.getMinutes();
+              <div class="form-group">
+                <label for="time">Time</label>
+                <input type="time" class="form-control" min="11:00" max="23:00" name="time" id="time" required>
+              </div>
 
-                  // Set min attribute of date input to current date
-                  document.getElementById("date").min = currentDate.toISOString().split('T')[0];
+              <script>
+                // Get current date and time
+                var currentDate = new Date();
+                var currentTime = currentDate.getHours() + ":" + currentDate.getMinutes();
 
-                  // Set min attribute of time input to current time
-                  document.getElementById("time").min = currentTime;
-                </script>
+                // Set min attribute of date input to current date
+                document.getElementById("date").min = currentDate.toISOString().split('T')[0];
 
-                <button type="button" class="btn btn-brown" data-toggle="modal" data-target="#bookingModal">
-                  Book Now!
-                </button>
+                // Set min attribute of time input to current time
+                document.getElementById("time").min = currentTime;
+              </script>
 
-                <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="bookingModalLabel">Confirm to book?</h5>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-dark">Book Now!</button>
-                      </div>
+              <button type="button" class="btn btn-brown" data-toggle="modal" data-target="#bookingModal">
+                Book Now!
+              </button>
+
+              <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="bookingModalLabel">Confirm to book?</h5>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
+                      <button type="submit" class="btn btn-dark">Book Now!</button>
                     </div>
                   </div>
                 </div>
-              </form>
-            </div>
+              </div>
+            </form>
           </div>
         </div>
+        <div class="col-md-6">
+          <img src="/media/menu_images/52187acc-804b-43cf-b75d-c571eef95590.jpg" alt="Reservation Image" class="img-fluid vertical-image">
+        </div>
       </div>
-    </form>
+    </div>
   </div>
 </div>
 
@@ -152,9 +152,7 @@
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  .form-move-left {
-    margin-left: 100px; /* Move form 100px to the left */
+    margin-left: 30px;
   }
   input, select {
     display: block;
@@ -191,6 +189,14 @@
   }
   .modal-footer .btn:hover {
     background-color: #5a2a0a; /* Darker background on hover */
+  }
+  .vertical-image {
+    width: 80%;
+    height: 600px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-left: 100px;
+    margin-top: 20px;
   }
 </style>
 {% endblock content %}
