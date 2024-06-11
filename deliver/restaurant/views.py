@@ -2,38 +2,31 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.views import View
 from django.utils.timezone import datetime
-from customer.models import OrderModel, ReservationModel, OrderPlaced
+from customer.models import OrderModel, ReservationModel, OrderPlaced, Product, RedeemedItem, CustomizationChoice
 from django.http import JsonResponse, HttpResponse
 import json
-# from django.contrib.auth.decorators import login_required
+from .forms import FoodStatusForm
+from django.contrib import messages
 
 class Index(View):
-    def get(self, request, *args, **kwargs):
-        return render(request, 'restaurant/index.html')
-
-class Dashboard(View):
     def get(self, request, *args, **kwargs):
         # get the current date
         today = datetime.today()
         orders = OrderPlaced.objects.filter(
-            ordered_date__year=today.year, ordered_date__month=today.month, ordered_date__day=today.day).order_by('-ordered_date')
+            ordered_date__year=today.year, ordered_date__month=today.month, ordered_date__day=today.day
+        ).order_by('-ordered_date')
         
-        # loop through the orders and add the price value
-        # total_revenue = sum(order.price for order in orders)
-
         total_orders = len(orders)
-        
-        # for order in orders:
-        #     total_revenue += order.price
 
-        # pass total number of orders and total revenue into template
         context = {
             'orders': orders,
-            # 'total_revenue': total_revenue,
             'total_orders': total_orders
         }
 
-        return render(request, 'restaurant/dashboard.html', context)
+        return render(request, 'restaurant/index.html', context)
+
+    def test_func(self):
+        return self.request.user.groups.filter(name='Staff').exists()
 
     def test_func(self):
         return self.request.user.groups.filter(name='Staff').exists()
@@ -82,4 +75,71 @@ class MarkAsServed(View):
         order.is_served = True
         order.save()
         # Optionally, redirect to a different URL or render a template
-        return redirect('dashboard')
+        return redirect('restaurant_index')
+    
+class Dashboard(View):
+    def get(self, request, *args, **kwargs):
+        today = datetime.today().date()
+
+        products = Product.objects.all()
+
+        # Calculate overall total sales per item and total revenue
+        sales_per_item = [{'product': product, 'total_sales': product.price * product.quantity_sold} for product in products]
+        total_revenue = sum(item['total_sales'] for item in sales_per_item)
+
+        # Filter order items for today
+        order_items_today = OrderPlaced.objects.filter(ordered_date__date=today)
+
+        # Calculate sales per item and total revenue for today
+        sales_per_item_today = []
+        for product in products:
+            quantity_sold_today = sum(item.quantity for item in order_items_today if item.product == product)
+            total_sales_today = sum(item.quantity * item.product.price for item in order_items_today if item.product == product)
+            sales_per_item_today.append({
+                'product': product,
+                'quantity_sold_today': quantity_sold_today,
+                'total_sales_today': total_sales_today
+            })
+        
+        total_revenue_today = sum(item['total_sales_today'] for item in sales_per_item_today)
+
+        context = {
+            'sales_per_item': sales_per_item,
+            'total_revenue': total_revenue,
+            'sales_per_item_today': sales_per_item_today,
+            'total_revenue_today': total_revenue_today
+        }
+
+        return render(request, 'restaurant/dashboard.html', context)
+
+def update_food_status(request, order_id):
+    order = get_object_or_404(OrderPlaced, id=order_id)
+    if request.method == 'POST':
+        new_status = request.POST.get('food_status')
+        order.food_status = new_status
+        order.save()
+        return redirect('restaurant_index')  # Redirect to the index page after updating
+    return render(request, 'restaurant/update_food_status.html', {'order': order})
+
+def verify_claim(request):
+    verification_result = None
+
+    if request.method == 'POST':
+        redemption_id = request.POST.get('redemption_id')
+        claim_code = request.POST.get('claim_code')
+
+        try:
+            redemption = RedeemedItem.objects.get(id=redemption_id)
+            if redemption.claim_code == claim_code:
+                if not redemption.claimed:
+                    redemption.claimed = True
+                    redemption.save()
+                    verification_result = 'success'
+            else:
+                verification_result = 'incorrect_code'
+        except RedeemedItem.DoesNotExist:
+            verification_result = 'invalid_id'
+
+    all_items = RedeemedItem.objects.all()
+    
+    return render(request, 'restaurant/verify_claim.html', {'all_items': all_items, 'verification_result': verification_result})

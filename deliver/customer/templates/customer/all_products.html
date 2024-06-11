@@ -84,111 +84,137 @@
 </style>
 
 <div class="container my-5">
-    <div class="row">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-sm-12 text-center">
-                <form method="GET" action="{% url 'menu-search' %}">
-                    <div class="md-form mt-0 active-cyan-2">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input class="form-control" name="q" type="text" placeholder="Search Our Menu" aria-label="Search" value="{{ request.GET.q }}" >
-                    </div>
-                </form>
-            </div>
-        </div>
+  <div class="row">
+      <div class="col-sm-3">
+          <a href="{% url 'all_products' %}" class="list-group-item list-group-item-action" aria-current="true">ALL</a>
+          <a href="{% url 'category' 'B' %}" class="list-group-item list-group-item-action" aria-current="true">BEVERAGE</a>
+          <a href="{% url 'category' 'D' %}" class="list-group-item list-group-item-action" aria-current="true">DESSERT</a>
+          <a href="{% url 'category' 'P' %}" class="list-group-item list-group-item-action" aria-current="true">PASTRIES</a>
+          <a href="{% url 'category' 'M' %}" class="list-group-item list-group-item-action" aria-current="true">MAIN</a>         
+          
+          <!-- Order Again Section -->
+          <div class="order-again my-5">
+              <h6>Order Again</h6>
+              <ul class="list-group">
+                  {% for order in latest_orders %}
+                  <li class="list-group-item order-again-item">
+                      <div class="order-info">
+                          <div class="order-title"><strong>{{ order.product.title }}</strong></div>
+                          <div class="order-quantity">Quantity: {{ order.quantity }}</div>
+                      </div>
+                      <br>
+                      <br>
+                      <a href="{% url 'order_again' order.id %}" class="btn btn-success btn-sm order-again-btn">Order Again</a>
+                  </li>
+                  {% endfor %}
+                  <a href="{% url 'order_history' %}" class="view-order-history">View All</a>
+              </ul>
+          </div>
 
-        <div class="col-sm-3">
-            <a href="{% url 'all_products' %}" class="list-group-item list-group-item-action" aria-current="true">ALL</a>
-            <a href="{% url 'category' 'B' %}" class="list-group-item list-group-item-action" aria-current="true">BEVERAGE</a>
-            <a href="{% url 'category' 'D' %}" class="list-group-item list-group-item-action" aria-current="true">DESSERT</a>
-            <a href="{% url 'category' 'P' %}" class="list-group-item list-group-item-action" aria-current="true">PASTRIES</a>
-            <a href="{% url 'category' 'M' %}" class="list-group-item list-group-item-action" aria-current="true">MAIN</a>
-        </div>
+          <br>
+          <!-- Checkout Section -->
+          <h6>Nothing to add?</h6>
+          <div>
+            <a href="{% url 'showcart' %}" class="btn btn-primary">Checkout Now!</a>
+          </div>
+      </div>
 
-        <div class="col-sm-9">
-            <div class="row row-cols-2"> <!-- Added row-cols-2 to create 2 columns per row -->
-                
-                {% for prod in products %}
-                    <div class="col text-center mb-4">
-                        <a href="{% url 'product_detail' prod.id %}" class="btn">
-                            <div>
-                                <img src="{{ prod.image.url }}" width="300px" height="200px" />
-                                <div class="fw-bold">{{ prod.title }}</div>
-                                <div class="fw-bold text-danger">
-                                    RM {{ prod.price }}
-                                </div>
-                                <i class="fas fa-shopping-cart"></i>
-                            </div>
-                        </a>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
+      <div class="col-sm-9">
+          <div class="row row-cols-2"> 
+              {% for prod in products %}
+                  <div class="col text-center mb-4">
+                      <a href="{% url 'product_detail' prod.id %}" class="btn">
+                          <div>
+                              <img src="{{ prod.image.url }}" width="300px" height="200px" />
+                              <div class="fw-bold">{{ prod.title }}</div>
+                              <div class="fw-bold text-danger">
+                                  RM {{ prod.price }}
+                              </div>
+                              <i class="fas fa-shopping-cart"></i>
+                          </div>
+                      </a>
+                  </div>
+              {% endfor %}
+          </div>
+      </div>
+  </div>
 </div>
 
 <style>
-  .container.my-5 {
-    margin-top: 20px;
-    padding: 20px;
-    background-color: whitesmoke; 
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
+.container.my-5 {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: whitesmoke; 
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
-  h4.text-center {
-    font-family: 'Arial', sans-serif;
-    font-weight: bold;
-    margin-bottom: 20px;
-    color: #6f4e37; /* Brown text color */
-  }
+.list-group-item-action {
+  color: #6f4e37; /* Brown text */
+  font-weight: bold;
+}
 
-  .table {
-    width: 100%;
-    margin: 20px 0;
-    border-collapse: collapse;
-  }
+.list-group-item-action:hover, .list-group-item-action:focus {
+  background-color: #f4f1ea; /* Light brown background on hover */
+}
 
-  .table th, .table td {
-    padding: 15px;
-    text-align: center;
-    vertical-align: middle;
-  }
+.order-again {
+  background-color: #fff; /* White background */
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
-  .table th {
-    background-color: #6f4e37; /* Brown header background */
-    color: #fff; /* White text */
-  }
+.order-again h6 {
+  font-weight: bold;
+  color: #6f4e37;
+  margin-bottom: 20px;
+}
 
-  .table-bordered {
-    border: 1px solid #dee2e6;
-  }
+.order-again .list-group-item {
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+}
 
-  .table-striped tbody tr:nth-of-type(odd) {
-    background-color: rgba(111, 78, 55, 0.05); /* Light brown stripe */
-  }
+.order-again .order-again-item {
+  flex-direction: column;
+  align-items: flex-start;
+}
 
-  .table-hover tbody tr:hover {
-    background-color: rgba(111, 78, 55, 0.075); /* Light brown hover */
-  }
+.order-again .order-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 
-  .list-group-item-action {
-    color: #6f4e37; /* Brown text */
-    font-weight: bold;
-  }
+.order-again .order-title {
+  font-weight: bold;
+}
 
-  .list-group-item-action:hover, .list-group-item-action:focus {
-    background-color: #f4f1ea; /* Light brown background on hover */
-  }
+.order-again .order-quantity {
+  font-size: 14px;
+  margin-top: 5px;
+}
 
-  .btn-outline-success {
-    border-color: #6f4e37; /* Brown border */
-    color: #6f4e37; /* Brown text */
-  }
+.order-again .order-again-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 12px;
+  padding: 5px 10px;
+}
 
-  .btn:hover {
-    background-color: #f4f1ea;
-  }
-
+.order-again .view-order-history {
+  display: block;
+  text-align: center;
+  margin-top: 10px;
+  font-weight: bold;
+  color: #6f4e37;
+  text-decoration: underline #6f4e37 1px;
+}
 </style>
 
 {% endblock content %}

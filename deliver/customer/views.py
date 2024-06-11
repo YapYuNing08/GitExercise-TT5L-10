@@ -1,15 +1,16 @@
 from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
-from django.views import View
+import random
 from django.views import View
 from django.db.models import Q
-from .models import MenuItem, Category, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel, OrderPlaced, Product, CustomizationChoice
-from .forms import CustomerRegistrationForm, CustomerProfileForm, CustomizationForm
+from .models import MenuItem, Category, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel, OrderPlaced, Product, CustomizationChoice, RedemptionOption, RedeemedItem
+from .forms import CustomerRegistrationForm, CustomerProfileForm, CustomizationForm, ReviewForm
 from django.db.models import Count
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.utils import timezone
 
 
 class Index(View):
@@ -94,6 +95,7 @@ class Signin(View):
         user = authenticate(request, username=username, password=pass1)
         
         if user is not None:
+            Customer.objects.get_or_create
             if 'admin' in username:
                 login(request,user)
                 return redirect('restaurant_index')
@@ -112,10 +114,10 @@ class Logout(View):
 class Order(View):
     def get(self, request, *args, **kwargs):
         # get every item from each category
-        beverage = MenuItem.objects.filter(category__name__contains='Beverage')
-        desserts = MenuItem.objects.filter(category__name__contains='Desserts')
-        pastries = MenuItem.objects.filter(category__name__contains='Pastries')
-        main = MenuItem.objects.filter(category__name__contains='Main')
+        beverage = MenuItem.objects.filter(category_name_contains='Beverage')
+        desserts = MenuItem.objects.filter(category_name_contains='Desserts')
+        pastries = MenuItem.objects.filter(category_name_contains='Pastries')
+        main = MenuItem.objects.filter(category_name_contains='Main')
         
 
         # pass into context
@@ -198,7 +200,13 @@ class Menu(View):
 def all_products(request):
     # categories = Category.objects.all()
     products = Product.objects.all()
-    return render(request, 'customer/all_products.html', {'products': products})
+    query = request.GET.get('q')
+    if query:
+        products = products.filter(title__icontains=query)
+
+    latest_orders = OrderPlaced.objects.filter(user=request.user).order_by('-id')[:2]
+
+    return render(request, 'customer/all_products.html', {'products': products, 'latest_orders': latest_orders})
 
 
 class Category(View):
@@ -286,37 +294,117 @@ class Checkout(View):
         user = request.user
         add = Customer.objects.filter(user=user)
         cart_items = Cart.objects.filter(user=user).select_related('product').prefetch_related('customizations')
-        total_amount = sum(item.total_cost for item in cart_items)
-        
+
+        famount = 0
+        cart_items_with_total = []
+        for p in cart_items:
+            total_price = p.quantity * p.product.price
+            customizations_total = sum(c.additional_price for c in p.customizations.all())
+            total_price += customizations_total * p.quantity  # Include customization price for each item quantity
+            famount += total_price
+            cart_items_with_total.append({
+                'product': p.product,
+                'quantity': p.quantity,
+                'total_price': total_price,
+                'customizations': p.customizations.all()
+            })
+
+        totalamount = famount
         context = {
             'add': add,
-            'cart_items': cart_items,
-            'total_amount': total_amount
+            'cart_items_with_total': cart_items_with_total,
+            'totalamount': totalamount
         }
         return render(request, 'customer/checkout.html', context)
 
 def order_placed(request):
-    user = request.user
-    cart_items = Cart.objects.filter(user=user).select_related('product').prefetch_related('customizations')
+    if request.method == 'POST':
+        user = request.user
+        method = request.POST.get('method')
+        order_id = generate_order_id()
 
-    ordered_items = []
-    for item in cart_items:
-        order = OrderPlaced.objects.create(
-            user=user,
-            product=item.product,
-            quantity=item.quantity,
-            status='Pending'
-        )
-        order.customizations.set(item.customizations.all())
-        order.save()
-        ordered_items.append(order)
+        if not method:
+            return redirect('checkout')
 
-    cart_items.delete()
-    return render(request, 'customer/order_summary.html', {'ordered_items': ordered_items})
+        table_number = request.POST.get('table_number') if method == 'Dine In' else None
 
+        num_items = (len(request.POST) - 2) // 2  # Adjusting for additional fields like method and order_id
+        ordered_items = []
+        total_points = 0
+
+        for i in range(1, num_items + 1):
+            product_id = request.POST.get(f'product_id_{i}')
+            quantity_str = request.POST.get(f'quantity_{i}')
+            if quantity_str is not None:
+                quantity = int(quantity_str)
+            else:
+                quantity = 0
+
+            cart_item = Cart.objects.filter(user=user, product_id=product_id).first()
+            if cart_item:
+                total_item_price = cart_item.product.price + sum(c.additional_price for c in cart_item.customizations.all())
+                total_price = total_item_price * quantity
+
+                order = OrderPlaced.objects.create(
+                    user=user,
+                    product=cart_item.product,
+                    quantity=quantity,
+                    food_status='Pending',
+                    method=method,
+                    points=0,
+                    table_number=table_number,
+                    order_id=order_id
+                )
+                order.customizations.set(cart_item.customizations.all())
+                order.save()
+
+                ordered_items.append({
+                    'product_id': cart_item.product.id,
+                    'title': cart_item.product.title,
+                    'price': total_item_price,
+                    'quantity': quantity,
+                    'total_price': total_price,
+                    'is_served': False,
+                    'customizations': list(cart_item.customizations.all())
+                })
+
+                item_points = int(total_item_price) * quantity
+                total_points += item_points
+
+                cart_item.product.quantity_sold += quantity
+                cart_item.product.save()
+
+                order.points = item_points
+                order.save()
+
+                cart_item.delete()
+
+        user_profile, created = Customer.objects.get_or_create(user=request.user)
+        initial_points = user_profile.points
+
+        user_profile.points += total_points
+        user_profile.save()
+
+        context = {
+            'ordered_items': ordered_items,
+            'total_points': total_points,
+            'initial_points': initial_points,
+            'method': method,
+            'table_number': table_number,
+            'order_id': order_id
+        }
+        return render(request, 'customer/order_summary.html', context)
+    else:
+        return redirect('checkout')
+
+
+
+def generate_order_id():
+    # Implement your logic to generate a unique order ID here
+    return 'ORD' + str(random.randint(100, 999))
 
 def order_history(request):
-    order_placed = OrderPlaced.objects.filter(user=request.user).prefetch_related('customizations')
+    order_placed = OrderPlaced.objects.filter(user=request.user).prefetch_related('customizations').order_by('-ordered_date')
     return render(request, 'customer/order_history.html', {'order_placed': order_placed})
 
 def plus_cart(request):
@@ -330,6 +418,7 @@ def plus_cart(request):
 
         else:
             Cart.objects.create(user=request.user, product_id=prod_id, quantity=1)
+            
         cart = Cart.objects.filter(user=request.user)
         amount = sum(item.quantity * item.product.price for item in cart)
         data = {
@@ -349,8 +438,9 @@ def minus_cart(request):
         cart_item = Cart.objects.filter(Q(product=prod_id) & Q(user=request.user)).first()
 
         if cart_item:
-            cart_item.quantity -= 1
-            cart_item.save()
+            if cart_item.quantity > 1:
+                cart_item.quantity -= 1
+                cart_item.save()
 
             cart = Cart.objects.filter(user=request.user)
             amount = sum(item.quantity * item.product.price for item in cart)
@@ -415,8 +505,6 @@ def profile_info_view(request):
     customer = request.user.customer
     return render(request, 'customer/profile_info.html', {'customer': customer})
 
-
-
 def address(request):
     add = Customer.objects.filter(user=request.user)
     return render(request, 'customer/address.html', locals())
@@ -434,9 +522,87 @@ class updateAddress(View):
             add = Customer.objects.get(pk=pk)
             add.name = form.cleaned_data['name']
             add.mobile = form.cleaned_data['mobile']
+            
             add.save()
             messages.success(request, "Congratulations! Profile Update Successfully.")
         else:
             messages.warning(request, "Invalid Input Data.")
         return redirect('address')
     
+def point(request):
+    user_profile, created = Customer.objects.get_or_create(user=request.user)
+    initial_points = user_profile.points
+    redemption_options = RedemptionOption.objects.all()
+    redeemed_items = RedeemedItem.objects.filter(customer=user_profile)
+    context = {'initial_points': initial_points, 'redemption_options': redemption_options, 'redeemed_items': redeemed_items}
+    return render(request, 'customer/point.html', context)
+
+
+def redeem_item(request):
+    if request.method == 'POST':
+        option_id = request.POST.get('option_id')
+        option = get_object_or_404(RedemptionOption, id=option_id)
+        product = get_object_or_404(Product, title=option.name)
+        customer = request.user.customer
+        today = timezone.now().date()  # Use timezone.now() to get the current date and time
+
+        # Check if the user has already redeemed this product today and if it requires a review
+        already_redeemed = RedeemedItem.objects.filter(customer=customer, option=option, date_redeemed__date=today).exists()
+
+        if already_redeemed:
+            messages.error(request, 'You have already redeemed this item today.')
+        else:
+            if option.points_required == 0 and RedeemedItem.objects.filter(customer=customer, option=option, date_redeemed__date=today).exists():
+                messages.error(request, 'You can only redeem this item once per day.')
+            elif option.review_required:
+                form = ReviewForm(request.POST)
+                if form.is_valid():
+                    review = form.save(commit=False)
+                    review.customer = customer
+                    review.product = product
+                    review.save()
+                    messages.success(request, 'Thank you for your review! Item redeemed successfully!')
+                    RedeemedItem.objects.create(customer=customer, option=option, date_redeemed=timezone.now())
+                else:
+                    messages.error(request, 'There was an error with your review. Please try again.')
+            else:
+                if customer.points >= option.points_required:
+                    customer.points -= option.points_required
+                    customer.save()
+                    RedeemedItem.objects.create(customer=customer, option=option, date_redeemed=timezone.now())
+                    messages.success(request, 'Item redeemed successfully!')
+                else:
+                    messages.error(request, 'Not enough points to redeem this item.')
+
+    return redirect('point')
+
+def claim_item(request):
+    if request.method == 'POST':
+        redemption_id = request.POST.get('redemption_id')
+        
+        try:
+            redemption = RedeemedItem.objects.get(id=redemption_id)
+            if not redemption.claimed:
+                redemption.generate_claim_code()  # Generate and save the claim code
+                redemption.save()
+                messages.success(request, f'Item has been claimed successfully. Your verification code is {redemption.claim_code}. Show this code to admin!')
+            else:
+                messages.error(request, 'Item has already been claimed.')
+        except RedeemedItem.DoesNotExist:
+            messages.error(request, 'Invalid redemption ID.')
+
+        return redirect('point')
+    else:
+        return redirect('point')
+    
+def order_again(request, order_id):
+    previous_order = get_object_or_404(OrderPlaced, id=order_id, user=request.user)
+    cart_item = Cart.objects.filter(user=request.user, product=previous_order.product).first()
+
+    if cart_item:
+        cart_item.quantity += previous_order.quantity
+        cart_item.save()
+    else:
+        Cart.objects.create(user=request.user, product=previous_order.product, quantity=previous_order.quantity)
+
+    return redirect('/cart')
