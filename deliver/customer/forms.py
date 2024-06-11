@@ -32,7 +32,7 @@ class CustomerProfileForm(forms.ModelForm):
     class Meta:
         model = Customer
         fields = '__all__'
-        exclude = ['user']
+        exclude = ['user', 'points']
 
 class AdForm(forms.ModelForm):
     class Meta:

@@ -95,70 +95,77 @@ $(document).ready(function(){
             }
         })
     });
-
+    
+    // Handle the plus-cart click event
     $('.plus-cart').click(function(){
-        var id = $(this).attr("pid").toString();
+        var id = $(this).attr("cid").toString();
         var eml = this.parentNode.children[2];
-        var quantity = parseInt(eml.innerText);
+        var quantity = parseInt(eml.innerText) + 1;
+        
         $.ajax({
             type: "GET",
             url: "/pluscart",
             data: {
-                prod_id: id,
-                quantity: quantity
+                cart_item_id: id
             },
             success: function(data){
                 eml.innerText = data.quantity; 
-                document.getElementById("amount").innerText = data.amount; 
-                document.getElementById("totalamount").innerText = data.totalamount;
-                location.reload();
-
+                document.getElementById("amount").innerText = 'RM ' + data.amount.toFixed(2); 
+                document.getElementById("totalamount").innerText = 'RM ' + data.totalamount.toFixed(2);
+                
                 // Update total price for the item
-                var pricePerUnit = parseFloat($(".cart-item[data-product-id='" + id + "']").data('price-per-unit'));
+                var pricePerUnit = parseFloat($(".cart-item[data-cart-item-id='" + id + "']").data('price-per-unit'));
                 var totalPriceElement = $("#total-price-" + id);
                 totalPriceElement.text("RM " + (pricePerUnit * data.quantity).toFixed(2));
+                location.reload();
             }
-        })
+        });
     });
 
+    // Handle the minus-cart click event
     $('.minus-cart').click(function(){
-        var id = $(this).attr("pid").toString();
+        var id = $(this).attr("cid").toString();
         var eml = this.parentNode.children[2];
+        
         $.ajax({
             type: "GET",
             url: "/minuscart",
             data: {
-                prod_id: id
+                cart_item_id: id
             },
             success: function(data){
-                eml.innerText = data.quantity;
-                document.getElementById("amount").innerText = data.amount;
-                document.getElementById("totalamount").innerText = data.totalamount;
-                location.reload();
+                if (data.quantity > 0) {
+                    eml.innerText = data.quantity;
+                    document.getElementById("amount").innerText = 'RM ' + data.amount.toFixed(2); 
+                    document.getElementById("totalamount").innerText = 'RM ' + data.totalamount.toFixed(2);
 
-                // Update total price for the item
-                var pricePerUnit = parseFloat($(".cart-item[data-product-id='" + id + "']").data('price-per-unit'));
-                var totalPriceElement = $("#total-price-" + id);
-                totalPriceElement.text("RM " + (pricePerUnit * data.quantity).toFixed(2));
+                    // Update total price for the item
+                    var pricePerUnit = parseFloat($(".cart-item[data-cart-item-id='" + id + "']").data('price-per-unit'));
+                    var totalPriceElement = $("#total-price-" + id);
+                    totalPriceElement.text("RM " + (pricePerUnit * data.quantity).toFixed(2));
+                    location.reload();
+                }
             }
-        })
+        });
     });
 
-    $('.remove-cart').click(function(){
-        var id = $(this).attr("pid").toString();
+     // Handle the remove-cart click event
+     $('.remove-cart').click(function(){
+        var id = $(this).attr("cid").toString();
         var eml = this;
+        
         $.ajax({
             type: "GET",
             url: "/removecart",
             data: {
-                prod_id: id
+                cart_item_id: id
             },
             success: function(data){
-                document.getElementById("amount").innerText = data.amount;
-                document.getElementById("totalamount").innerText = data.totalamount;
+                document.getElementById("amount").innerText = 'RM ' + data.amount.toFixed(2); 
+                document.getElementById("totalamount").innerText = 'RM ' + data.totalamount.toFixed(2);
                 eml.parentNode.parentNode.parentNode.parentNode.remove();
             }
-        })
+        });
     });
 });
 
