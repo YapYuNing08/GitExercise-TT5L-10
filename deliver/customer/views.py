@@ -411,15 +411,12 @@ def order_history(request):
 # original version
 def plus_cart(request):
     if request.method == 'GET':
-        prod_id = request.GET.get('prod_id') 
-        cart_item = Cart.objects.filter(Q(product=prod_id) & Q(user=request.user)).first()
+        cart_item_id = request.GET.get('cart_item_id') 
+        cart_item = Cart.objects.filter(Q(id=cart_item_id) & Q(user=request.user)).first()
    
         if cart_item:
             cart_item.quantity += 1
             cart_item.save()
-
-        else:
-            Cart.objects.create(user=request.user, product_id=prod_id, quantity=1)
             
         cart = Cart.objects.filter(user=request.user)
         amount = sum(item.quantity * item.product.price for item in cart)
@@ -436,8 +433,8 @@ def plus_cart(request):
     
 def minus_cart(request):
     if request.method == 'GET':
-        prod_id = request.GET.get('prod_id') 
-        cart_item = Cart.objects.filter(Q(product=prod_id) & Q(user=request.user)).first()
+        cart_item_id = request.GET.get('cart_item_id') 
+        cart_item = Cart.objects.filter(Q(id=cart_item_id) & Q(user=request.user)).first()
 
         if cart_item:
             if cart_item.quantity > 1:
@@ -457,71 +454,16 @@ def minus_cart(request):
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
     
-
-# testing 1.0
-# def plus_cart(request):
-#     if request.method == 'GET':
-#         prod_id = request.GET.get('prod_id')
-#         customizations = request.GET.get('customizations')  # Assume customizations is a comma-separated string of customization ids
-#         customization_ids = [int(x) for x in customizations.split(',')] if customizations else []
-        
-#         cart_item = Cart.objects.filter(product_id=prod_id, user=request.user, customizations__id__in=customization_ids).first()
-
-#         if cart_item:
-#             cart_item.quantity += 1
-#             cart_item.save()
-#         else:
-#             cart_item = Cart.objects.create(user=request.user, product_id=prod_id, quantity=1)
-#             cart_item.customizations.set(customization_ids)
-
-#         cart = Cart.objects.filter(user=request.user)
-#         amount = sum(item.quantity * item.product.price for item in cart)
-#         data = {
-#             'quantity': cart_item.quantity,
-#             'amount': amount,
-#             'totalamount': amount,
-#         }
-
-#         return JsonResponse(data)
-#     return JsonResponse({'error': 'Invalid request method.'}, status=400)
-
-# def minus_cart(request):
-#     if request.method == 'GET':
-#         prod_id = request.GET.get('prod_id')
-#         customizations = request.GET.get('customizations')
-#         customization_ids = [int(x) for x in customizations.split(',')] if customizations else []
-
-#         cart_item = Cart.objects.filter(product_id=prod_id, user=request.user, customizations__id__in=customization_ids).first()
-
-#         if cart_item:
-#             if cart_item.quantity > 1:
-#                 cart_item.quantity -= 1
-#                 cart_item.save()
-#             else:
-#                 cart_item.delete()
-
-#             cart = Cart.objects.filter(user=request.user)
-#             amount = sum(item.quantity * item.product.price for item in cart)
-#             data = {
-#                 'quantity': cart_item.quantity if cart_item else 0,
-#                 'amount': amount,
-#                 'totalamount': amount,
-#             }
-#             return JsonResponse(data)
-#         return JsonResponse({'error': 'Cart item not found for the user and product.'}, status=400)
-#     return JsonResponse({'error': 'Invalid request method.'}, status=400)
-
 def remove_cart(request):
     if request.method == 'GET':
-        prod_id = request.GET.get('prod_id') 
-        cart_item = Cart.objects.filter(Q(product=prod_id) & Q(user=request.user)).first()
+        cart_item_id = request.GET.get('cart_item_id') 
+        cart_item = Cart.objects.filter(Q(id=cart_item_id) & Q(user=request.user)).first()
         if cart_item:
             cart_item_quantity = cart_item.quantity  # Store the quantity before deletion
             cart_item.delete()  # Delete the cart item
 
             cart = Cart.objects.filter(user=request.user)
             amount = sum(item.quantity * item.product.price for item in cart)
-            # totalamount = amount  # Assuming totalamount is the same as amount in this context
             data = {
                 'quantity': cart_item_quantity,  # Use the stored quantity before deletion
                 'amount': amount,
