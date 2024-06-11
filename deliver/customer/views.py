@@ -2,14 +2,12 @@ from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 import random
 from django.views import View
 from django.db.models import Q
-from .models import Category, Product, Customer, Cart, ReservationModel, OrderPlaced, Product, CustomizationChoice, RedemptionOption, RedeemedItem, Ad
+from .models import Product, Customer, Cart, ReservationModel, OrderPlaced, Product, CustomizationChoice, RedemptionOption, RedeemedItem, Ad
 from .forms import CustomerRegistrationForm, CustomerProfileForm, CustomizationForm, ReviewForm
-from django.db.models import Count
-from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse
 from django.utils import timezone
 
 class About(View):
@@ -131,14 +129,6 @@ class MenuSearch(View):
         }
 
         return render(request, 'customer/all_products.html', context)
-    
-# class Menu(View):
-#     def get(self, request, *args, **kwargs):
-#         # Retrieve menu items from the database
-#         menu_items = MenuItem.objects.all()
-#         context = {'menu_items': menu_items}
-
-#         return render(request, 'customer/menu.html', context)
 
 def all_products(request):
     # categories = Category.objects.all()
@@ -419,11 +409,6 @@ def remove_cart(request):
 class Login(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/login.html')
-    
-# class PasswordResetView(View):
-#     def get(self, request, *args, **kwargs):
-#         return render(request, 'customer/login.html')
-    
 
 class ProfileView(View):
     def get(self, request):
@@ -446,8 +431,6 @@ def profile_info_view(request):
 def address(request):
     add = Customer.objects.filter(user=request.user)
     return render(request, 'customer/address.html', locals())
-
-
 
 class updateAddress(View):
     def get(self, request, pk):
