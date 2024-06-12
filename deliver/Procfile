@@ -1,0 +1,1 @@
+web gunicorn cuppaclick.wsgi:application --log-file -
