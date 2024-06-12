@@ -7,10 +7,14 @@ from .forms import CustomerRegistrationForm, CustomerProfileForm, CustomizationF
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse
 from django.utils import timezone
 
-
+class About(View):
+    def get(self, request, *args, **kwargs):
+        ad = Ad.objects.filter(is_active=True).first()
+        return render(request, 'customer/about.html', {'ad': ad})
+    
 class Index(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/index.html')
@@ -53,11 +57,6 @@ class ReservationConfirmation(View):
             'reservation': reservation
         }
         return render(request, 'customer/reservation_confirmation.html', context)
-
-class About(View):
-    def get(self, request, *args, **kwargs):
-        ad = Ad.objects.filter(is_active=True).first()
-        return render(request, 'customer/about.html', {'ad': ad})
 
 class Signup(View):
     def get(self, request, *args, **kwargs):
@@ -109,7 +108,6 @@ class Logout(View):
         logout(request)  # Logs out the user
         return redirect('signin') 
 
-
 class MenuSearch(View):
     def get(self, request, *args, **kwargs):
         query = request.GET.get("q")
@@ -138,7 +136,6 @@ def all_products(request):
     latest_orders = OrderPlaced.objects.filter(user=request.user).order_by('-id')[:2]
 
     return render(request, 'customer/all_products.html', {'products': products, 'latest_orders': latest_orders})
-
 
 class Category(View):
     def get(self, request, val):
@@ -173,7 +170,6 @@ class ProductDetail(View):
 
             return add_to_cart(request)
         return render(request, 'customer/product_detail.html', {'product': product, 'form': form})
-
     
 class CustomerRegistrationView(View):
     def get(self, request):
@@ -328,8 +324,6 @@ def order_placed(request):
     else:
         return redirect('checkout')
 
-
-
 def generate_order_id():
     # Implement your logic to generate a unique order ID here
     return 'ORD' + str(random.randint(100, 999))
@@ -404,7 +398,6 @@ def remove_cart(request):
             return JsonResponse({'error': 'Cart item not found for the user and product.'}, status=400)
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
-
 
 class ProfileView(View):
     def get(self, request):
@@ -520,5 +513,3 @@ def order_again(request, order_id):
         cart_item.customizations.set(customizations)
 
     return redirect('/cart')
-
-

@@ -61,7 +61,7 @@
             <!-- Rewards Section -->
             <div class="card-reward p-4 text-center">
                 <!-- Rewards Title -->
-                <h1 class="display-4 mb-4">Rewards</h1>
+                <h1 class="display-4 mb-4"><strong>Rewards</strong></h1>
                 <!-- Points Info -->
                 <h3 class="text-info"><strong>Points: {{ initial_points }}</strong></h3>
                 <p class="text-info"><strong>Every RM 1 spent = 1 point</strong></p>
@@ -106,7 +106,7 @@
                                     <div class="modal-body">
                                         <img src="{{ option.image.url }}" alt="{{ option.name }}" width="300px" height="200px">
                                         <p><strong>{{ option.description | linebreaksbr }}</strong></p>
-                                        <p>Points Required: {{ option.points_required }}</p>
+                                        <p class="point"><strong>Points Required: <span class="points-required">{{ option.points_required }}</span></strong></p>
                                         <!-- Redeem Form -->
                                         <form id="redeemForm{{ option.id }}" action="{% url 'redeem_item' %}" method="POST">
                                             {% csrf_token %}
@@ -131,7 +131,7 @@
 
             <!-- Free Items Section -->
             <hr class="my-4">
-            <h3 class="text-info"><strong>Free Items (0 Points)</strong></h3>
+            <h3 class="text-info"><strong>No point required!!!</strong></h3>
             <div class="row row-cols-1 row-cols-md-2">
                 {% for option in redemption_options %}
                     {% if option.points_required == 0 %}
@@ -280,6 +280,9 @@
         border: 1px solid #f5c6cb;
     }
 
+    .point{
+        color: black;
+    }
     /* Style for My Rewards Section */
     .list-group-item {
         display: flex;
