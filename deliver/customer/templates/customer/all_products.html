@@ -102,8 +102,6 @@
                           <div class="order-title"><strong>{{ order.product.title }}</strong></div>
                           <div class="order-quantity">Quantity: {{ order.quantity }}</div>
                       </div>
-                      <br>
-                      <br>
                       <a href="{% url 'order_again' order.id %}" class="btn btn-success btn-sm order-again-btn">Order Again</a>
                   </li>
                   {% endfor %}
@@ -111,8 +109,6 @@
               </ul>
           </div>
 
-          <br>
-          <!-- Checkout Section -->
           <h6>Nothing to add?</h6>
           <div>
             <a href="{% url 'showcart' %}" class="btn btn-primary">Checkout Now!</a>
@@ -141,9 +137,10 @@
 </div>
 
 <style>
-h6{
+h6 {
   padding-left: 35px;
 }
+
 .container.my-5 {
   margin-top: 20px;
   padding: 20px;
@@ -217,6 +214,17 @@ h6{
   font-weight: bold;
   color: #6f4e37;
   text-decoration: underline #6f4e37 1px;
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+  .row-cols-2 {
+    flex-direction: column;
+  }
+  .col.text-center.mb-4 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
 }
 </style>
 
