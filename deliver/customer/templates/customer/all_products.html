@@ -83,28 +83,7 @@
   }
 </style>
 
-
 <div class="container my-5">
-
-  <div class="row">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-sm-12 text-center">
-            <form method="GET" action="{% url 'menu-search' %}">
-                <div class="md-form mt-0 active-cyan-2">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input class="form-control" name="q" type="text" placeholder="Search Our Menu" aria-label="Search" value="{{ request.GET.q }}">
-                </div>
-
-                {% if request.GET.q %}
-                <div class="input-group-append">
-                    <a href="{% url 'all_products' %}" class="btn btn-warning">Clear</a>
-                    <!-- <a href="{% url 'all_products' %}" class="btn btn-primary"><i class="fa-solid fa-xmark"></i></a> -->
-                </div>
-                {% endif %}
-            </form>
-        </div>
-    </div>
-
   <div class="row">
       <div class="col-sm-3">
           <a href="{% url 'all_products' %}" class="list-group-item list-group-item-action" aria-current="true">ALL</a>
@@ -114,7 +93,6 @@
           <a href="{% url 'category' 'M' %}" class="list-group-item list-group-item-action" aria-current="true">MAIN</a>         
           
           <!-- Order Again Section -->
-          {% if latest_orders %}
           <div class="order-again my-5">
               <h6>Order Again</h6>
               <ul class="list-group">
@@ -123,25 +101,14 @@
                       <div class="order-info">
                           <div class="order-title"><strong>{{ order.product.title }}</strong></div>
                           <div class="order-quantity">Quantity: {{ order.quantity }}</div>
-                          <div class="order-customizations">
-                              {% for customization in order.customizations.all %}
-                                  <span class="badge" style="background-color: #5c2d0c; color: white;">{{ customization.name }}</span>
-                              {% endfor %}
-                          </div>
                       </div>
-                      <br>
-                      <br>
                       <a href="{% url 'order_again' order.id %}" class="btn btn-success btn-sm order-again-btn">Order Again</a>
                   </li>
                   {% endfor %}
                   <a href="{% url 'order_history' %}" class="view-order-history">View All</a>
               </ul>
           </div>
-          {% endif %}
 
-
-          <br>
-          <!-- Checkout Section -->
           <h6>Nothing to add?</h6>
           <div>
             <a href="{% url 'showcart' %}" class="btn btn-primary">Checkout Now!</a>
@@ -170,9 +137,10 @@
 </div>
 
 <style>
-h6{
+h6 {
   padding-left: 35px;
 }
+
 .container.my-5 {
   margin-top: 20px;
   padding: 20px;
@@ -246,6 +214,17 @@ h6{
   font-weight: bold;
   color: #6f4e37;
   text-decoration: underline #6f4e37 1px;
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+  .row-cols-2 {
+    flex-direction: column;
+  }
+  .col.text-center.mb-4 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
 }
 </style>
 
