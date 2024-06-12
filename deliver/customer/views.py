@@ -58,10 +58,6 @@ class ReservationConfirmation(View):
         }
         return render(request, 'customer/reservation_confirmation.html', context)
 
-class About(View):
-    def get(self, request, *args, **kwargs):
-        return render(request, 'customer/about.html')
-
 class Signup(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'customer/signup.html')
@@ -141,7 +137,6 @@ def all_products(request):
 
     return render(request, 'customer/all_products.html', {'products': products, 'latest_orders': latest_orders})
 
-
 class Category(View):
     def get(self, request, val):
         product = Product.objects.filter(category=val)
@@ -175,7 +170,6 @@ class ProductDetail(View):
 
             return add_to_cart(request)
         return render(request, 'customer/product_detail.html', {'product': product, 'form': form})
-
     
 class CustomerRegistrationView(View):
     def get(self, request):
@@ -329,8 +323,6 @@ def order_placed(request):
         return render(request, 'customer/order_summary.html', context)
     else:
         return redirect('checkout')
-
-
 
 def generate_order_id():
     # Implement your logic to generate a unique order ID here

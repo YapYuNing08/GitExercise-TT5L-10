@@ -37,7 +37,7 @@ $(document).ready(function(){
             success: function(){
                 location.reload(); // Reload the page to update the cart section
             }
-        })
+        });
     });
     
     // Handle the plus-cart click event
@@ -61,7 +61,8 @@ $(document).ready(function(){
                 var pricePerUnit = parseFloat($(".cart-item[data-cart-item-id='" + id + "']").data('price-per-unit'));
                 var totalPriceElement = $("#total-price-" + id);
                 totalPriceElement.text("RM " + (pricePerUnit * data.quantity).toFixed(2));
-                location.reload();
+
+                location.reload(); // Reload the page to update the price
             }
         });
     });
@@ -87,14 +88,15 @@ $(document).ready(function(){
                     var pricePerUnit = parseFloat($(".cart-item[data-cart-item-id='" + id + "']").data('price-per-unit'));
                     var totalPriceElement = $("#total-price-" + id);
                     totalPriceElement.text("RM " + (pricePerUnit * data.quantity).toFixed(2));
-                    location.reload();
+
+                    location.reload(); // Reload the page to update the price
                 }
             }
         });
     });
 
-     // Handle the remove-cart click event
-     $('.remove-cart').click(function(){
+    // Handle the remove-cart click event
+    $('.remove-cart').click(function(){
         var id = $(this).attr("cid").toString();
         var eml = this;
         
@@ -108,10 +110,13 @@ $(document).ready(function(){
                 document.getElementById("amount").innerText = 'RM ' + data.amount.toFixed(2); 
                 document.getElementById("totalamount").innerText = 'RM ' + data.totalamount.toFixed(2);
                 eml.parentNode.parentNode.parentNode.parentNode.remove();
+
+                location.reload(); // Reload the page to update the price
             }
         });
     });
 });
+
 
 
 // update info/ad section
