@@ -1,0 +1,277 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poetsen+One&display=swap" rel="stylesheet">
+{% extends 'customer/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="cover-image-container">
+    <img src="/media/menu_images/about3.jpg" class="cover-image" alt="Cover Image">
+    <div class="cover-text">
+        <h1 class="poetsen-one-regular">CuppaClick</h1>
+        <p>Your ultimate culinary destination</p>
+        <a href="{% url 'all_products' %}" class="btn btn-light" style="padding: 10px 20px; font-size: 14px; color: #4E342E;">
+            Order Now!
+        </a>
+    </div>
+</div>
+
+<div class="container my-5">
+    <h2 class="text-center mb-4 poetsen-one-regular">TOP 3 MUST-TRY</h2>
+    <div class="row">
+        <!-- Recommended Food 1 -->
+        <div class="col-md-4 text-center mb-4">
+            <div class="card">
+                <img src="/media/menu_images/MatchaLatte2_wbuzODc.jpg" class="card-img-top" alt="Food 1">
+                <div class="card-body">
+                    <h5 class="card-title">Matcha Latte</h5>
+                    <p class="card-text">A delightful blend of premium matcha powder and steamed milk, rich in antioxidants and earthy flavor. 🍵🌿</p>
+                    <a href="{% url 'product_detail' 6 %}" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        <!-- Recommended Food 2 -->
+        <div class="col-md-4 text-center mb-4">
+            <div class="card">
+                <img src="/media/menu_images/RedVelvet.jpg" class="card-img-top" alt="Food 2">
+                <div class="card-body">
+                    <h5 class="card-title">Red Velvet</h5>
+                    <p class="card-text">Soft, buttery sponge with subtle chocolate and vanilla flavors, topped with fluffy cream cheese frosting. 🍰❤️</p>
+                    <a href="{% url 'product_detail' 16 %}" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        <!-- Recommended Food 3 -->
+        <div class="col-md-4 text-center mb-4">
+            <div class="card">
+                <img src="/media/menu_images/Bolognese_fdPGtfH_EwoixvR.jpg" class="card-img-top" alt="Food 3">
+                <div class="card-body">
+                    <h5 class="card-title">Spaghetti Bolognese</h5>
+                    <p class="card-text">Long, tender strands of pasta coated in a rich Italian ragù made with minced beef, bacon, and tomatoes, served with Parmesan cheese. 🍝🧀</p>
+                    <a href="{% url 'product_detail' 25 %}" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-sm-12 text-center">
+            <h1 class="poetsen-one-regular">About Us!</h1>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-sm-12 p-4 text-center">
+            <p>Welcome to Cuppa Click, where passion meets palate.</p>
+            <p>From refreshing beverages to decadent desserts, artisanal pastries to hearty spaghetti, every dish is crafted with care and quality ingredients.</p>
+            <p>Join us for a culinary journey that promises to delight your senses and keep you coming back for more. Your table awaits at Cuppa Click.</p>
+        </div>
+    </div>
+</div>
+
+{% if ad %}
+<div id="popup" class="popup" style="display: none;">
+    <div class="popup-content">
+        <span class="close-btn" onclick="closePopup()">&times;</span>
+        <h2>{{ ad.title }}</h2>
+        <p>{{ ad.description }}</p>
+        <img src="{{ ad.image.url }}" alt="Ad Image">
+        <a href="{% url 'all_products' %}" class="claim-btn">Claim Now</a>
+    </div>
+</div>
+{% endif %}
+
+</body>
+
+<style>
+    .poetsen-one-regular {
+        font-family: "Poetsen One", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 3rem;
+    }
+    /* General styles */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #FAF3E0;
+        color: #5D4037;
+    }
+
+    .container {
+        margin-top: 50px;
+    }
+
+    .cover-image-container {
+        position: relative;
+        text-align: right;
+        color: white;
+    }
+
+    .cover-image {
+        width: 100%;
+        height: 275px;
+        object-fit: cover;
+    }
+
+    .cover-text {
+        position: absolute;
+        top: 50%;
+        right: 20px;
+        transform: translateY(-50%);
+        color: #fff;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        text-align: right;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .cover-text h1 {
+        font-size: 48px;
+        margin: 0;
+        padding: 0;
+        line-height: 1.2;
+    }
+
+    .cover-text p {
+        font-size: 24px;
+        margin: 0;
+    }
+
+    /* Card styles */
+    .card {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border: 1px solid #8D6E63;
+    }
+
+    /* Button styles */
+    .btn {
+        background-color: #8D6E63; /* Brown color for buttons */
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        font-size: 16px;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+        background-color: #5D4037; /* Darker brown on hover */
+    }
+
+    /* Popup styles */
+    .popup {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .popup-content {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        width: 80%;
+        max-width: 500px;
+        text-align: center;
+        position: relative;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        font-size: 30px;
+        cursor: pointer;
+    }
+
+    .claim-btn {
+        background-color: #8D6E63;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 16px;
+    }
+
+    .claim-btn:hover {
+        background-color: #5D4037;
+    }
+
+    /* Text styles */
+    p {
+        line-height: 1.6;
+    }
+
+    h2, h5 {
+        color: #4E342E;
+    }
+
+    .popup {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Sit on top */
+}
+
+    .popup-content {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        text-align: center;
+        position: relative;
+        width: 500px;
+        max-width: 80%;
+        margin: auto;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .popup-content img {
+        max-width: 100%; /* Make the image responsive */
+        height: auto;
+        border-radius: 5px; 
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        color: #aaa;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .claim-btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #9c5b4a;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        margin-top: 20px;
+    }
+
+    .claim-btn:hover {
+        background-color: #a53c3c;
+        color: #333;
+    }
+</style>
+
+
+{% endblock content %}

@@ -1,0 +1,101 @@
+{% extends 'restaurant/base.html' %}
+{% block content %}
+<div class="container my-5">
+    <h2>Verify Claim Code</h2>
+    {% if all_items %}
+        <div class="list-group">
+            {% for item in all_items %}
+                <div class="list-group-item {% if item.claimed %}list-group-item-success{% else %}list-group-item-warning{% endif %}" data-item-id="{{ item.id }}">
+                    <h5>Item: {{ item.option.name }}</h5>
+                    <p>User: {{ item.customer.user.username }}</p>
+                    <p>Date Redeemed: {{ item.date_redeemed }}</p>
+                    <p>Status: {% if item.claimed %}Verified{% else %}Not Verified{% endif %}</p>
+                    {% if not item.claimed %}
+                        <form action="{% url 'verify_claim' %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="redemption_id" value="{{ item.id }}">
+                            <div class="form-group">
+                                <label for="claim_code{{ item.id }}">Enter Claim Code:</label>
+                                <input type="text" name="claim_code" id="claim_code{{ item.id }}" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Verify</button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No items need verification at this time.</p>
+    {% endif %}
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<style>
+    .container {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .list-group-item {
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+    }
+
+    .list-group-item-success {
+        background-color: #d4edda;
+    }
+
+    .list-group-item-warning {
+        background-color: #f8d7da;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .btn-primary:focus {
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const verificationResult = "{{ verification_result }}";
+        const redemptionId = "{{ verified_redemption_id }}";
+
+        if (verificationResult) {
+            if (verificationResult === 'success') {
+                alert('Verification successful: Item has been claimed successfully.');
+                const itemElement = document.querySelector(`[data-item-id="${redemptionId}"]`);
+                if (itemElement) {
+                    itemElement.remove();
+                }
+                
+            } else if (verificationResult === 'incorrect_code') {
+                alert('Verification failed: Incorrect claim code for this item. Please try again.');
+            } else if (verificationResult === 'invalid_id') {
+                alert('Verification failed: Invalid redemption ID.');
+            }
+        }
+    });
+</script>
+{% endblock %}
