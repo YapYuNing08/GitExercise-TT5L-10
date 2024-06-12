@@ -18,9 +18,9 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from customer.views import Index, About, Order, Signin, Signup, Menu, MenuSearch, Category, CategoryTitle, ProductDetail, CustomerRegistrationView, Login, ProfileView, Reservation, ReservationConfirmation, Logout, Checkout
+from customer.views import Index, About, Signin, Signup, MenuSearch, Category, CategoryTitle, ProductDetail, CustomerRegistrationView, ProfileView, Reservation, ReservationConfirmation, Logout, Checkout
 from django.contrib.auth import views as auth_view
-from customer.forms import LoginForm, MyPasswordResetForm, MyPasswordChangeForm
+from customer.forms import MyPasswordResetForm, MyPasswordChangeForm
 from customer import views
 
 urlpatterns = [
@@ -39,8 +39,6 @@ urlpatterns = [
     
     path('signup/', Signup.as_view(), name="signup"),
 
-    path('order/', Order.as_view(), name="order"),
-    path('menu/', Menu.as_view(), name='menu'),
     path('menu/search', MenuSearch.as_view(), name='menu-search'),
     path('all-products/', views.all_products, name='all_products'),
     path('order_again/<int:order_id>/', views.order_again, name='order_again'),
@@ -51,9 +49,6 @@ urlpatterns = [
     path('product_detail/<int:pk>/', ProductDetail.as_view(), name='product_detail'),
     path('profile/', ProfileView.as_view(), name='profile'),
     path('profile_info/', views.profile_info_view, name='profile_info'),
-    
-    path('address/', views.address, name='address'),
-    path('updateAddress/<int:pk>', views.updateAddress.as_view(), name='updateAddress'),
     
     path('add-to-cart/', views.add_to_cart, name='add-to-cart'),
     path('cart/', views.show_cart, name='showcart'),
@@ -68,7 +63,6 @@ urlpatterns = [
 
     # login authentication
     path('registration/', CustomerRegistrationView.as_view(), name='customerregistration'),
-    path('login/', Login.as_view(), name='login'),
     path('logout/', Logout.as_view(), name='logout'),
     path('password_reset/', auth_view.PasswordResetView.as_view(template_name='customer/password_reset.html', form_class=MyPasswordResetForm), name='password_reset'),
     path('password_change/', auth_view.PasswordChangeView.as_view(template_name='customer/changepassword.html', form_class=MyPasswordChangeForm),name='password_change'),

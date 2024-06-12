@@ -2,10 +2,8 @@ from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 import random
 from django.views import View
 from django.db.models import Q
-from .models import MenuItem, Category, OrderModel, Product, OrderItem, Customer, Cart, ReservationModel, OrderPlaced, Product, CustomizationChoice, RedemptionOption, RedeemedItem, Ad
+from .models import Product, Customer, Cart, ReservationModel, OrderPlaced, Product, CustomizationChoice, RedemptionOption, RedeemedItem, Ad
 from .forms import CustomerRegistrationForm, CustomerProfileForm, CustomizationForm, ReviewForm
-from django.db.models import Count
-from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -110,66 +108,6 @@ class Logout(View):
     def get(self, request, *args, **kwargs):
         logout(request)  # Logs out the user
         return redirect('signin') 
-        
-
-class Order(View):
-    def get(self, request, *args, **kwargs):
-        # get every item from each category
-        beverage = MenuItem.objects.filter(category_name_contains='Beverage')
-        desserts = MenuItem.objects.filter(category_name_contains='Desserts')
-        pastries = MenuItem.objects.filter(category_name_contains='Pastries')
-        main = MenuItem.objects.filter(category_name_contains='Main')
-        
-
-        # pass into context
-        context = {
-            'beverage': beverage,
-            'desserts': desserts,
-            'pastries': pastries,
-            'main': main
-            
-        }
-
-        # render the template
-        return render(request, 'customer/order.html', context)
-
-    def post(self, request, *args, **kwargs):
-        items_ids = request.POST.getlist('items[]')
-        quantities = request.POST.getlist('quantities[]')
-        name = request.POST.get('name')
-        phone = request.POST.get('phone')
-
-        total_price = 0
-        items_with_quantity = []  
-        for item_id, quantity in zip(items_ids, quantities):
-            item = MenuItem.objects.get(id=item_id)
-            item_total_price = item.price * int(quantity)
-            if item_total_price > 0:
-                items_with_quantity.append({'item': item, 'quantity': int(quantity), 'total_price': item_total_price})  
-                total_price += item_total_price
-
-        order = OrderModel.objects.create(
-            price=total_price,
-            name=name,
-            phone=phone,
-        )
-
-        # Create OrderItem instances for each selected item
-        for item_info in items_with_quantity:
-            order_item = OrderItem.objects.create(
-                order=order,
-                item=item_info['item'],
-                quantity=item_info['quantity'],
-                total_price=item_info['total_price']
-            )
-
-        context = {
-            'items_with_quantity': items_with_quantity,
-            'total_price': total_price
-        }
-
-        return render(request, 'customer/order_history.html', context)
-
 
 
 class MenuSearch(View):
@@ -189,14 +127,6 @@ class MenuSearch(View):
         }
 
         return render(request, 'customer/all_products.html', context)
-    
-class Menu(View):
-    def get(self, request, *args, **kwargs):
-        # Retrieve menu items from the database
-        menu_items = MenuItem.objects.all()
-        context = {'menu_items': menu_items}
-
-        return render(request, 'customer/menu.html', context)
 
 def all_products(request):
     # categories = Category.objects.all()
@@ -476,11 +406,6 @@ def remove_cart(request):
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
 
-class Login(View):
-    def get(self, request, *args, **kwargs):
-        return render(request, 'customer/login.html')
-    
-
 class ProfileView(View):
     def get(self, request):
         customer = request.user.customer
@@ -499,29 +424,7 @@ def profile_info_view(request):
     customer = request.user.customer
     return render(request, 'customer/profile_info.html', {'customer': customer})
 
-def address(request):
-    add = Customer.objects.filter(user=request.user)
-    return render(request, 'customer/address.html', locals())
 
-
-
-class updateAddress(View):
-    def get(self, request, pk):
-        add = Customer.objects.get(pk=pk)
-        form = CustomerProfileForm(instance=add)
-        return render(request, 'customer/updateAddress.html', locals())
-    def post(self, request, pk):
-        form = CustomerProfileForm(request.POST)
-        if form.is_valid():
-            add = Customer.objects.get(pk=pk)
-            add.name = form.cleaned_data['name']
-            add.mobile = form.cleaned_data['mobile']
-            
-            add.save()
-            messages.success(request, "Congratulations! Profile Update Successfully.")
-        else:
-            messages.warning(request, "Invalid Input Data.")
-        return redirect('address')
     
 def point(request):
     user_profile, created = Customer.objects.get_or_create(user=request.user)
