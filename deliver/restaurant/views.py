@@ -137,10 +137,9 @@ def verify_claim(request):
         except RedeemedItem.DoesNotExist:
             verification_result = 'invalid_id'
 
-    all_items = RedeemedItem.objects.all()
+    all_items = RedeemedItem.objects.all().order_by('-id')
     return render(request, 'restaurant/verify_claim.html', {
         'all_items': all_items,
         'verification_result': verification_result,
         'verified_redemption_id': verified_redemption_id
     })
-

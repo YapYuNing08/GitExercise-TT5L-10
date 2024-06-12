@@ -332,6 +332,7 @@ def order_history(request):
     order_placed = OrderPlaced.objects.filter(user=request.user).prefetch_related('customizations').order_by('-ordered_date')
     return render(request, 'customer/order_history.html', {'order_placed': order_placed})
 
+# original version
 def plus_cart(request):
     if request.method == 'GET':
         cart_item_id = request.GET.get('cart_item_id') 
@@ -397,10 +398,6 @@ def remove_cart(request):
             return JsonResponse({'error': 'Cart item not found for the user and product.'}, status=400)
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
-    
-class Login(View):
-    def get(self, request, *args, **kwargs):
-        return render(request, 'customer/login.html')
 
 class ProfileView(View):
     def get(self, request):
@@ -420,27 +417,7 @@ def profile_info_view(request):
     customer = request.user.customer
     return render(request, 'customer/profile_info.html', {'customer': customer})
 
-def address(request):
-    add = Customer.objects.filter(user=request.user)
-    return render(request, 'customer/address.html', locals())
 
-class updateAddress(View):
-    def get(self, request, pk):
-        add = Customer.objects.get(pk=pk)
-        form = CustomerProfileForm(instance=add)
-        return render(request, 'customer/updateAddress.html', locals())
-    def post(self, request, pk):
-        form = CustomerProfileForm(request.POST)
-        if form.is_valid():
-            add = Customer.objects.get(pk=pk)
-            add.name = form.cleaned_data['name']
-            add.mobile = form.cleaned_data['mobile']
-            
-            add.save()
-            messages.success(request, "Congratulations! Profile Update Successfully.")
-        else:
-            messages.warning(request, "Invalid Input Data.")
-        return redirect('address')
     
 def point(request):
     user_profile, created = Customer.objects.get_or_create(user=request.user)
@@ -508,14 +485,31 @@ def claim_item(request):
     else:
         return redirect('point')
     
+
 def order_again(request, order_id):
     previous_order = get_object_or_404(OrderPlaced, id=order_id, user=request.user)
-    cart_item = Cart.objects.filter(user=request.user, product=previous_order.product).first()
+    customizations = previous_order.customizations.all()
+
+    # Check if a similar cart item exists
+    cart_item = Cart.objects.filter(
+        user=request.user,
+        product=previous_order.product,
+        customizations__in=customizations
+    ).first()
 
     if cart_item:
+        # If a similar cart item exists, update its quantity
         cart_item.quantity += previous_order.quantity
         cart_item.save()
     else:
-        Cart.objects.create(user=request.user, product=previous_order.product, quantity=previous_order.quantity)
+        # If no similar cart item exists, create a new one
+        cart_item = Cart.objects.create(
+            user=request.user,
+            product=previous_order.product,
+            quantity=previous_order.quantity,
+        )
+
+        # Set customizations for the new cart item
+        cart_item.customizations.set(customizations)
 
     return redirect('/cart')

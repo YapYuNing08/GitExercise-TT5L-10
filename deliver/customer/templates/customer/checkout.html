@@ -106,6 +106,14 @@
         text-align: center;
     }
 
+    .form-container {
+        margin-top: 20px;
+    }
+
+    .product-title{
+        text-align: center;
+    }
+
 </style>
 
 <div class="container my-5 order-summary">
@@ -119,6 +127,9 @@
 
     <div class="row mt-5">
         <div class="col-sm-6">
+            <!-- <a href="{% url 'add-to-cart' %}" class="btn btn-warning shadow px-3 py-2 ms-2 mt-1"><i class="fa fa-arrow-left"></i>&nbsp;Back to Cart</a>
+            <br>
+            <br> -->
             <h4>Order Summary</h4>
             <hr>
             <form method="post" action="{% url 'order_placed' %}" id="order_form" onsubmit="return validateForm()">

@@ -2,18 +2,14 @@ from django.contrib import admin
 from . models import Category, Product, Cart, Customer, ReservationModel, OrderPlaced, CustomizationOption, CustomizationChoice, RedemptionOption, RedeemedItem, Review, Ad, AdditionalImage
 
 admin.site.register(Category)
-
 admin.site.register(ReservationModel)
 admin.site.register(CustomizationOption)
 admin.site.register(CustomizationChoice)
 
+
 @admin.register(Product)
 class ProductModelAdmin(admin.ModelAdmin):
     list_display = ['id','title','price','category','image']
-
-@admin.register(AdditionalImage)
-class ProductModelAdmin(admin.ModelAdmin):
-    list_display = ['product','image']
 
 @admin.register(Cart)
 class CartModelAdmin(admin.ModelAdmin):
@@ -48,3 +44,7 @@ class RedemptionOptionModelAdmin(admin.ModelAdmin):
 @admin.register(Review)
 class RedemptionOptionModelAdmin(admin.ModelAdmin):
     list_display = ['customer', 'product', 'rating', 'comment', 'date_created']
+
+@admin.register(AdditionalImage)
+class ProductModelAdmin(admin.ModelAdmin):
+    list_display = ['product','image']
