@@ -1,0 +1,178 @@
+{% extends 'restaurant/base.html' %}
+
+{% block content %}
+{% if user.is_authenticated and user.is_staff and user.is_superuser %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <h1 class="text-center mb-4">Orders</h1>
+            <table class="table table-hover table-striped spaced-table">
+                <!-- Table header -->
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Name</th>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>Food Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <!-- Table body -->
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>{% if order.method == 'Pick Up' %}
+                                {{ order.method }} : {{order.order_id}}
+                            {% else %}
+                                {{ order.method }} : Table {{ order.table_number }}
+                            {% endif %}</td>
+                        <!-- <td>{{ order.table_number }}</td> -->
+                        <td>{{ order.user.username }}</td>
+                        <td><strong>{{ order.product.title }}</strong>
+                            {% if order.customizations.exists %}
+                            <ul class="customizations-list">
+                                {% for customization in order.customizations.all %}
+                                <li>{{ customization.name }} (RM{{ customization.additional_price }})</li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <ul class="customizations-list">
+                                <li>No customizations</li>
+                            </ul>
+                            {% endif %}
+                        </td>
+                        <td>{{ order.quantity }}</td>
+                        <td>{{ order.food_status }}</td>
+                        <td>
+                            <form method="POST" action="{% url 'update_food_status' order.id %}" id="statusForm">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    
+                                    <button type="submit" name="food_status" value="Preparing" class="btn btn-warning mt-3 btn-sm" id="preparingButton" {% if order.food_status == 'Served' %}disabled{% endif %}>Preparing</button>
+                                    
+                                    <button type="submit" name="food_status" value="Served" class="btn btn-success mt-3 btn-sm" id="servedButton">Served</button>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="container">
+    <h3>Staff page</h3>
+</div>
+{% endif %}
+
+<style>
+    .container.my-5 {
+        background-color: #f4ece7;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        font-family: 'Arial', sans-serif;
+        font-weight: bold;
+        color: #5c2d0c; 
+        margin-bottom: 30px;
+    }
+
+    .spaced-table {
+        background-color: #fff;
+    }
+
+    .spaced-table thead th {
+        background-color: #292828; 
+        color: #fff;
+        padding: 15px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .spaced-table tbody tr td {
+        padding: 15px;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .spaced-table tbody tr td .form-group {
+        margin-bottom: 0;
+    }
+
+    .spaced-table tbody tr td .form-control {
+        width: 100%;
+    }
+
+    .table-hover tbody tr:hover td {
+        background-color: #fdf4e4; /* Hover color for all cells */
+    }
+
+    .customizations-list {
+        list-style-type: none;
+        padding-left: 0;
+        margin: 10px 0 0 0;
+    }
+
+    .customizations-list li {
+        font-size: 14px;
+        color: #5c2d0c;
+        margin: 5px 0;
+        font-weight: bold;
+    }
+
+    .btn-action {
+        background-color: #5c2d0c;
+        border-color: #5c2d0c;
+        color: #fff;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-action:hover {
+        background-color: #b58d70;
+        border-color: #b58d70;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const preparingButton = document.getElementById('preparingButton');
+        const servedButton = document.getElementById('servedButton');
+
+        if (preparingButton) {
+            preparingButton.addEventListener('click', function(event) {
+                if (preparingButton.classList.contains('btn-secondary')) {
+                    event.preventDefault();
+                } else {
+                    this.classList.remove('btn-warning');
+                    this.classList.add('btn-secondary');
+                    servedButton.classList.remove('btn-secondary');
+                    servedButton.classList.add('btn-success');
+                    // setTimeout(() => this.remove(), 0);  
+                }
+            });
+        }
+
+        servedButton.addEventListener('click', function(event) {
+            if (servedButton.classList.contains('btn-secondary')) {
+                event.preventDefault();
+            } else {
+                this.classList.remove('btn-success');
+                this.classList.add('btn-secondary');
+                if (preparingButton) {
+                    preparingButton.classList.remove('btn-warning');
+                    preparingButton.classList.add('btn-secondary');
+                    preparingButton.disabled = true;
+                    
+                }
+            }
+        });
+    });
+</script>
+
+{% endblock content %}

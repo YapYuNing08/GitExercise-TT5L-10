@@ -1,0 +1,271 @@
+{% extends 'customer/base.html' %}
+
+{% block content %}
+<div class="stepper-wrapper">
+    <div class="stepper-item completed">
+      <div class="step-counter">1</div>
+      <div class="step-name">Sign In</div>
+    </div>
+    <div class="stepper-item active">
+      <div class="step-counter">2</div>
+      <div class="step-name">Order</div>
+    </div>
+    <div class="stepper-item">
+      <div class="step-counter">3</div>
+      <div class="step-name">Confirmation</div>
+    </div>
+  </div>
+
+  <style>
+    .stepper-wrapper {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    }
+    .stepper-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    }
+    .stepper-item::before {
+    position: absolute;
+    content: "";
+    border-bottom: 2px solid #ccc;
+    width: 100%;
+    top: 20px;
+    left: -50%;
+    z-index: 2;
+    }
+    .stepper-item::after {
+    position: absolute;
+    content: "";
+    border-bottom: 2px solid #ccc;
+    width: 100%;
+    top: 20px;
+    left: 50%;
+    z-index: 2;
+    }
+    .stepper-item .step-counter {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ccc;
+    margin-bottom: 6px;
+    }
+    .stepper-item.active .step-counter{
+    font-weight: bold;
+    background-color: #4bb543;
+    }
+    .stepper-item.completed .step-counter {
+    background-color: #4bb543;
+    }
+    .stepper-item.completed::after {
+    position: absolute;
+    content: "";
+    border-bottom: 2px solid #4bb543;
+    width: 100%;
+    top: 20px;
+    left: 50%;
+    z-index: 3;
+    }
+    .stepper-item:first-child::before {
+    content: none;
+    }
+    .stepper-item:last-child::after {
+    content: none;
+    }
+  </style>
+
+<div class="container mb-5">
+    <div class="row justify-content-center mt-1">
+        <div class="col-md-12 col-sm-12 p-4">
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="pt-5"><h2>Beverages</h2>
+                    {% for beverage in beverage %}
+                    <div class="row mt-4">
+                        <div class="col-md-2 col-sm-12">
+                            <img class="rounded" src="{{ beverage.image.url }}" width="150" height="100"/>
+                        </div>
+                        <div class="col-md-8 col-sm-12">
+                            <div class="d-flex flex-row">
+                                <div class="form-group form-check">
+                                    <input type="checkbox" name="items[]" class="form-check-input" value="{{ beverage.pk }}">
+                                    <label class="form-check-label">{{ beverage.name }}</label>
+                                </div>
+                                <p class="font-weight-bold pl-5">RM{{ beverage.price }}</p>
+
+                                <div class="form-group ml-auto">
+                                    <label for="quantity{{ beverage.pk }}">Quantity:</label>
+                                    <select class="form-control" id="quantity{{ beverage.pk }}" name="quantities[]">
+                                        <option value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <p>{{ beverage.description }}</p>
+                        </div>
+                    </div>
+                    <hr />
+                    {% endfor %}
+                </div>
+
+                <div class="pt-5"><h2>Desserts</h2>
+                    {% for desserts in desserts %}
+                    <div class="row mt-4">
+                        <div class="col-md-2 col-sm-12">
+                            <img class="rounded" src="{{ desserts.image.url }}" width="150" height="100"/>
+                        </div>
+                        <div class="col-md-8 col-sm-12">
+                            <div class="d-flex flex-row">
+                                <div class="form-group form-check">
+                                    <input type="checkbox" name="items[]" class="form-check-input" value="{{ desserts.pk }}">
+                                    <label class="form-check-label">{{ desserts.name }}</label>
+                                </div>
+                                <p class="font-weight-bold pl-5">RM{{ desserts.price }}</p>
+                                <div class="form-group ml-auto">
+                                    <label for="quantity{{ desserts.pk }}">Quantity:</label>
+                                    <select class="form-control" id="quantity{{ desserts.pk }}" name="quantities[]">
+                                        <option value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <p>{{ desserts.description }}</p>
+                        </div>
+                    </div>
+                    <hr />
+                    {% endfor %}
+                </div>
+
+                <div class="pt-5"><h2>Pastries</h2>
+                    {% for pastries in pastries %}
+                    <div class="row mt-4">
+                        <div class="col-md-2 col-sm-12">
+                            <img class="rounded" src="{{ pastries.image.url }}" width="150" height="100"/>
+                        </div>
+                        <div class="col-md-8 col-sm-12">
+                            <div class="d-flex flex-row">
+                                <div class="form-group form-check">
+                                    <input type="checkbox" name="items[]" class="form-check-input" value="{{ pastries.pk }}">
+                                    <label class="form-check-label">{{ pastries.name }}</label>
+                                </div>
+                                <p class="font-weight-bold pl-5">RM{{ pastries.price }}</p>
+                                <div class="form-group ml-auto">
+                                    <label for="quantity{{ pastries.pk }}">Quantity:</label>
+                                    <select class="form-control" id="quantity{{ pastries.pk }}" name="quantities[]">
+                                        <option value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <p>{{ pastries.description }}</p>
+                        </div>
+                    </div>
+                    <hr />
+                    {% endfor %}
+                </div>
+
+                <div class="pt-5"><h2>Main dishes</h2>
+                    {% for main in main %}
+                    <div class="row mt-4">
+                        <div class="col-md-2 col-sm-12">
+                            <img class="rounded" src="{{ main.image.url }}" width="150" height="100"/>
+                        </div>
+                        <div class="col-md-8 col-sm-12">
+                            <div class="d-flex flex-row">
+                                <div class="form-group form-check">
+                                    <input type="checkbox" name="items[]" class="form-check-input" value="{{ main.pk }}">
+                                    <label class="form-check-label">{{ main.name }}</label>
+                                </div>
+                                <p class="font-weight-bold pl-5">RM{{ main.price }}</p>
+                                <div class="form-group ml-auto">
+                                    <label for="quantity{{ main.pk }}">Quantity:</label>
+                                    <select class="form-control" id="quantity{{ main.pk }}" name="quantities[]">
+                                        <option value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <p>{{ main.description }}</p>
+                        </div>
+                    </div>
+                    <hr />
+                    {% endfor %}
+                </div> 
+
+                <div class="form-group pt-3">
+                    <label for="name">Full Name</label>
+                    <input required class="form-control" type="text" placeholder="Your Name" name="name"/>
+                </div>
+
+                <div class="form-group pt-3">
+                    <label for="phone">Phone Number</label>
+                    <input required class="form-control" type="text" placeholder="01xxxxxxx" name="phone"/>
+                </div>
+
+                <div class="form-group pt-3">
+                    <label for="table">Table Number</label>
+                    <input required class="form-control" type="number" placeholder="Table No." name="table_number"/>
+                </div>
+
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#submitModal">
+                    Submit Order!
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="submitModal" tabindex="-1" aria-labelledby="submitModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="submitModalLabel">Submit Your Order!</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-dark">Place Order!</button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+  
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

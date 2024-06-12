@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+
+<html>
+    <body>
+        <title>Sign In</title>
+     
+       
+        <style media="screen">
+          *,
+    *:before,
+    *:after{
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+    
+    body, .background_image {
+        /* background-color: rgb(118, 28, 28); */
+        background-image: url('media/menu_images/coffee_shop.jpg');
+        background-size: cover; /* Cover the entire element */
+        background-repeat: no-repeat; /* Prevent the background from repeating */
+        z-index: -1;
+    }
+
+    .background{
+        width: 430px;
+        height: 520px;
+        position: absolute;
+        transform: translate(-50%,-50%);
+        left: 50%;
+        top: 50%;
+        
+    }
+   
+    form{
+        height: 520px;
+        width: 400px;
+        background-color: rgba(255, 255, 255, 0.44);
+        position: absolute;
+        transform: translate(-50%,-50%);
+        top: 50%;
+        left: 50%;
+        border-radius: 10px;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.251);
+        box-shadow: 0 0 40px rgba(255, 255, 255, 0.6);
+        padding: 50px 35px;
+    }
+
+    form *{
+        font-family: 'Poppins',sans-serif;
+        color: #3b2106;
+        letter-spacing: 0.5px;
+        outline: none;
+        border: none;
+    }
+
+    form h3{
+        font-size: 32px;
+        font-weight: 500;
+        line-height: 42px;
+        text-align: center;
+    }
+    
+    label{
+        display: block;
+        margin-top: 30px;
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    input{
+        display: block;
+        height: 50px;
+        width: 100%;
+        background-color: rgba(240, 253, 255, 0.667);
+        border-radius: 3px;
+        padding: 0 10px;
+        margin-top: 8px;
+        font-size: 14px;
+        font-weight: 300;
+    }
+
+    ::placeholder{
+        color: #b8a490;
+    }
+
+    button{
+        margin-top: 50px;
+        width: 100%;
+        background-color: #fff6dd;
+        color: #080710;
+        padding: 15px 0;
+        font-size: 18px;
+        font-weight: 600;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    
+        </style>
+ 
+ 
+        {% if background %}
+        <div class="background_image"></div>
+        {% endif %}
+
+        <form method="post">
+            <h3>Login Here</h3>
+            {% csrf_token %} 
+            <label for="username">Username</label>
+            <input type="text" placeholder="Enter Username" id="username" name="username">
+    
+            <label for="password">Password</label>
+            <input type="password" placeholder="Password" id="password" name="pass">
+    
+            <button type="submit">Log In</button>
+            <br>
+            <br>
+            <a href="{% url 'signup' %}" >No account? Create now!</a> 
+        </form>
+    </body>
+</html>

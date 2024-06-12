@@ -1,0 +1,61 @@
+{% extends 'customer/base.html' %}
+
+{% block content %}
+<div class="container mb-5">
+    <div class="row justify-content-center mt-1">
+        <div class="col-md-5 col-sm-12 p-4 text-center ins-style">
+            <h1>Reservation Submitted!</h1>
+            <p>Your booking has been confirmed.</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-5 col-sm-12 text-center">
+            <h3 class="pb-3">Reservation Summary</h3>
+                <table class="table table-striped">
+                    <tbody>
+                        <tr>
+                            <td><strong>Name:</strong></td>
+                            <td>{{ reservation.name }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Phone Number:</strong></td>
+                            <td>{{ reservation.phone }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Date:</strong></td>
+                            <td>{{ reservation.date }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Time:</strong></td>
+                            <td>{{ reservation.time }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Number of Pax:</strong></td>
+                            <td>{{ reservation.person }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            <br>
+            <a href="{% url 'about' %}" class="btn btn-primary"><i class="fa fa-arrow-left"></i>&nbsp;Go to the homepage</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .ins-style h1 {
+        color: #4a4a4a;
+        font-weight: bold;
+    }
+
+    .ins-style p {
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+
+    .ins-style h4 {
+        color: #5c2d0c;
+        font-size: 1.25rem;
+    }
+</style>
+{% endblock content %}
