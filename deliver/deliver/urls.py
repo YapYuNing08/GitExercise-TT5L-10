@@ -20,7 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from customer.views import Index, About, Signin, Signup, MenuSearch, Category, CategoryTitle, ProductDetail, CustomerRegistrationView, ProfileView, Reservation, ReservationConfirmation, Logout, Checkout
 from django.contrib.auth import views as auth_view
-from customer.forms import MyPasswordResetForm, MyPasswordChangeForm
+from customer.forms import  MyPasswordResetForm, MyPasswordChangeForm
 from customer import views
 
 urlpatterns = [
