@@ -18,6 +18,7 @@ $(document).ready(function(){
             }
         });
     });
+
     // Handle the plus-cart click event
     $('.plus-cart').click(function(){
         var id = $(this).attr("cid").toString();
