@@ -1,1 +1,1 @@
-web: gunicorn deliver.wsgi
+web: gunicorn deliver.wsgi --log-file -
