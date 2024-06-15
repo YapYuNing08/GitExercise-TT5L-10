@@ -26,9 +26,9 @@ SECRET_KEY = 'django-insecure-gi-bvn&3n+wezcw_6e3*2-&&cr%*td)@&@u0tbl^jqwt1ggr*p
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = []
 
-ALLOWED_HOSTS = ['arcane-sea-26917-3ccce8aa2ea2.herokuapp.com']
+# ALLOWED_HOSTS = ['arcane-sea-26917-3ccce8aa2ea2.herokuapp.com']
 
 # Application definition
 
