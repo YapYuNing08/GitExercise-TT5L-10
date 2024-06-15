@@ -3,37 +3,39 @@
 {% block content %}
 
 <body>
-<div class="container" style="margin-top: 20px;">
-    <div class="row flex justify-content-between">
-        <div class="img2 col-lg-5 mt-3">
-            <div class="image-container">
-                <img src="{{product.image.url}}" class="main-image img-fluid mt-3" alt="">
-                {% if product.additional_images.all %}
-                    {% for image in product.additional_images.all %}
-                        <img src="{{ image.image.url }}" class="additional-image img-fluid mt-3" alt="Additional Image">
-                    {% endfor %}
-                {% endif %}
+    <div class="container" style="margin-top: 20px;">
+        <div class="row flex justify-content-between">
+            <div class="img2 col-lg-5 mt-3">
+                <div class="image-container">
+                    <img src="{{product.image.url}}" class="main-image img-fluid mt-3" alt="">
+                    {% if product.additional_images.all %}
+                        {% for image in product.additional_images.all %}
+                            <img src="{{ image.image.url }}" class="additional-image img-fluid mt-3" alt="Additional Image">
+                        {% endfor %}
+                    {% endif %}
+                </div>
             </div>
-        </div>
 
-        <div class="productdetail col-lg-5">
-            <h1 style="font-family: Georgia; font-size: 50px;">{{product.title}}</h1>
-            <h4>RM {{product.price}}</h4>
-            <br>
-            <strong><p>{{ product.description | linebreaksbr }}</p></strong>
-            <div>
-                <h3>Select Customizations</h3>
-                <form method="POST" action="{% url 'product_detail' product.pk %}">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <input type="hidden" name="prod_id" value="{{ product.id }}">
-                    <button type="submit" class="btn btn-primary shadow px-5 py-2">Add to Cart</button>
-                    <a href="{% url 'all_products' %}" class="btn btn-warning shadow px-5 py-2 ms-2">Back to Menu</a>
-                </form>
+            <div class="productdetail col-lg-5">
+                <h1 style="font-family: Georgia; font-size: 50px;">{{product.title}}</h1>
+                <h4>RM {{product.price}}</h4>
+                <br>
+                <strong><p>{{ product.description | linebreaksbr }}</p></strong>
+                <div>
+                    {% if form.fields %}
+                        <h3>Select Customizations</h3>
+                    {% endif %}
+                    <form method="POST" action="{% url 'product_detail' product.pk %}">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <input type="hidden" name="prod_id" value="{{ product.id }}">
+                        <button type="submit" class="btn btn-primary shadow px-5 py-2">Add to Cart</button>
+                        <a href="{% url 'all_products' %}" class="btn btn-warning shadow px-5 py-2 ms-2">Back to Menu</a>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
