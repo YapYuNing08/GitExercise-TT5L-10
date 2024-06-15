@@ -202,6 +202,13 @@
             alert("Please choose either 'Pick Up' or 'Dine In'.");
             return false;
         }
+        if (method === "Dine In") {
+            var tableNumber = document.getElementById("table_number").value;
+            if (!tableNumber) {
+                alert("Please fill in the table number.");
+                return false;
+            }
+        }
         return true;
     }
 </script>

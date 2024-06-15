@@ -61,7 +61,7 @@
             <!-- Rewards Section -->
             <div class="card-reward p-4 text-center">
                 <!-- Rewards Title -->
-                <h1 class="display-4 mb-4"><strong>Rewards</strong></h1>
+                <h1 class="display-4 mb-4">Rewards</h1>
                 <!-- Points Info -->
                 <h3 class="text-info"><strong>Points: {{ initial_points }}</strong></h3>
                 <p class="text-info"><strong>Every RM 1 spent = 1 point</strong></p>
@@ -106,7 +106,7 @@
                                     <div class="modal-body">
                                         <img src="{{ option.image.url }}" alt="{{ option.name }}" width="300px" height="200px">
                                         <p><strong>{{ option.description | linebreaksbr }}</strong></p>
-                                        <p class="point"><strong>Points Required: <span class="points-required">{{ option.points_required }}</span></strong></p>
+                                        <p>Points Required: {{ option.points_required }}</p>
                                         <!-- Redeem Form -->
                                         <form id="redeemForm{{ option.id }}" action="{% url 'redeem_item' %}" method="POST">
                                             {% csrf_token %}
@@ -228,34 +228,33 @@
     }
 
     .button-container {
-        margin-left: auto;
-        display: flex;
-        justify-content: flex-end;
-        width: 100%;
-        text-align: right;
-    }
+    margin-left: auto;
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    text-align: right;
+}
 
-    .claim-button {
-        display: inline-block;
-        margin-left: auto;
-        text-align: right;
-    }
+.claim-button {
+    display: inline-block;
+    margin-left: auto;
+    text-align: right;
+}
 
-    .d-flex.align-items-center.justify-content-between {
-        width: 100%;
-    }
+.d-flex.align-items-center.justify-content-between {
+    width: 100%;
+}
 
-    .list-group-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-    }
+.list-group-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
 
-    .list-group-item .d-flex {
-        width: 100%;
-    }
-
+.list-group-item .d-flex {
+    width: 100%;
+}
     .points-required {
         color: #ff4500;
         font-weight: bold;
@@ -280,9 +279,6 @@
         border: 1px solid #f5c6cb;
     }
 
-    .point{
-        color: black;
-    }
     /* Style for My Rewards Section */
     .list-group-item {
         display: flex;
@@ -312,7 +308,7 @@
         white-space: nowrap;
     }
 
-    .name {
+    .name{
         font-size: smaller;
     }
 
@@ -329,47 +325,48 @@
     }
 
     /* Style for Star Rating */
-    .star-rating {
-        unicode-bidi: bidi-override;
-        direction: rtl;
-        display: inline-block;
-        margin-top: 10px;
-    }
+.star-rating {
+    unicode-bidi: bidi-override;
+    direction: rtl;
+    display: inline-block;
+    margin-top: 10px;
+}
 
-    .star-rating input[type="radio"] {
-        display: none;
-    }
+.star-rating input[type="radio"] {
+    display: none;
+}
 
-    .star-rating label {
-        font-size: 25px;
-        color: #fef1c4; /* Color for empty stars */
-        cursor: pointer;
-    }
+.star-rating label {
+    font-size: 25px;
+    color: #fef1c4; /* Color for empty stars */
+    cursor: pointer;
+}
 
-    .star-rating input[type="radio"]:checked ~ label {
-        color: #fdd835; /* Color for filled stars */
-    }
+.star-rating input[type="radio"]:checked ~ label {
+    color: #fdd835; /* Color for filled stars */
+}
 
-    .star-rating {
-        direction: rtl;
-        display: inline-flex;
-        font-size: 1.5rem;
-    }
+.star-rating {
+    direction: rtl;
+    display: inline-flex;
+    font-size: 1.5rem;
+}
 
-    .star-rating input {
-        display: none;
-    }
+.star-rating input {
+    display: none;
+}
 
-    .star-rating label {
-        cursor: pointer;
-        color: #ddd;
-    }
+.star-rating label {
+    cursor: pointer;
+    color: #ddd;
+}
 
-    .star-rating input:checked ~ label,
-    .star-rating label:hover,
-    .star-rating label:hover ~ label {
-        color: #ffc700;
-    }
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #ffc700;
+}
+
 
 </style>
 

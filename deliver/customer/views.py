@@ -434,7 +434,6 @@ def point(request):
     context = {'initial_points': initial_points, 'redemption_options': redemption_options, 'redeemed_items': redeemed_items}
     return render(request, 'customer/point.html', context)
 
-
 def redeem_item(request):
     if request.method == 'POST':
         option_id = request.POST.get('option_id')
@@ -491,7 +490,6 @@ def claim_item(request):
         return redirect('point')
     else:
         return redirect('point')
-    
 
 def order_again(request, order_id):
     previous_order = get_object_or_404(OrderPlaced, id=order_id, user=request.user)
