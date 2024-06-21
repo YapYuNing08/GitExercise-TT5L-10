@@ -29,7 +29,19 @@
                             {% endif %}</td>
                         <!-- <td>{{ order.table_number }}</td> -->
                         <td>{{ order.user.username }}</td>
-                        <td>{{ order.product.title }}</td>
+                        <td><strong>{{ order.product.title }}</strong>
+                            {% if order.customizations.exists %}
+                            <ul class="customizations-list">
+                                {% for customization in order.customizations.all %}
+                                <li>{{ customization.name }} (RM{{ customization.additional_price }})</li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <ul class="customizations-list">
+                                <li>No customizations</li>
+                            </ul>
+                            {% endif %}
+                        </td>
                         <td>{{ order.quantity }}</td>
                         <td>{{ order.food_status }}</td>
                         <td>
@@ -102,5 +114,76 @@
         });
     });
 </script>
+
+<style>
+    .container.my-5 {
+        background-color: #f4ece7;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        font-family: 'Arial', sans-serif;
+        font-weight: bold;
+        color: #5c2d0c; 
+        margin-bottom: 30px;
+    }
+
+    .spaced-table {
+        background-color: #fff;
+    }
+
+    .spaced-table thead th {
+        background-color: #292828; 
+        color: #fff;
+        padding: 15px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .spaced-table tbody tr td {
+        padding: 15px;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .spaced-table tbody tr td .form-group {
+        margin-bottom: 0;
+    }
+
+    .spaced-table tbody tr td .form-control {
+        width: 100%;
+    }
+
+    .table-hover tbody tr:hover td {
+        background-color: #fdf4e4; /* Hover color for all cells */
+    }
+
+    .customizations-list {
+        list-style-type: none;
+        padding-left: 0;
+        margin: 10px 0 0 0;
+    }
+
+    .customizations-list li {
+        font-size: 14px;
+        color: #5c2d0c;
+        margin: 5px 0;
+        font-weight: bold;
+    }
+
+    .btn-action {
+        background-color: #5c2d0c;
+        border-color: #5c2d0c;
+        color: #fff;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-action:hover {
+        background-color: #b58d70;
+        border-color: #b58d70;
+    }
+</style>
 
 {% endblock content %}
