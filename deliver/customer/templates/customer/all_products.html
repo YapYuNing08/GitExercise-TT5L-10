@@ -244,6 +244,17 @@
   color: #6f4e37;
   text-decoration: underline #6f4e37 1px;
 }
+
+/* Responsive styling */
+@media (max-width: 768px) {
+  .row-cols-2 {
+    flex-direction: column;
+  }
+  .col.text-center.mb-4 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
 </style>
 
 {% endblock content %}
