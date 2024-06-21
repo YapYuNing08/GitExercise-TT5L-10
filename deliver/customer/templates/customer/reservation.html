@@ -49,20 +49,8 @@
 
               <div class="form-group">
                 <label for="time">Time</label>
-                <input type="time" class="form-control" min="11:00" max="23:00" name="time" id="time" required>
+                <input type="time" class="form-control" name="time" id="time" min="11:00" max="23:00" required>
               </div>
-
-              <script>
-                // Get current date and time
-                var currentDate = new Date();
-                var currentTime = currentDate.getHours() + ":" + currentDate.getMinutes();
-
-                // Set min attribute of date input to current date
-                document.getElementById("date").min = currentDate.toISOString().split('T')[0];
-
-                // Set min attribute of time input to current time
-                document.getElementById("time").min = currentTime;
-              </script>
 
               <button type="button" class="btn btn-brown" data-toggle="modal" data-target="#bookingModal">
                 Book Now!
@@ -199,4 +187,43 @@
     margin-top: 20px;
   }
 </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var dateInput = document.getElementById('date');
+    var timeInput = document.getElementById('time');
+
+    // Get current date and time
+    var currentDate = new Date();
+    var currentYear = currentDate.getFullYear();
+    var currentMonth = ('0' + (currentDate.getMonth() + 1)).slice(-2);
+    var currentDay = ('0' + currentDate.getDate()).slice(-2);
+    var currentHours = ('0' + currentDate.getHours()).slice(-2);
+    var currentMinutes = ('0' + currentDate.getMinutes()).slice(-2);
+
+    // Set min attribute of date input to current date
+    var minDate = currentYear + '-' + currentMonth + '-' + currentDay;
+    dateInput.min = minDate;
+
+    // Function to update time input constraints
+    function updateTimeConstraints() {
+      var selectedDate = dateInput.value;
+      var todayDate = new Date();
+      var todayDateString = todayDate.toISOString().split('T')[0];
+
+      if (selectedDate === todayDateString) {
+        var minTime = currentHours + ':' + currentMinutes;
+        timeInput.min = minTime;
+      } else {
+        timeInput.min = '11:00';
+      }
+    }
+
+    // Attach event listener to date input
+    dateInput.addEventListener('change', updateTimeConstraints);
+
+    // Initialize time constraints on page load
+    updateTimeConstraints();
+  });
+</script>
 {% endblock content %}
