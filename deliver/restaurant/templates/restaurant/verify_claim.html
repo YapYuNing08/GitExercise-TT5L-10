@@ -5,10 +5,11 @@
     {% if all_items %}
         <div class="list-group">
             {% for item in all_items %}
-                <div class="list-group-item {% if item.claimed %}list-group-item-success{% else %}list-group-item-warning{% endif %}" data-item-id="{{ item.id }}">
+                <div class="list-group-item {% if item.claimed %}list-group-item-success{% else %}list-group-item-warning{% endif %}">
                     <h5>Item: {{ item.option.name }}</h5>
                     <p>User: {{ item.customer.user.username }}</p>
                     <p>Date Redeemed: {{ item.date_redeemed }}</p>
+                    <!-- <p>Claim Code: {{ item.claim_code }}</p> -->
                     <p>Status: {% if item.claimed %}Verified{% else %}Not Verified{% endif %}</p>
                     {% if not item.claimed %}
                         <form action="{% url 'verify_claim' %}" method="POST">
@@ -80,16 +81,9 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const verificationResult = "{{ verification_result }}";
-        const redemptionId = "{{ verified_redemption_id }}";
-
         if (verificationResult) {
             if (verificationResult === 'success') {
                 alert('Verification successful: Item has been claimed successfully.');
-                const itemElement = document.querySelector(`[data-item-id="${redemptionId}"]`);
-                if (itemElement) {
-                    itemElement.remove();
-                }
-                
             } else if (verificationResult === 'incorrect_code') {
                 alert('Verification failed: Incorrect claim code for this item. Please try again.');
             } else if (verificationResult === 'invalid_id') {
@@ -98,4 +92,4 @@
         }
     });
 </script>
-{% endblock %}
+{% endblock content %}
