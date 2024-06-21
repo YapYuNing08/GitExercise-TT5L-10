@@ -45,7 +45,7 @@ class OrderDetails(View):
 class ReservationDetails(View):
     def get(self, request, pk, *args, **kwargs):
         reservation = ReservationModel.objects.get(pk=pk)
-        reservations = ReservationModel.objects.all()
+        reservations = ReservationModel.objects.all().order_by('date')  # Sorting by date
         
         context = {
             'reservation': reservation,
@@ -57,13 +57,9 @@ class ReservationDetails(View):
     def post(self, request, pk, *args, **kwargs):
         reservation_id = request.POST.get('reservation_id')  # Assuming the hidden input is named 'reservation_id'
         reservation = ReservationModel.objects.get(pk=reservation_id)
-        # reservation = ReservationModel.objects.get(pk=pk)
         reservation.is_served = True
         reservation.save()
-        context = {
-            'reservation':reservation
-        }
-
+        
         return redirect('reservation_details', pk=pk)
     
 class MarkAsServed(View):
@@ -119,27 +115,24 @@ def update_food_status(request, order_id):
     return render(request, 'restaurant/update_food_status.html', {'order': order})
 
 def verify_claim(request):
-    verification_result = ''
-    verified_redemption_id = None
+    verification_result = None
 
     if request.method == 'POST':
         redemption_id = request.POST.get('redemption_id')
         claim_code = request.POST.get('claim_code')
+
         try:
-            item = RedeemedItem.objects.get(id=redemption_id)
-            if item.claim_code == claim_code:
-                item.claimed = True
-                item.save()
-                verification_result = 'success'
-                verified_redemption_id = redemption_id
+            redemption = RedeemedItem.objects.get(id=redemption_id)
+            if redemption.claim_code == claim_code:
+                if not redemption.claimed:
+                    redemption.claimed = True
+                    redemption.save()
+                    verification_result = 'success'
             else:
                 verification_result = 'incorrect_code'
         except RedeemedItem.DoesNotExist:
             verification_result = 'invalid_id'
 
-    all_items = RedeemedItem.objects.all().order_by('-id')
-    return render(request, 'restaurant/verify_claim.html', {
-        'all_items': all_items,
-        'verification_result': verification_result,
-        'verified_redemption_id': verified_redemption_id
-    })
+    all_items = RedeemedItem.objects.all()
+    
+    return render(request, 'restaurant/verify_claim.html', {'all_items': all_items, 'verification_result': verification_result})
