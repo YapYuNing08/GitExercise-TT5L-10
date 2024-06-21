@@ -75,6 +75,9 @@ class Signup(View):
         if User.objects.filter(email=email).exists():
             return HttpResponse("This email is already in use. Please use a different email.")
         
+        if User.objects.filter(username=uname).exists():
+            return HttpResponse("This username is already in use. Please use a different username.")
+        
         if 'admin' in uname:
             return HttpResponse("Username 'admin' is not allowed. Please try again with a different username.")
         
